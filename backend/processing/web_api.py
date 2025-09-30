@@ -4,7 +4,7 @@ This module provides clean functions for web endpoints without CLI interface.
 """
 
 import pandas as pd
-from typing import Dict, Any, List, Union
+from typing import Dict, Any, List
 import os
 import json
 from datetime import datetime

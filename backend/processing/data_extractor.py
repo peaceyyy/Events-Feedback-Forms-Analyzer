@@ -13,7 +13,7 @@ def get_default_csv_path() -> str:
     """
     script_dir = os.path.dirname(__file__)
     project_root = os.path.dirname(os.path.dirname(script_dir))
-    return os.path.join(project_root, 'ai_studio_code.csv')
+    return os.path.join(project_root, 'feedback_forms-1.csv')
 
 def validate_csv_file(file_path: str) -> Dict[str, Any]:
     """
@@ -24,7 +24,6 @@ def validate_csv_file(file_path: str) -> Dict[str, Any]:
     if not os.path.exists(file_path): return {"valid": False, "message": f"File not found: {file_path}"}
     if not file_path.lower().endswith('.csv'): return {"valid": False, "message": "File must be a CSV file"}
     try:
-        # Test readability by attempting to read just the header row
         pd.read_csv(file_path, nrows=1)
         return {"valid": True, "message": "File is valid"}
     except Exception as e:
@@ -90,7 +89,10 @@ def extract_feedback_data(file_path: str) -> List[Dict[str, Any]]:
             extracted_df[col] = extracted_df[col].fillna('No comment')
 
     # Convert DataFrame to list of dictionaries (one dict per row)
-    return list([dict(row) for row in extracted_df.to_dict(orient='records')])
+    return [
+        {str(k): v for k, v in row.items()}
+        for row in extracted_df.to_dict(orient='records')
+    ]
 
 
 def save_extracted_data(data: List[Dict[str, Any]], original_file_path: str):

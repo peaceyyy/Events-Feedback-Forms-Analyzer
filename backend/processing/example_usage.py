@@ -20,7 +20,7 @@ def example_basic_usage():
     result = extract_feedback_data(csv_path)
     
     if "error" in result:
-        print(f"Error: {result['error']}")
+        print(f"Error: {result[0]}")
     else:
         print(f"Success: {result['message']}")
         print(f"Records extracted: {len(result['data'])}")
