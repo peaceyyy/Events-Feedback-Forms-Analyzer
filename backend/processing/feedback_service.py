@@ -13,7 +13,7 @@ def get_default_csv_path() -> str:
     """
     script_dir = os.path.dirname(__file__)
     project_root = os.path.dirname(os.path.dirname(script_dir))
-    return os.path.join(project_root, 'feedback_forms-1.csv')
+    return os.path.join(project_root, 'test_data/feedback_forms-1.csv')
 
 def validate_csv_file(file_path: str) -> Dict[str, Any]:
     """
@@ -30,13 +30,13 @@ def validate_csv_file(file_path: str) -> Dict[str, Any]:
         return {"valid": False, "message": f"Cannot read or parse CSV file: {str(e)}"}
 
 # --- CORE DATA PROCESSING ---
-def extract_feedback_data(file_path: str) -> List[Dict[str, Any]]:
+def extract_feedback_data(file_path_or_buffer) -> List[Dict[str, Any]]:
     """
     Main processing function: reads CSV, renames columns to shorter names,
     validates required columns exist, and cleans the data.
     Returns a list of dictionaries (one per survey response).
     """
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(file_path_or_buffer)
 
     # Convert long survey question columns to short, code-friendly names
     rename_map = {
@@ -113,12 +113,9 @@ def save_extracted_data(data: List[Dict[str, Any]], original_file_path: str):
         print(f"Failed to save data: {str(e)}")
 
 
-# --- USER INTERFACE ---
+# --- CLI ver. for testing ---
 def main():
-    """
-    Interactive command-line interface that guides users through CSV processing.
-    Handles user input, file validation, and error display.
-    """
+    
     print("=== Feedback Data Extractor ===")
     
     default_csv_path = get_default_csv_path()

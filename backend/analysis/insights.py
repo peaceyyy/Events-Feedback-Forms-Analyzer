@@ -256,6 +256,45 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
+def generate_initial_summary(data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Generates a lightweight summary for immediate frontend display after upload.
+    """
+    if not data:
+        return {"total_responses": 0}
+    
+    df = pd.DataFrame(data)
+    
+    summary = {
+        "total_responses": len(data),
+        "average_satisfaction": float(df['satisfaction'].mean()) if 'satisfaction' in df.columns else 0,
+        "average_recommendation": float(df['recommendation_score'].mean()) if 'recommendation_score' in df.columns else 0,
+        "response_distribution": {},
+        "most_attended_sessions": [],
+    }
+    
+    # Satisfaction distribution
+    if 'satisfaction' in df.columns:
+        satisfaction_counts = df['satisfaction'].value_counts().to_dict()
+        summary["response_distribution"]["satisfaction"] = {str(k): int(v) for k, v in satisfaction_counts.items()}
+    
+    # Most popular sessions
+    if 'sessions_attended' in df.columns:
+        all_sessions = []
+        for sessions in df['sessions_attended'].dropna():
+            if isinstance(sessions, list):
+                all_sessions.extend([s for s in sessions if s])
+        
+        if all_sessions:
+            session_counts = Counter(all_sessions)
+            summary["most_attended_sessions"] = [
+                {"session": session, "count": count} 
+                for session, count in session_counts.most_common(5)
+            ]
+    
+    return summary
+
+
 # Helper functions
 def generate_satisfaction_insights(satisfaction_series) -> List[str]:
     """Generate actionable insights from satisfaction data"""
