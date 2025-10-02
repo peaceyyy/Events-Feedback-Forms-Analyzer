@@ -1,0 +1,275 @@
+/* 
+  Component Styles - Professional Google/Samsung inspired components
+  Ready for light/dark mode implementation
+*/
+
+/* Glass morphism base styles */
+.glass-light {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+}
+
+.glass-dark {
+  background: rgba(30, 41, 59, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+}
+
+/* Card Components */
+.card-light {
+  @apply bg-white rounded-xl shadow-md border border-slate-200;
+  transition: all 250ms ease-in-out;
+}
+
+.card-light:hover {
+  @apply shadow-lg;
+  transform: translateY(-2px);
+}
+
+.card-glass {
+  @apply rounded-xl;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+}
+
+/* Button Styles */
+.btn-primary {
+  @apply px-6 py-3 rounded-lg font-medium transition-all duration-250;
+  background: linear-gradient(135deg, #5e94eb 0%, #1a9d57 100%);
+  @apply text-white shadow-md;
+}
+
+.btn-primary:hover {
+  @apply shadow-lg;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px 0 rgba(94, 148, 235, 0.25);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  @apply px-6 py-3 rounded-lg font-medium transition-all duration-250;
+  @apply bg-slate-100 text-slate-700 border border-slate-200;
+}
+
+.btn-secondary:hover {
+  @apply bg-slate-200 shadow-md;
+}
+
+.btn-glass {
+  @apply px-6 py-3 rounded-lg font-medium transition-all duration-250;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  @apply text-slate-700;
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Input Styles */
+.input-light {
+  @apply w-full px-4 py-3 rounded-lg border border-slate-300 transition-all duration-250;
+  @apply focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none;
+  @apply bg-white text-slate-700 placeholder-slate-400;
+}
+
+.input-glass {
+  @apply w-full px-4 py-3 rounded-lg transition-all duration-250;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  @apply text-slate-700 placeholder-slate-500;
+}
+
+.input-glass:focus {
+  @apply outline-none;
+  border-color: #5e94eb;
+  box-shadow: 0 0 0 3px rgba(94, 148, 235, 0.1);
+}
+
+/* File Upload Styles */
+.file-upload-area {
+  @apply relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-250;
+  @apply border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50;
+}
+
+.file-upload-area.dragover {
+  @apply border-blue-500 bg-blue-100;
+  background: linear-gradient(135deg, rgba(94, 148, 235, 0.1) 0%, rgba(26, 157, 87, 0.1) 100%);
+}
+
+.file-upload-glass {
+  @apply relative rounded-xl p-8 text-center transition-all duration-250;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.file-upload-glass:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: #5e94eb;
+}
+
+/* Status Indicators */
+.status-success {
+  @apply p-4 rounded-lg border-l-4 border-green-500;
+  background: linear-gradient(90deg, rgba(26, 157, 87, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.status-error {
+  @apply p-4 rounded-lg border-l-4 border-red-500;
+  background: linear-gradient(90deg, rgba(237, 93, 81, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.status-warning {
+  @apply p-4 rounded-lg border-l-4 border-yellow-500;
+  background: linear-gradient(90deg, rgba(213, 213, 129, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.status-info {
+  @apply p-4 rounded-lg border-l-4 border-blue-500;
+  background: linear-gradient(90deg, rgba(94, 148, 235, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+/* Loading States */
+.loading-spinner {
+  @apply animate-spin rounded-full border-4 border-slate-200;
+  border-top-color: #5e94eb;
+}
+
+.loading-pulse {
+  @apply animate-pulse bg-slate-200 rounded;
+}
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+/* Typography Styles */
+.heading-primary {
+  @apply text-4xl font-bold text-slate-800 tracking-tight;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.heading-secondary {
+  @apply text-2xl font-semibold text-slate-700 tracking-tight;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.text-body {
+  @apply text-base text-slate-600 leading-relaxed;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.text-caption {
+  @apply text-sm text-slate-500;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Navigation Styles */
+.nav-glass {
+  @apply fixed top-0 w-full z-50;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  @apply bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6;
+  animation: modalSlideIn 250ms ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Utility Classes */
+.gradient-primary {
+  background: linear-gradient(135deg, #5e94eb 0%, #1a9d57 100%);
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, #4285f4 0%, #80bc6e 100%);
+}
+
+.gradient-warm {
+  background: linear-gradient(135deg, #fee293 0%, #d5d581 100%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #5e94eb 0%, #1a9d57 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Responsive Design Helpers */
+.mobile-padding {
+  @apply px-4;
+}
+
+.desktop-padding {
+  @apply lg:px-8 xl:px-12;
+}
+
+.container-max {
+  @apply max-w-7xl mx-auto;
+}
+
+/* Dark Mode Preparation (classes ready but not implemented) */
+.dark-mode-ready {
+  transition: background-color 250ms ease-in-out, color 250ms ease-in-out, border-color 250ms ease-in-out;
+}
+
+/* Focus States for Accessibility */
+.focus-visible {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}

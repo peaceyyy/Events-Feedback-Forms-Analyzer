@@ -9,6 +9,8 @@ import os
 
 from backend.app.handlers import process_feedback_csv, validate_csv_content
 from backend.analysis.insights import generate_comprehensive_report
+from backend.processing.feedback_service import extract_feedback_data
+from backend.utils.file_helpers import get_default_csv_path
 
 app = Flask(__name__)
 CORS(app)  # Allow frontend to call this API
@@ -111,9 +113,6 @@ def test_with_sample():
     Test endpoint using sample data - useful for development.
     """
     try:
-        # Use existing sample CSV
-        from backend.processing.feedback_service import extract_feedback_data, get_default_csv_path
-        
         csv_path = get_default_csv_path()
         if not os.path.exists(csv_path):
             # Try alternative paths
