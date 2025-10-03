@@ -11,13 +11,15 @@ import {
 interface FileUploadProps {
   onUploadSuccess?: (results: any) => void
   onUploadError?: (error: string) => void
+  onReset?: () => void
+  isMinimized?: boolean
 }
 
 /**
  * FileUpload Component - Handles file selection and upload to backend
  * Follows single responsibility principle - only manages file upload logic
  */
-export default function FileUpload({ onUploadSuccess, onUploadError }: FileUploadProps) {
+export default function FileUpload({ onUploadSuccess, onUploadError, onReset, isMinimized = false }: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState<boolean>(false)
 
@@ -49,10 +51,24 @@ export default function FileUpload({ onUploadSuccess, onUploadError }: FileUploa
         body: formData,
       })
 
+      console.log('=== FETCH RESPONSE ===')
+      console.log('Response status:', response.status)
+      console.log('Response headers:', response.headers)
+      console.log('Response ok:', response.ok)
+
       const result = await response.json()
+      console.log('=== RAW RESULT ===')
+      console.log('Raw result:', result)
 
       if (result.success) {
-        console.log('Processing successful:', result)
+        console.log('=== FLASK RESPONSE SUCCESS ===')
+        console.log('Full result:', result)
+        console.log('Result keys:', Object.keys(result))
+        console.log('NPS data:', result.nps)
+        console.log('Sessions data:', result.sessions) 
+        console.log('Ratings data:', result.ratings)
+        console.log('Summary data:', result.summary)
+        console.log('=== END FLASK RESPONSE ===')
         if (onUploadSuccess) onUploadSuccess(result)
       } else {
         const errorMsg = result.error || 'Upload failed'
@@ -69,9 +85,19 @@ export default function FileUpload({ onUploadSuccess, onUploadError }: FileUploa
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Main Upload Card */}
-      <div className="glass-card-dark p-10 rounded-3xl elevation-3 mb-8">
-        <div className="text-center mb-10">
+      {/* Main Upload Card with Minimize Animation */}
+      <div className={`glass-card-dark rounded-3xl elevation-3 mb-8 transition-all duration-500 ease-out overflow-hidden ${
+        isMinimized 
+          ? 'p-4 h-20' // Minimized state - fixed height instead of max-height
+          : 'p-10 h-auto' // Full state with auto height
+      }`}>
+        
+        {/* Header Section - Conditionally rendered based on state */}
+        <div className={`text-center mb-10 transition-all duration-500 ease-out ${
+          isMinimized 
+            ? 'opacity-0 scale-95 transform -translate-y-4 pointer-events-none absolute inset-0' 
+            : 'opacity-100 scale-100 transform translate-y-0 relative'
+        }`}>
           <div className="w-24 h-24 mx-auto mb-6 rounded-2xl flex items-center justify-center"
                style={{background: 'linear-gradient(135deg, var(--color-usc-green), var(--color-google-blue))'}}>
             <CloudUploadIcon sx={{ fontSize: 40, color: 'white' }} />
@@ -84,8 +110,36 @@ export default function FileUpload({ onUploadSuccess, onUploadError }: FileUploa
           </p>
         </div>
 
-        {/* File Upload Area */}
-        <div className="mb-8">
+        {/* Minimized State Content */}
+        <div className={`transition-all duration-700 ease-out delay-200 ${
+          isMinimized 
+            ? 'opacity-100 scale-100 transform translate-y-0 flex items-center justify-between relative' 
+            : 'opacity-0 scale-95 transform translate-y-4 pointer-events-none absolute inset-0'
+        }`}>
+          <div className="flex items-center gap-3">
+            <CheckCircleIcon sx={{ fontSize: 24, color: 'var(--color-usc-green)' }} />
+            <span className="font-medium text-lg" style={{color: 'var(--color-text-primary)'}}>
+              Analysis Complete
+            </span>
+          </div>
+          <button
+            onClick={() => {
+              setSelectedFile(null) // Clear file selection
+              onReset && onReset() // Call parent reset function
+            }}
+            className="btn-google text-sm py-2 px-4 flex items-center gap-2"
+          >
+            <CloudUploadIcon sx={{ fontSize: 18 }} />
+            Upload Another CSV
+          </button>
+        </div>
+
+        {/* File Upload Area - Hidden when minimized */}
+        <div className={`mb-8 transition-all duration-300 ease-out ${
+          isMinimized 
+            ? 'opacity-0 scale-95 transform -translate-y-4 pointer-events-none absolute inset-0' 
+            : 'opacity-100 scale-100 transform translate-y-0 relative'
+        }`}>
           <div className="relative">
             <input
               type="file"
@@ -143,24 +197,30 @@ export default function FileUpload({ onUploadSuccess, onUploadError }: FileUploa
           )}
         </div>
 
-        {/* Upload Button */}
-        <button
-          onClick={handleUpload}
-          disabled={!selectedFile || isUploading}
-          className="btn-google w-full text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-        >
-          {isUploading ? (
-            <div className="flex items-center justify-center gap-3">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-              <span>Processing Analytics...</span>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center gap-3">
-              <AnalyticsIcon sx={{ fontSize: 24 }} />
-              <span>Generate AI Insights</span>
-            </div>
-          )}
-        </button>
+        {/* Upload Button - Hidden when minimized */}
+        <div className={`transition-all duration-300 ease-out ${
+          isMinimized 
+            ? 'opacity-0 scale-95 transform -translate-y-4 pointer-events-none absolute inset-0' 
+            : 'opacity-100 scale-100 transform translate-y-0 relative'
+        }`}>
+          <button
+            onClick={handleUpload}
+            disabled={!selectedFile || isUploading}
+            className="btn-google w-full text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+          >
+            {isUploading ? (
+              <div className="flex items-center justify-center gap-3">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                <span>Processing Analytics...</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-3">
+                <AnalyticsIcon sx={{ fontSize: 24 }} />
+                <span>Generate AI Insights</span>
+              </div>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   )

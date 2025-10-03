@@ -13,9 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Define your custom font (e.g., Product Sans)
-// IMPORTANT: Ensure you have the font files in the specified path (e.g., src/fonts/)
-// Product Sans is proprietary, so you should only use it if you have the necessary license or permission.
+
 const productSans = LocalFont({
   src: [
     {
@@ -24,7 +22,7 @@ const productSans = LocalFont({
       style: 'normal',
     },
     {
-      path: '../../public/fonts/ProductSans-Medium.ttf', // Add this
+      path: '../../public/fonts/ProductSans-Medium.ttf',
       weight: '500',
       style: 'normal',
     },

@@ -19,7 +19,7 @@ CORS(app)  # Allow frontend to call this API
 def health_check():
     """Simple health check endpoint"""
     return jsonify({
-        "status": "healthy",
+        "status": "iz good",
         "message": "Feedback Form Analyzer API is running",
         "version": "1.0.0"
     })

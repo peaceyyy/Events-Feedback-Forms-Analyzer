@@ -11,8 +11,8 @@ from datetime import datetime
 import tempfile
 import io
 from backend.processing.feedback_service import extract_feedback_data
-# Import the summary function from its new home in the analysis package
-from backend.analysis.insights import generate_initial_summary
+# Import the summary and analysis functions from the analysis package
+from backend.analysis.insights import generate_initial_summary, generate_comprehensive_report
 
 
 def validate_csv_content(file_content: bytes) -> Dict[str, Any]:
@@ -41,13 +41,27 @@ def process_feedback_csv(file_content: bytes) -> Dict[str, Any]:
 
         # Generate summary statistics for the frontend
         summary = generate_initial_summary(extracted_data)
-        return {
+        
+        # Generate comprehensive analysis for charts
+        comprehensive_analysis = generate_comprehensive_report(extracted_data)
+        
+        # Debug logging to see what we're returning
+        print(f"DEBUG: Generated comprehensive analysis with keys: {comprehensive_analysis.keys()}")
+        print(f"DEBUG: NPS analysis: {comprehensive_analysis.get('nps', {}).get('data', {})}")
+        print(f"DEBUG: Sessions analysis: {comprehensive_analysis.get('sessions', {}).get('data', {})}")
+        
+        result = {
             "success": True,
             "message": "CSV processed successfully",
             "data": extracted_data,
             "summary": summary,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            # Add the comprehensive analysis for dashboard charts
+            **comprehensive_analysis
         }
+        
+        print(f"DEBUG: Final result keys: {result.keys()}")
+        return result
     except ValueError as e:
         return {
             "success": False,

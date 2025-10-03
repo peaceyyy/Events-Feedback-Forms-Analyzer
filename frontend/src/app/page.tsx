@@ -2,7 +2,8 @@
 import FileUpload from '../components/FileUpload';
 import InsightsCard from '../components/InsightsCard';
 import Image from 'next/image';
-import Starfield from '../components/Starfield';
+import CombinedBackground from '../components/CombinedBackground';
+
 import {
   UploadFile as UploadFileIcon,
   Settings as SettingsIcon,
@@ -22,13 +23,16 @@ import {
  * @returns {JSX.Element}
  */
 import { useState, useEffect } from 'react';
-import USCAbstractBackground from '../components/USCAbstractBackground';
+
 
 
 export default function Home() {
+  console.log('=== PAGE COMPONENT LOADING ===')
+  
   const [darkMode, setDarkMode] = useState(true); // Start with dark mode (GDG style)
   const [analysisResults, setAnalysisResults] = useState(null)
   const [analysisError, setAnalysisError] = useState('')
+  const [isAnalyzed, setIsAnalyzed] = useState(false) // Track if analysis is complete
   
   // Apply dark mode class to document
   useEffect(() => {
@@ -45,20 +49,28 @@ export default function Home() {
   const handleUploadSuccess = (results: any) => {
     setAnalysisResults(results)
     setAnalysisError('')
+    setIsAnalyzed(true) // Trigger transition to analysis view
   }
 
   // Handle upload errors
   const handleUploadError = (error: string) => {
     setAnalysisError(error)
     setAnalysisResults(null)
+    setIsAnalyzed(false) // Keep in upload view on error
+  }
+
+  // Reset to upload state (for "Upload another CSV" functionality)
+  const handleResetToUpload = () => {
+    setAnalysisResults(null)
+    setAnalysisError('')
+    setIsAnalyzed(false)
   }
   
   return (
     <div className={`min-h-screen relative overflow-hidden transition-colors duration-500 ${
       darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'
     }`}>
-      <Starfield starCount={200} />
-      <USCAbstractBackground isDark={darkMode} />
+      <CombinedBackground isDark={darkMode} />
 
       {/* Dark Mode Toggle - Fixed positioning with high z-index */}
       <div className="fixed top-6 right-6 z-50">
@@ -156,6 +168,8 @@ export default function Home() {
           <FileUpload 
             onUploadSuccess={handleUploadSuccess}
             onUploadError={handleUploadError}
+            onReset={handleResetToUpload}
+            isMinimized={isAnalyzed}
           />
           
           {/* Display results or errors */}
@@ -164,8 +178,12 @@ export default function Home() {
             error={analysisError}
           />
           
-          {/* How it works section - Material Design Cards */}
-          <div className="mt-16 grid md:grid-cols-3 gap-8">
+          {/* How it works section - Hidden when analysis is complete */}
+          <div className={`mt-16 grid md:grid-cols-3 gap-8 transition-all duration-500 ease-out ${
+            isAnalyzed 
+              ? 'opacity-0 max-h-0 overflow-hidden pointer-events-none' 
+              : 'opacity-100 max-h-none'
+          }`}>
             <div className="glass-card-dark p-8 rounded-2xl text-center elevation-2 hover:elevation-3 transition-all duration-300">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" 
                    style={{background: 'linear-gradient(135deg, var(--color-usc-green), var(--color-usc-green-light))'}}>

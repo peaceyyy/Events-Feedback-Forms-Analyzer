@@ -69,6 +69,10 @@ def generate_recommendation_analysis(data: List[Dict[str, Any]]) -> Dict[str, An
     # Calculate NPS score (-100 to +100)
     nps = ((promoters - detractors) / total * 100) if total > 0 else 0
     
+    # Debug logging
+    print(f"DEBUG NPS: Detractors={detractors}, Passives={passives}, Promoters={promoters}, Total={total}")
+    print(f"DEBUG NPS: Calculated NPS Score = {nps}")
+    
     return {
         "chart_type": "nps_analysis",
         "data": {
@@ -243,6 +247,30 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     Generates a complete analysis report combining all insights.
     This is the main function to call for dashboard data.
     """
+    
+    # Generate individual data points for scatter plots
+    scatter_data = []
+    for response in data:
+        if 'satisfaction' in response and 'recommendation_score' in response:
+            # Only include responses that have both satisfaction and recommendation data
+            try:
+                satisfaction = float(response['satisfaction']) if response['satisfaction'] is not None else None
+                recommendation = float(response['recommendation_score']) if response['recommendation_score'] is not None else None
+                
+                if satisfaction is not None and recommendation is not None:
+                    scatter_data.append({
+                        'x': satisfaction,
+                        'y': recommendation,
+                        'satisfaction': satisfaction,
+                        'recommendation_score': recommendation,
+                        'venue_rating': float(response.get('venue_rating', 0)) if response.get('venue_rating') else None,
+                        'speaker_rating': float(response.get('speaker_rating', 0)) if response.get('speaker_rating') else None,
+                        'content_rating': float(response.get('content_rating', 0)) if response.get('content_rating') else None
+                    })
+            except (ValueError, TypeError):
+                # Skip invalid data points
+                continue
+    
     return {
         "summary": {
             "total_responses": len(data),
@@ -252,7 +280,15 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
         "nps": generate_recommendation_analysis(data),
         "sessions": generate_session_popularity(data),
         "ratings": generate_rating_comparison(data),
-        "feedback": generate_text_insights(data)
+        "feedback": generate_text_insights(data),
+        # Add individual response data for scatter plots
+        "scatter_data": {
+            "chart_type": "satisfaction_vs_recommendation_scatter",
+            "data": {
+                "points": scatter_data,
+                "total_points": len(scatter_data)
+            }
+        }
     }
 
 

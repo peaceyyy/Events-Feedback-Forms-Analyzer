@@ -6,17 +6,16 @@ import {
   Insights as InsightsIcon,
   Error as ErrorIcon
 } from '@mui/icons-material'
+import Dashboard from './Dashboard'
 
 interface InsightsCardProps {
   results?: any
   error?: string
 }
 
-/**
- * InsightsCard Component - Displays analysis results in a clean, organized format
- * Separated from FileUpload for better component modularity and scalability
- */
 export default function InsightsCard({ results, error }: InsightsCardProps) {
+  console.log('=== INSIGHTS CARD RECEIVED ===', results, error)
+  
   // Don't render anything if no results or error
   if (!results && !error) return null
 
@@ -85,11 +84,11 @@ export default function InsightsCard({ results, error }: InsightsCardProps) {
                 
                 <div className="text-center">
                   <div className="text-3xl font-bold mb-2" style={{color: 'var(--color-usc-orange)'}}>
-                    {results.summary.average_recommendation?.toFixed(1) || 'N/A'}
-                    <span className="text-lg">/10</span>
+                    {results.nps?.data?.nps_score?.toFixed(1) || results.summary.average_recommendation?.toFixed(1) || 'N/A'}
+                    <span className="text-lg">{results.nps?.data?.nps_score !== undefined ? '' : '/10'}</span>
                   </div>
                   <div className="text-sm font-medium" style={{color: 'var(--color-text-secondary)'}}>
-                    NPS Score
+                    {results.nps?.data?.nps_score !== undefined ? 'NPS Score' : 'Avg Recommendation'}
                   </div>
                 </div>
                 
@@ -105,40 +104,8 @@ export default function InsightsCard({ results, error }: InsightsCardProps) {
             </div>
           )}
 
-          {/* Sample Data Preview */}
-          {results.data && results.data.length > 0 && (
-            <div className="glass-card-dark p-8 rounded-xl elevation-2">
-              <div className="flex items-center gap-3 mb-6">
-                <InsightsIcon sx={{ fontSize: 28, color: 'var(--color-usc-orange)' }} />
-                <h3 className="text-2xl font-bold" style={{color: 'var(--color-text-primary)'}}>
-                  Sample Response
-                </h3>
-              </div>
-              
-              <div className="glass-card-dark p-6 rounded-xl border" style={{borderColor: 'var(--color-border-light)'}}>
-                <div className="grid gap-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium" style={{color: 'var(--color-text-secondary)'}}>Satisfaction Rating:</span>
-                    <span className="text-xl font-bold" style={{color: 'var(--color-usc-green)'}}>
-                      {results.data[0].satisfaction}/5
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium" style={{color: 'var(--color-text-secondary)'}}>Recommendation Score:</span>
-                    <span className="text-xl font-bold" style={{color: 'var(--color-google-blue)'}}>
-                      {results.data[0].recommendation_score}/10
-                    </span>
-                  </div>
-                  <div>
-                    <span className="font-medium block mb-2" style={{color: 'var(--color-text-secondary)'}}>Feedback Sample:</span>
-                    <p className="text-base leading-relaxed" style={{color: 'var(--color-text-primary)'}}>
-                      "{results.data[0].positive_feedback}"
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Interactive Dashboard with Charts */}
+          <Dashboard analysisData={results} />
         </>
       )}
     </div>
