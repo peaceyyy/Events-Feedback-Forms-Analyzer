@@ -50,14 +50,14 @@ def process_feedback_csv(file_content: bytes) -> Dict[str, Any]:
         print(f"DEBUG: NPS analysis: {comprehensive_analysis.get('nps', {}).get('data', {})}")
         print(f"DEBUG: Sessions analysis: {comprehensive_analysis.get('sessions', {}).get('data', {})}")
         
+        # FIXED: Merge comprehensive analysis at root level instead of nesting
         result = {
             "success": True,
             "message": "CSV processed successfully",
             "data": extracted_data,
             "summary": summary,
             "timestamp": datetime.now().isoformat(),
-            # Add the comprehensive analysis for dashboard charts
-            **comprehensive_analysis
+            **comprehensive_analysis  # Spread comprehensive analysis at root level
         }
         
         print(f"DEBUG: Final result keys: {result.keys()}")
@@ -65,7 +65,7 @@ def process_feedback_csv(file_content: bytes) -> Dict[str, Any]:
     except ValueError as e:
         return {
             "success": False,
-            "error": "Data validation error",
+            "error": "Data validation error", 
             "message": str(e),
             "timestamp": datetime.now().isoformat()
         }

@@ -16,17 +16,9 @@ interface ChartFactoryProps {
   className?: string
 }
 
-/**
- * ChartFactory - Core component that routes data to appropriate chart templates
- * 
- * Architecture Benefits:
- * • Single entry point for all charts (maintainable)
- * • Configurable chart types via props (scalable)  
- * • Consistent styling and behavior (professional)
- * • Easy to add new chart types without breaking existing code
- */
 export default function ChartFactory({ config, className = '' }: ChartFactoryProps) {
   const [selectedVariant, setSelectedVariant] = React.useState(config.chartVariant || getDefaultVariant(config.type))
+
 
   // Default chart variants based on data type (industry best practices)
   function getDefaultVariant(type: string): string {
@@ -49,15 +41,13 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
         ]
       case 'comparison':
         return [
-          { value: 'horizontalBar', label: 'Horizontal Bar' },
           { value: 'groupedBar', label: 'Grouped Bar' },
+          { value: 'horizontalBar', label: 'Horizontal Bar' },
           { value: 'stackedBar', label: 'Stacked Bar' }
         ]
       case 'score':
         return [
           { value: 'gauge', label: 'Gauge' },
-          { value: 'progress', label: 'Progress' },
-          { value: 'donut', label: 'Score Donut' }
         ]
       case 'relationship':
         return [

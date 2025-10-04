@@ -40,6 +40,9 @@ export default function RelationshipChart({ data, variant, options, config }: Re
     console.log('=== RELATIONSHIP CHART DATA PROCESSING ===', data)
     console.log('Data type:', typeof data)
     console.log('Data keys:', data ? Object.keys(data) : 'null')
+    console.log('Has points property:', !!data?.points)
+    console.log('Points data:', data?.points)
+    console.log('Points length:', data?.points?.length)
     
     if (!data) return []
 
@@ -57,8 +60,8 @@ export default function RelationshipChart({ data, variant, options, config }: Re
     if (data.detailed_comparison) {
       console.log('Using detailed_comparison structure for radar')
       return data.detailed_comparison.map((item: any) => ({
-        aspect: item.aspect,
-        value: item.average,
+        aspect: item.aspect || 'Unknown Aspect',
+        value: item.average || 0,
         fullMark: 5
       }))
     }
@@ -67,16 +70,16 @@ export default function RelationshipChart({ data, variant, options, config }: Re
     if (data.detailed_ratings && Array.isArray(data.detailed_ratings)) {
       console.log('Using detailed_ratings structure for radar')
       return data.detailed_ratings.map((item: any) => ({
-        aspect: item.aspect || item.name,
+        aspect: item.aspect || item.name || 'Unknown Aspect',
         value: item.average || item.value || 0,
         fullMark: 5
       }))
     }
 
     // Handle NEW scatter plot data from Flask (individual response points)
-    if (data.data && data.data.points && Array.isArray(data.data.points)) {
-      console.log('Using NEW scatter_data.data.points structure for scatter plot', data.data.points.length, 'points')
-      return data.data.points.map((item: any, index: number) => ({
+    if (data.points && Array.isArray(data.points)) {
+      console.log('Using scatter_data.points structure for scatter plot', data.points.length, 'points')
+      return data.points.map((item: any, index: number) => ({
         x: item.x || item.satisfaction || 0,
         y: item.y || item.recommendation_score || 0, 
         name: `Response ${index + 1}`,
@@ -149,25 +152,34 @@ export default function RelationshipChart({ data, variant, options, config }: Re
     if (chartData.length === 0) return []
     
     return chartData.map((item: any) => ({
-      key: item.aspect,
-      name: item.aspect.charAt(0).toUpperCase() + item.aspect.slice(1),
+      key: item.aspect || 'Unknown',
+      name: item.aspect ? item.aspect.charAt(0).toUpperCase() + item.aspect.slice(1) : 'Unknown',
       domain: [0, 5]
     }))
   }, [chartData])
 
-  // Custom tooltip for better context
+  // Custom tooltip for business insights
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+      const data = payload[0]?.payload
       return (
-        <div className="glass-card-dark p-3 rounded-lg border border-white/20">
-          <p className="font-medium mb-2" style={{color: 'var(--color-text-primary)'}}>
-            {label || 'Data Point'}
+        <div className="glass-card-dark p-4 rounded-lg border border-white/20 max-w-xs">
+          <p className="font-semibold mb-2" style={{color: 'var(--color-text-primary)'}}>
+            {data?.category || 'Survey Response'}
           </p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} style={{color: entry.color}} className="text-sm">
-              {entry.name}: <span className="font-semibold">{entry.value?.toFixed(2)}</span>
+          <div className="space-y-1 text-sm">
+            <p style={{color: 'var(--color-text-secondary)'}}>
+              <span className="font-medium">Satisfaction:</span> {data?.originalX?.toFixed(1)}/5.0
             </p>
-          ))}
+            <p style={{color: 'var(--color-text-secondary)'}}>
+              <span className="font-medium">Recommendation:</span> {data?.originalY?.toFixed(1)}/10.0
+            </p>
+            {data?.venue_rating && (
+              <p style={{color: 'var(--color-text-secondary)'}}>
+                <span className="font-medium">Venue:</span> {data.venue_rating}/5.0
+              </p>
+            )}
+          </div>
         </div>
       )
     }
@@ -229,83 +241,123 @@ export default function RelationshipChart({ data, variant, options, config }: Re
     )
   }
 
+  // Process scatter plot data - group by satisfaction levels for business insights
+  const scatterData = React.useMemo(() => {
+    if (!chartData || chartData.length === 0) return { grouped: {}, jittered: [] }
+    
+    // Group by satisfaction levels for meaningful business categories
+    const groupBySatisfaction = (satisfaction: number) => {
+      if (satisfaction >= 4.5) return 'Highly Satisfied (4.5-5.0)'
+      if (satisfaction >= 3.5) return 'Satisfied (3.5-4.4)' 
+      if (satisfaction >= 2.5) return 'Neutral (2.5-3.4)'
+      if (satisfaction >= 1.5) return 'Dissatisfied (1.5-2.4)'
+      return 'Very Dissatisfied (1.0-1.4)'
+    }
+
+    // Color mapping for satisfaction categories (business-friendly)
+    const colorMap = {
+      'Highly Satisfied (4.5-5.0)': '#4CAF50',     // Green
+      'Satisfied (3.5-4.4)': '#8BC34A',           // Light Green  
+      'Neutral (2.5-3.4)': '#FF9800',             // Orange
+      'Dissatisfied (1.5-2.4)': '#F44336',        // Red
+      'Very Dissatisfied (1.0-1.4)': '#9C27B0'    // Purple
+    }
+
+    
+    const processedData = chartData.map((point: any, index: number) => {
+      const satisfactionLevel = groupBySatisfaction(point.x)
+      return {
+        ...point,
+        // Add small jitter to prevent overlapping
+        x: point.x + (Math.random() - 0.5) * 0.15,
+        y: point.y + (Math.random() - 0.5) * 0.3,
+        // Group by satisfaction level instead of individual responses
+        category: satisfactionLevel,
+        fill: colorMap[satisfactionLevel],
+        // Keep original satisfaction for tooltip
+        originalX: point.x,
+        originalY: point.y
+      }
+    })
+
+    // Group by satisfaction categories
+    const groupedData = processedData.reduce((acc: any, point: any) => {
+      const category = point.category
+      if (!acc[category]) {
+        acc[category] = []
+      }
+      acc[category].push(point)
+      return acc
+    }, {})
+
+    return { grouped: groupedData, jittered: processedData }
+  }, [chartData])
+
+
+
   // Render scatter plot (correlation analysis)  
   const renderScatter = () => {
-    console.log('=== SCATTER PLOT DEBUG START ===')
-    console.log('Raw data passed to RelationshipChart:', data)
-    console.log('Processed chartData:', chartData)
-    console.log('chartData is array?', Array.isArray(chartData))
-    console.log('chartData length:', chartData?.length)
-    
-    if (chartData && chartData.length > 0) {
-      console.log('First chartData item:', chartData[0])
-      console.log('Sample item has x?', 'x' in chartData[0])
-      console.log('Sample item has y?', 'y' in chartData[0])
-      chartData.forEach((item: any, index: number) => {
-        console.log(`Item ${index}:`, { x: item.x, y: item.y, name: item.name })
-      })
-    }
     
     // Defensive check
     if (!chartData || !Array.isArray(chartData) || chartData.length === 0) {
-      console.log('=== SCATTER: No valid data available ===');
+      console.log('=== SCATTER: No valid data available ===')
       return (
-        <div className="w-full h-full flex items-center justify-center min-h-[300px] bg-red-900/20">
+        <div className="w-full h-full flex items-center justify-center min-h-[300px]">
           <p style={{color: 'var(--color-text-secondary)'}}>No scatter plot data available</p>
         </div>
-      );
+      )
     }
     
-    console.log('=== SCATTER: Proceeding with rendering ===');
+    console.log('=== SCATTER: Rendering grouped satisfaction categories ===')
+    console.log('Categories:', Object.keys(scatterData.grouped))
 
     return (
-      <div className="w-full h-full min-h-[400px] bg-blue-900/10">
-        <ResponsiveContainer width="100%" height="100%" minHeight={400}>
-        <ScatterChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-          
-          <XAxis 
-            type="number" 
-            dataKey="x"
-            name="Satisfaction"
-            domain={[0, 5]}
-            tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
-            stroke="rgba(255,255,255,0.3)"
-            label={{ value: 'Satisfaction Rating', position: 'insideBottom', offset: -25 }}
-          />
-          <YAxis 
-            type="number" 
-            dataKey="y"
-            name="Recommendation" 
-            domain={[0, 10]}
-            tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
-            stroke="rgba(255,255,255,0.3)"
-            label={{ value: 'Recommendation Score', angle: -90, position: 'insideLeft', offset: -5 }}
-          />
-          
-          {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3' }} />}
-          <Legend />
+      <div className="w-full h-full min-h-[400px]">
+        <ResponsiveContainer width="100%" height={400}>
+          <ScatterChart margin={{ top: 20, right: 30, left: 40, bottom: 60 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+            
+            <XAxis 
+              type="number" 
+              dataKey="x"
+              name="Satisfaction"
+              domain={[1, 5]}
+              tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
+              stroke="rgba(255,255,255,0.3)"
+              label={{ value: 'Satisfaction Rating (1-5)', position: 'insideBottom', offset: -10 }}
+            />
+            <YAxis 
+              type="number" 
+              dataKey="y"
+              name="Recommendation" 
+              domain={[0, 10]}
+              tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
+              stroke="rgba(255,255,255,0.3)"
+              label={{ value: 'Recommendation Score (0-10)', angle: -90, position: 'insideLeft' }}
+            />
+            
+            <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3' }} />
+            <Legend 
+              wrapperStyle={{ paddingTop: '20px' }}
+              iconType="circle"
+            />
 
-          {/* 
-            THE MISSING PIECE:
-            This component is what actually loops through the 'data' prop from ScatterChart
-            and renders a dot for each item at the (x, y) coordinate.
-            The 'data' is automatically inherited from the parent ScatterChart component.
-          */}
-          <Scatter 
-            name="Feedback Correlation"
-            fill="var(--color-usc-green)"
-            fillOpacity={0.8}
-          />
+            {/* Render each satisfaction category as a separate series */}
+            {Object.entries(scatterData.grouped).map(([category, dataPoints]) => (
+              <Scatter 
+                key={category}
+                name={category}
+                data={dataPoints as any[]}
+                fill={(dataPoints as any[])[0]?.fill || '#4CAF50'}
+                fillOpacity={0.7}
+              />
+            ))}
 
-        </ScatterChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
+          </ScatterChart>
+        </ResponsiveContainer>
+      </div>
+    )
+  }
 
   // Render line chart (trend analysis)
 const renderLine = () => {
@@ -390,44 +442,3 @@ const renderLine = () => {
     </div>
   )
 }
-
-// Sidebar Theory: Multi-Dimensional Chart Guidelines
-/*
-CHOOSING THE RIGHT RELATIONSHIP CHART:
-
-🕸️ RADAR CHARTS:
-• Best for: 3-8 dimensions on similar scales (ratings, scores, percentages)
-• Why: Easy to spot strengths/weaknesses across multiple aspects
-• Use when: Comparing performance profiles (Venue: 4.2, Speaker: 4.7, Content: 4.1)
-• Avoid: Different scales, negative values, too many dimensions (>8)
-
-🔵 SCATTER PLOTS:  
-• Best for: Exploring correlations between two continuous variables
-• Why: Reveals patterns, clusters, outliers in relationships
-• Use when: Investigating "Does higher satisfaction → higher recommendation?"
-• Look for: Positive correlation (upward trend), negative correlation, clusters
-
-📈 LINE CHARTS:
-• Best for: Trends over time, sequences, ordered categories
-• Why: Clear progression patterns, easy to spot trends/changes
-• Use when: Showing improvement over events, seasonal patterns, performance tracking
-
-RADAR CHART BEST PRACTICES:
-1. Use consistent scales across all axes (e.g., all 1-5 ratings)
-2. Limit to 3-8 dimensions for readability
-3. Start from 12 o'clock position, go clockwise
-4. Fill areas with low opacity to show overlaps
-5. Include reference benchmarks when available
-
-CORRELATION INTERPRETATION:
-• Strong positive: r > 0.7 (satisfaction ↑ → recommendation ↑)  
-• Moderate positive: 0.3 < r < 0.7
-• Weak/No correlation: -0.3 < r < 0.3
-• Negative correlation: r < -0.3 (rare in satisfaction data)
-
-DATA PREPARATION TIPS:
-• Normalize scales before radar visualization
-• Handle missing values appropriately  
-• Consider log transformations for skewed data
-• Add jitter to scatter plots if points overlap
-*/

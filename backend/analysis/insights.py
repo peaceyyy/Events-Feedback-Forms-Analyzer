@@ -117,6 +117,15 @@ def generate_session_popularity(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     # Count session attendance
     session_counts = Counter(all_sessions)
     top_sessions = session_counts.most_common(10)  # Top 10 sessions
+
+    # Calculate average satisfaction for each of the top sessions for grouped charts
+    session_satisfaction = {}
+    if 'satisfaction' in df.columns:
+        for session_name, _ in top_sessions:
+            # Filter rows where the session was attended
+            mask = df['sessions_attended'].apply(lambda x: isinstance(x, list) and session_name in x)
+            if mask.any():
+                session_satisfaction[session_name] = df.loc[mask, 'satisfaction'].mean()
     
     return {
         "chart_type": "session_popularity",
@@ -124,13 +133,15 @@ def generate_session_popularity(data: List[Dict[str, Any]]) -> Dict[str, Any]:
             # For horizontal bar chart
             "sessions": [session for session, count in top_sessions],
             "attendance": [count for session, count in top_sessions],
-            
+            # For grouped bar chart (Attendance vs. Avg. Satisfaction)
+            "average_satisfaction": [round(session_satisfaction.get(s, 0), 2) for s, _ in top_sessions],
+
             # For comparison with total responses
             "attendance_rates": [
                 {"session": session, "count": count, "percentage": round(count/len(df)*100, 1)}
                 for session, count in top_sessions
             ],
-            
+
             # Summary stats
             "stats": {
                 "total_unique_sessions": len(session_counts),
@@ -159,18 +170,34 @@ def generate_rating_comparison(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     for col in available_ratings:
         ratings = pd.to_numeric(df[col], errors='coerce').dropna()
         if len(ratings) > 0:
-            comparison_data[col.replace('_rating', '').title()] = {
+            aspect_name = col.replace('_rating', '').title()
+            comparison_data[aspect_name] = {
                 "average": float(ratings.mean()),
                 "count": len(ratings),
                 "distribution": ratings.value_counts().sort_index().to_dict()
             }
     
+    print(f"DEBUG: Rating comparison data keys: {list(comparison_data.keys())}")
+    print(f"DEBUG: Rating comparison data structure: {comparison_data}")
+    
+    # Prepare data for scatter/line plots comparing two rating aspects
+    scatter_pairs = {}
+    if 'venue_rating' in available_ratings and 'speaker_rating' in available_ratings:
+        scatter_pairs['venue_vs_speaker'] = df[['venue_rating', 'speaker_rating']].dropna().to_dict('records')
+    if 'venue_rating' in available_ratings and 'content_rating' in available_ratings:
+        scatter_pairs['venue_vs_content'] = df[['venue_rating', 'content_rating']].dropna().to_dict('records')
+    if 'speaker_rating' in available_ratings and 'content_rating' in available_ratings:
+        scatter_pairs['speaker_vs_content'] = df[['speaker_rating', 'content_rating']].dropna().to_dict('records')
+
     return {
         "chart_type": "rating_comparison",
         "data": {
-            # For radar/spider chart
+            # For radar/spider chart  
             "aspects": list(comparison_data.keys()),
             "averages": [data["average"] for data in comparison_data.values()],
+            
+            # Add scatter data for correlation analysis
+            "scatter_pairs": scatter_pairs,
             
             # For grouped bar chart
             "detailed_comparison": [
@@ -182,7 +209,7 @@ def generate_rating_comparison(data: List[Dict[str, Any]]) -> Dict[str, Any]:
             "insights": {
                 "highest_rated": max(comparison_data.keys(), key=lambda x: comparison_data[x]["average"]) if comparison_data else None,
                 "lowest_rated": min(comparison_data.keys(), key=lambda x: comparison_data[x]["average"]) if comparison_data else None,
-                "rating_spread": max([data["average"] for data in comparison_data.values()]) - min([data["average"] for data in comparison_data.values()]) if comparison_data else 0
+                "rating_spread": max([data["average"] for data in comparison_data.values()]) - min([data["average"] for data in comparison_data.values()]) if len(comparison_data) > 0 else 0
             }
         }
     }
@@ -248,6 +275,8 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     This is the main function to call for dashboard data.
     """
     
+    print(f"DEBUG: Starting comprehensive report generation for {len(data)} records")
+    
     # Generate individual data points for scatter plots
     scatter_data = []
     for response in data:
@@ -267,29 +296,67 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
                         'speaker_rating': float(response.get('speaker_rating', 0)) if response.get('speaker_rating') else None,
                         'content_rating': float(response.get('content_rating', 0)) if response.get('content_rating') else None
                     })
-            except (ValueError, TypeError):
-                # Skip invalid data points
+            except (ValueError, TypeError) as e:
+                print(f"DEBUG: Skipping invalid data point: {e}")
                 continue
     
-    return {
+    print(f"DEBUG: Generated {len(scatter_data)} scatter plot points")
+    
+    # Generate each analysis section with error handling
+    analysis_result = {
         "summary": {
             "total_responses": len(data),
             "analysis_timestamp": pd.Timestamp.now().isoformat()
-        },
-        "satisfaction": generate_satisfaction_analysis(data),
-        "nps": generate_recommendation_analysis(data),
-        "sessions": generate_session_popularity(data),
-        "ratings": generate_rating_comparison(data),
-        "feedback": generate_text_insights(data),
-        # Add individual response data for scatter plots
-        "scatter_data": {
-            "chart_type": "satisfaction_vs_recommendation_scatter",
-            "data": {
-                "points": scatter_data,
-                "total_points": len(scatter_data)
-            }
         }
     }
+    
+    # Generate each analysis with individual error handling
+    try:
+        analysis_result["satisfaction"] = generate_satisfaction_analysis(data)
+        print("DEBUG: Satisfaction analysis completed")
+    except Exception as e:
+        print(f"DEBUG: Satisfaction analysis failed: {e}")
+        analysis_result["satisfaction"] = {"error": str(e)}
+    
+    try:
+        analysis_result["nps"] = generate_recommendation_analysis(data)
+        print("DEBUG: NPS analysis completed")
+    except Exception as e:
+        print(f"DEBUG: NPS analysis failed: {e}")
+        analysis_result["nps"] = {"error": str(e)}
+    
+    try:
+        analysis_result["sessions"] = generate_session_popularity(data)
+        print("DEBUG: Sessions analysis completed")
+    except Exception as e:
+        print(f"DEBUG: Sessions analysis failed: {e}")
+        analysis_result["sessions"] = {"error": str(e)}
+    
+    try:
+        analysis_result["ratings"] = generate_rating_comparison(data)
+        print("DEBUG: Ratings analysis completed")
+    except Exception as e:
+        print(f"DEBUG: Ratings analysis failed: {e}")
+        analysis_result["ratings"] = {"error": str(e)}
+    
+    try:
+        analysis_result["feedback"] = generate_text_insights(data)
+        print("DEBUG: Feedback analysis completed")
+    except Exception as e:
+        print(f"DEBUG: Feedback analysis failed: {e}")
+        analysis_result["feedback"] = {"error": str(e)}
+    
+    # Add scatter data
+    analysis_result["scatter_data"] = {
+        "chart_type": "satisfaction_vs_recommendation_scatter",
+        "data": {
+            "points": scatter_data,
+            "total_points": len(scatter_data)
+        }
+    }
+    
+    print(f"DEBUG: Comprehensive analysis completed with keys: {list(analysis_result.keys())}")
+    return analysis_result
 
 
 def generate_initial_summary(data: List[Dict[str, Any]]) -> Dict[str, Any]:

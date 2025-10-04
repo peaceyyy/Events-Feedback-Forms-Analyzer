@@ -3,9 +3,11 @@
 import React from 'react'
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
-  ResponsiveContainer, Cell
+  ResponsiveContainer, Cell, Label 
 } from 'recharts'
 import { ChartConfig, ChartOptions } from './types'
+
+
 
 interface ComparisonChartProps {
   data: any
@@ -55,14 +57,17 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
       }))
     }
 
-    // Handle session popularity data (legacy format)
+    // Handle session popularity data with optional satisfaction (for grouped bars)
     if (data.sessions && data.attendance && Array.isArray(data.sessions) && Array.isArray(data.attendance)) {
       console.log('Using sessions/attendance structure')
+      console.log('Sessions data includes average_satisfaction:', !!data.average_satisfaction)
       return data.sessions.map((session: string, index: number) => ({
         name: session && session.length > 30 ? `${session.substring(0, 30)}...` : (session || `Session ${index + 1}`),
         fullName: session || `Session ${index + 1}`,
         value: data.attendance[index] || 0,
         attendance: data.attendance[index] || 0,
+        // Add satisfaction data for grouped bars
+        satisfaction: data.average_satisfaction ? data.average_satisfaction[index] || 0 : 0,
         fill: options?.colors?.[index % (options?.colors?.length || 5)] || '#4CAF50'
       }))
     }
@@ -209,23 +214,24 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
 }
 
   // Render grouped bar chart (for multi-metric comparison)
-  const renderGroupedBar = () => {
-  // Defensive check: Ensure data is valid before rendering.
+
+
+const renderGroupedBar = () => {
+  // Defensive check remains the same...
   if (!chartData || chartData.length === 0) {
-    console.log('No data available to render the grouped bar chart.');
-    return <div>No data to display</div>;
+    // ...
   }
   
-  console.log('=== RENDERING GROUPED BAR ===', chartData.length, 'items');
-  console.log('Chart data for grouped bar:', chartData);
+  // ... console logs ...
 
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart 
         data={chartData} 
-        margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+        // Increase margins to make space for the new axis labels
+        margin={{ top: 20, right: 40, left: 40, bottom: 20 }}
       >
-        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />}
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
         
         <XAxis 
           dataKey="name" 
@@ -233,38 +239,55 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
           stroke="rgba(255,255,255,0.3)"
         />
         
-        {/* Primary Y-Axis (for the average rating) */}
+        {/* --- REFINED Primary Y-Axis --- */}
         <YAxis 
-          yAxisId="left" // Assign an ID to this axis
-          orientation="left" // Explicitly place it on the left
-          stroke="var(--color-usc-green)" // Match the color of its bar
-          tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-          domain={[0, 5]} // Optional but good: lock the scale to 0-5
-        />
+          yAxisId="left"
+          orientation="left"
+          stroke="var(--color-usc-green)" // Color association
+          tick={{ fill: 'var(--color-usc-green)', fontSize: 12, fontWeight: 'bold' }} // Stronger ticks
+          domain={[0, 5]}
+        >
+          {/* THE FIX: Add an explicit label to the axis */}
+          <Label 
+            value="Average Satisfaction (0-5)" 
+            angle={-90} 
+            position="insideLeft" 
+            style={{ textAnchor: 'middle', fill: 'var(--color-usc-green)' }} 
+          />
+        </YAxis>
         
-        {/* Secondary Y-Axis (for the response count) */}
+        {/* --- REFINED Secondary Y-Axis --- */}
         <YAxis 
-          yAxisId="right" // Assign a different ID
-          orientation="right" // Place it on the right
-          stroke="var(--color-usc-orange)" // Match the color of its bar
-          tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-        />
+          yAxisId="right"
+          orientation="right"
+          stroke="var(--color-usc-orange)" // Color association
+          tick={{ fill: 'var(--color-usc-orange)', fontSize: 12, fontWeight: 'bold' }} // Stronger ticks
+        >
+          {/* THE FIX: Add an explicit label to the axis */}
+          <Label 
+            value="Attendance Count" 
+            angle={-90} 
+            position="insideRight" 
+            style={{ textAnchor: 'middle', fill: 'var(--color-usc-orange)' }} 
+          />
+        </YAxis>
         
         {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
-        {options?.showLegend && <Legend />}
         
-        {/* Tell each bar which Y-Axis to use */}
+        {/* Place the legend at the top for better initial context */}
+        {options?.showLegend && <Legend verticalAlign="top" height={36} />}
+        
         <Bar 
-          yAxisId="left" // This bar uses the 'left' Y-Axis
-          dataKey="average_rating" // Use a more descriptive dataKey
-          name="Average Rating" 
+          yAxisId="left"
+          dataKey="satisfaction"
+          name="Avg Satisfaction" 
           fill="var(--color-usc-green)" 
           radius={[4, 4, 0, 0]} 
         />
         <Bar 
-          yAxisId="right" // This bar uses the 'right' Y-Axis
-          dataKey="response_count" // Use a more descriptive dataKey
-          name="Response Count" 
+          yAxisId="right"
+          dataKey="attendance"
+          name="Attendance" 
           fill="var(--color-usc-orange)" 
           radius={[4, 4, 0, 0]} 
         />
@@ -272,7 +295,6 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
     </ResponsiveContainer>
   );
 }
-
   // Render stacked bar chart (for composition data)
   const renderStackedBar = () => (
     <ResponsiveContainer width="100%" height="100%" minHeight={300}>

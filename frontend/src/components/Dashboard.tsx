@@ -59,17 +59,27 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
       ))
     }
 
-    // 3. SESSION POPULARITY COMPARISON (Horizontal Bar preferred) 
+    // 3. SESSION POPULARITY COMPARISON (Grouped Bar when satisfaction data available)
     if (analysisData.sessions?.data) {
       console.log('=== SESSIONS DATA FOR CHART ===', analysisData.sessions.data)
+      
+      // Use grouped bar if we have satisfaction data, otherwise horizontal bar
+      const hassatisfaction = analysisData.sessions.data.average_satisfaction && 
+                             Array.isArray(analysisData.sessions.data.average_satisfaction)
+      const variant = hassatisfaction ? 'groupedBar' : 'horizontalBar'
+      
+      console.log(`📊 Sessions chart variant: ${variant} (has satisfaction: ${hassatisfaction})`)
+      
       configs.push(createChartConfig(
         'session-popularity',
-        'Session Popularity',
+        hassatisfaction ? 'Session Performance Analysis' : 'Session Popularity',
         'comparison',
         analysisData.sessions.data,
         {
-          subtitle: `Top ${analysisData.sessions.data.sessions?.length || 0} attended sessions`,
-          chartVariant: 'horizontalBar', // Better for session names
+          subtitle: hassatisfaction 
+            ? `Attendance vs Satisfaction for top ${analysisData.sessions.data.sessions?.length || 0} sessions`
+            : `Top ${analysisData.sessions.data.sessions?.length || 0} attended sessions`,
+          chartVariant: variant,
           allowVariantToggle: true
         }
       ))
@@ -107,9 +117,9 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
       ))
     }
 
-    console.log('=== FINAL CHART CONFIGS ===', configs)
     return configs
-  }, [analysisData])
+  }, [analysisData]
+)
 
   // Loading state
   if (!analysisData || chartConfigs.length === 0) {

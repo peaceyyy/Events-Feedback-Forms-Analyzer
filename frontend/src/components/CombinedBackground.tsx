@@ -85,6 +85,13 @@ export default function CombinedBackground({
   enableShooting?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
+  // --- Aesthetic Controls ---
+  const LINE_COLOR_GREEN = '129, 199, 132'; // A soft green
+  const LINE_COLOR_ORANGE = '255, 183, 77'; // A soft orange
+  const LINE_OPACITY_BASE = 0.16; // Base brightness of the line
+  const LINE_OPACITY_TWINKLE_MIN = 0.5; // Brightness at the dimmest point of twinkle
+  const LINE_OPACITY_TWINKLE_MAX = 1; // Brightness at the peak of the twinkle
+
   const rng = useMemo(() => (typeof window !== 'undefined' ? createSessionRng() : Math.random), []);
 
   // --- Stars (static layout, CSS twinkle) ---
@@ -127,16 +134,16 @@ export default function CombinedBackground({
     setStars(s);
 
     // Build exactly up to 7 faint lines between nearest neighbors
-    const buildConstellations = (): ConstellationLine[] => {
+    const buildConstellations = (starData: Star[]): ConstellationLine[] => {
       const lines: ConstellationLine[] = [];
       const k = 2;
       const maxDist = 22; // percent, more permissive for visibility
-      const connectProb = 1.0; // always try to connect nearest neighbors
-      const maxLines = 7; // strict cap to avoid clutter
+      const connectProb = 0.5; // 50% chance to connect nearest neighbors
+      const maxLines = 15; // strict cap to avoid clutter
 
-      for (const a of s) {
+      for (const a of starData) {
         if (lines.length >= maxLines) break;
-        const others = s.filter(o => o.id !== a.id);
+        const others = starData.filter(o => o.id !== a.id);
         const sorted = others
           .map(o => ({ o, dx: o.xPct - a.xPct, dy: o.yPct - a.yPct }))
           .map(({ o, dx, dy }) => ({ o, dist: Math.sqrt(dx * dx + dy * dy), dx, dy }))
@@ -167,16 +174,8 @@ export default function CombinedBackground({
       return lines;
     };
 
-    const built = buildConstellations();
+    const built = buildConstellations(s);
     setConstellationLines(built);
-
-    // Periodically rebuild constellations for a lively feel
-    let constInterval: number | null = null;
-    if (!reduceMotion) {
-      constInterval = window.setInterval(() => {
-        setConstellationLines(buildConstellations());
-      }, 10000); // every 10s
-    }
 
     // Shooting stars (optional)
     const makeShooters = () => {
@@ -205,7 +204,6 @@ export default function CombinedBackground({
     }
     return () => {
       if (interval) window.clearInterval(interval);
-      if (constInterval) window.clearInterval(constInterval);
     };
   }, [starCount, enableShooting, reduceMotion, rng]);
 
@@ -283,7 +281,10 @@ export default function CombinedBackground({
   return (
     <div className="starfield-container">
       <style jsx global>{`
-        @keyframes starLineTwinkle { 0%, 100% { opacity: 0.08; } 50% { opacity: 0.22; } }
+        @keyframes starLineTwinkle { 
+          0%, 100% { opacity: ${LINE_OPACITY_TWINKLE_MIN}; } 
+          50% { opacity: ${LINE_OPACITY_TWINKLE_MAX}; } 
+        }
       `}</style>
 
       {/* Blob layer first (below stars/lines). SVG for gradients + subtle animations */}
@@ -334,7 +335,7 @@ export default function CombinedBackground({
             top: `${line.y1}%`,
             width: `${line.length}%`,
             height: '1px',
-            backgroundColor: line.type === 'green' ? 'rgba(129, 199, 132, 0.16)' : 'rgba(255, 183, 77, 0.16)',
+            backgroundColor: line.type === 'green' ? `rgba(${LINE_COLOR_GREEN}, ${LINE_OPACITY_BASE})` : `rgba(${LINE_COLOR_ORANGE}, ${LINE_OPACITY_BASE})`,
             transform: `rotate(${line.angle}deg)`,
             transformOrigin: '0 50%',
             boxShadow: 'none',
