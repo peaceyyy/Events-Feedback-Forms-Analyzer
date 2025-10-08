@@ -16,28 +16,13 @@ interface ComparisonChartProps {
   config: ChartConfig
 }
 
-/**
- * ComparisonChart - Template for ranking and comparison data
- * 
- * Industry Use Cases:
- * • Session popularity (attendance counts) - Horizontal bar preferred for long labels
- * • Venue vs Speaker vs Content ratings - Grouped bar for side-by-side comparison
- * • Department satisfaction breakdown - Stacked bar for category composition
- * 
- * Design Principles:  
- * • Horizontal bars > Vertical for text-heavy labels (session names, locations)
- * • Sort by value (highest first) unless natural order exists
- * • Grouped bars for comparing same metric across categories
- * • Stacked bars for showing composition within categories
- */
 export default function ComparisonChart({ data, variant, options, config }: ComparisonChartProps) {
   
-  console.log('=== COMPARISON CHART DATA ===', data)
-  console.log('=== COMPARISON CHART VARIANT ===', variant)
-  
+
+
   // Transform backend data to chart format
   const chartData = React.useMemo(() => {
-    console.log('=== PROCESSING CHART DATA ===', data)
+    
     
     if (!data) {
       console.log('No data provided')
@@ -128,16 +113,13 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
   // Sort data by value (descending) for better readability
   const sortedData = [...chartData].sort((a, b) => (b.value || b.attendance || 0) - (a.value || a.attendance || 0))
   
-  console.log('=== SORTED DATA ===', sortedData)
-
-  // Custom tooltip with enhanced information
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0]
       
       return (
         <div className="glass-card-dark p-4 rounded-lg border border-white/20 max-w-xs">
-          <p className="font-semibold text-sm mb-2" style={{color: 'var(--color-text-primary)'}}>
+          <p className="font-semibold text-sm mb-2 z-100" style={{color: 'var(--color-text-primary)'}}>
             {data.payload.fullName || data.payload.name}
           </p>
           <div className="space-y-1 text-xs">
@@ -156,40 +138,38 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
     return null
   }
 
-
   const renderHorizontalBar = () => {
-  // First, let's be defensive. Ensure the data is valid before trying to render.
-  // This can prevent crashes if sortedData is ever undefined or not an array.
+
   if (!sortedData || sortedData.length === 0) {
     console.log('No data available to render the horizontal bar chart.');
     return <div>No data to display</div>; // Or a loading spinner, etc.
   }
   
-  console.log('=== RENDERING HORIZONTAL BAR ===', sortedData.length, 'items');
-  console.log('Sorted data for horizontal bar:', sortedData);
-
   return (
-    <ResponsiveContainer width="100%" height={350}>
+    <ResponsiveContainer width="100%" height="100%">
       <BarChart 
         data={sortedData} 
-        layout="vertical" // For a horizontal bar chart, the layout is "vertical"
-        margin={{ top: 5, right: 30, left: 120, bottom: 5 }}
+        layout="vertical" 
+
+        margin={{ top: 5, right: 40, left: 20, bottom: 20 }}
       >
-        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />}
+        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" horizontal={false} />}
         
-        {/* For a HORIZONTAL bar chart, the axes are flipped: */}
-        {/* The XAxis is the numerical axis, and the YAxis is the categorical axis. */}
+  
         <XAxis 
           type="number"
           tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
           stroke="rgba(255,255,255,0.3)"
+          label={{ value: 'Attendance Count', position: 'insideBottom', offset: -50 }}
         />
         <YAxis 
           type="category"
           dataKey="name" // This is the label for each bar
           width={120} // Adjusted width for better label visibility
           tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-          stroke="rgba(255,255,255,0.3)"
+          stroke="rgba(255,255,255,0.3)" // Keep stroke for consistency
+          tickLine={false} // Hide the small tick lines for a cleaner look
+          axisLine={false} // Hide the vertical axis line itself
         />
         
         {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(255,255,255,0.05)'}} />}
@@ -199,10 +179,7 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
           radius={[0, 4, 4, 0]} // Rounded right edges
         >
           {/* 
-            CORRECT IMPLEMENTATION: 
-            You provide a list of Cells. Recharts automatically maps the 
-            first Cell to the first bar, the second to the second, and so on.
-            No explicit .map() loop is needed here.
+ 
           */}
           {sortedData.map((entry: any, index: number) => (
             <Cell key={`cell-${index}`} fill={entry.fill || 'var(--color-usc-green)'} />
@@ -225,11 +202,11 @@ const renderGroupedBar = () => {
   // ... console logs ...
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height="100%">
       <BarChart 
         data={chartData} 
         // Increase margins to make space for the new axis labels
-        margin={{ top: 20, right: 40, left: 40, bottom: 20 }}
+        margin={{ top: 20, right: 40, left: 20, bottom: 20 }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
         
@@ -262,6 +239,7 @@ const renderGroupedBar = () => {
           orientation="right"
           stroke="var(--color-usc-orange)" // Color association
           tick={{ fill: 'var(--color-usc-orange)', fontSize: 12, fontWeight: 'bold' }} // Stronger ticks
+          domain={[0, 'dataMax + 10']} // Give some headroom above the max attendance
         >
           {/* THE FIX: Add an explicit label to the axis */}
           <Label 
@@ -337,10 +315,6 @@ const renderGroupedBar = () => {
     )
   }
 
-  console.log('=== RENDERING CHART WITH VARIANT ===', variant)
-  console.log('=== SHOULD RENDER HORIZONTAL BAR? ===', variant === 'horizontalBar')
-  console.log('=== SHOULD RENDER GROUPED BAR? ===', variant === 'groupedBar')
-  console.log('=== SHOULD RENDER STACKED BAR? ===', variant === 'stackedBar')
 
   return (
     <div className="w-full h-full">

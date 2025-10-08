@@ -2,6 +2,7 @@
 'use client'
 import React from 'react'
 import ChartFactory, { createChartConfig, ChartConfig } from './charts/ChartFactory'
+import InsightsSummary from './InsightsSummary'
 import { Refresh as RefreshIcon, Dashboard as DashboardIcon } from '@mui/icons-material'
 
 interface DashboardProps {
@@ -28,7 +29,7 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
 
     const configs: ChartConfig[] = []
 
-    // 1. SATISFACTION DISTRIBUTION CHART (Bar/Pie/Donut options)
+    // 1. SATISFACTION DISTRIBUTION CHART 
     if (analysisData.satisfaction?.data) {
       configs.push(createChartConfig(
         'satisfaction-dist',
@@ -37,7 +38,7 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
         analysisData.satisfaction.data,
         {
           subtitle: `${analysisData.satisfaction.data.stats?.total_responses || 0} responses analyzed`,
-          chartVariant: 'bar', // Default to bar for better comparison
+          chartVariant: 'horizontalBar', // Default to horizontal for better satisfaction label reading
           allowVariantToggle: true
         }
       ))
@@ -95,13 +96,13 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
         analysisData.ratings.data,
         {
           subtitle: 'Venue • Speakers • Content performance',
-          chartVariant: 'radar', // Explicitly set to radar for multi-aspect comparison
-          allowVariantToggle: true
+          chartVariant: 'radar', // Perfect for multi-aspect comparison
+          allowVariantToggle: false // Radar is the best choice for this data type
         }
       ))
     }
 
-    // 5. SCATTER PLOT (Individual response correlation analysis)
+    // 5. CORRELATION ANALYSIS (Individual response correlation - scatter/line only)
     if (analysisData.scatter_data?.data) {
       console.log('=== SCATTER DATA FOR CHART ===', analysisData.scatter_data.data)
       configs.push(createChartConfig(
@@ -112,7 +113,8 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
         {
           subtitle: `Individual responses correlation (${analysisData.scatter_data.data.total_points || 0} points)`,
           chartVariant: 'scatter', // Perfect for correlation analysis
-          allowVariantToggle: true
+          allowVariantToggle: true, // Scatter and line both work for this data
+          availableVariants: ['scatter', 'line'] // Exclude radar - doesn't make sense for correlation data
         }
       ))
     }
@@ -158,33 +160,56 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
         </button>
       </div>
 
-      {/* Responsive Chart Grid - Larger and more prominent */}
+      {/* THE FIX: Re-architected the grid for a more logical and visually appealing layout */}
       <div className="space-y-10">
-        {/* Top Row - Key Metrics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {chartConfigs.slice(0, 2).map((config, index) => (
-            <div key={config.id} className="w-full min-h-[450px]">
-              <ChartFactory 
-                config={config}
-                className="w-full h-full" 
-              />
+        {/* Row 1: Satisfaction Distribution (Full Width) */}
+        {chartConfigs.filter(c => c.id === 'satisfaction-dist').map(config => (
+          <div key={config.id} className="grid grid-cols-1 gap-8">
+            <div className="w-full min-h-[450px]">
+              <ChartFactory config={config} className="w-full h-full" />
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
 
-        {/* Bottom Row - Detailed Analysis */}
-        {chartConfigs.length > 2 && (
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            {chartConfigs.slice(2).map((config, index) => (
+        {/* Row 2: NPS Score and Aspect Ratings (Side-by-Side) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {chartConfigs
+            .filter(c => c.id === 'nps-score' || c.id === 'rating-comparison')
+            .map(config => (
               <div key={config.id} className="w-full min-h-[450px]">
-                <ChartFactory 
-                  config={config}
-                  className="w-full h-full"
-                />
+                <ChartFactory config={config} className="w-full h-full" />
               </div>
             ))}
+        </div>
+
+        {/* Row 2.5: Comparative Insights Summary (Full Width) */}
+        {analysisData.ratings?.data && (
+          <div className="grid grid-cols-1 gap-8">
+            <InsightsSummary 
+              data={analysisData.ratings.data} 
+              title="Event Strengths & Weaknesses Analysis"
+              className="w-full"
+            />
           </div>
         )}
+
+        {/* Row 3: Session Performance Analysis (Full Width) */}
+        {chartConfigs.filter(c => c.id === 'session-popularity').map(config => (
+          <div key={config.id} className="grid grid-cols-1 gap-8">
+            <div className="w-full min-h-[450px]">
+              <ChartFactory config={config} className="w-full h-full" />
+            </div>
+          </div>
+        ))}
+
+        {/* Row 4: Satisfaction vs Recommendation Correlation (Full Width) */}
+        {chartConfigs.filter(c => c.id === 'satisfaction-vs-recommendation').map(config => (
+          <div key={config.id} className="grid grid-cols-1 gap-8">
+            <div className="w-full min-h-[450px]">
+              <ChartFactory config={config} className="w-full h-full" />
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Summary Insights Card */}

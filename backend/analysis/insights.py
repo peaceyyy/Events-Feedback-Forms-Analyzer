@@ -154,8 +154,8 @@ def generate_session_popularity(data: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 def generate_rating_comparison(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Compares different aspect ratings (venue, speakers, content).
-    Creates multi-series data for comparison charts.
+    Compares different aspect ratings (venue, speakers, content) against overall satisfaction baseline.
+    Creates radar chart data optimized for strengths/weaknesses analysis.
     """
     df = pd.DataFrame(data)
     
@@ -165,19 +165,31 @@ def generate_rating_comparison(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     if not available_ratings:
         return {"error": "No rating data found"}
     
+    # Calculate overall satisfaction baseline
+    overall_satisfaction = 0
+    if 'satisfaction' in df.columns:
+        satisfaction_ratings = pd.to_numeric(df['satisfaction'], errors='coerce').dropna()
+        if len(satisfaction_ratings) > 0:
+            overall_satisfaction = float(satisfaction_ratings.mean())
+    
     # Calculate averages for each aspect
     comparison_data = {}
     for col in available_ratings:
         ratings = pd.to_numeric(df[col], errors='coerce').dropna()
         if len(ratings) > 0:
             aspect_name = col.replace('_rating', '').title()
+            aspect_avg = float(ratings.mean())
             comparison_data[aspect_name] = {
-                "average": float(ratings.mean()),
+                "average": aspect_avg,
                 "count": len(ratings),
-                "distribution": ratings.value_counts().sort_index().to_dict()
+                "distribution": ratings.value_counts().sort_index().to_dict(),
+                # NEW: Performance relative to overall satisfaction
+                "vs_overall": aspect_avg - overall_satisfaction,
+                "performance_category": "strength" if aspect_avg > overall_satisfaction + 0.1 else "weakness" if aspect_avg < overall_satisfaction - 0.1 else "adequate"
             }
     
     print(f"DEBUG: Rating comparison data keys: {list(comparison_data.keys())}")
+    print(f"DEBUG: Overall satisfaction baseline: {overall_satisfaction}")
     print(f"DEBUG: Rating comparison data structure: {comparison_data}")
     
     # Prepare data for scatter/line plots comparing two rating aspects
@@ -192,9 +204,22 @@ def generate_rating_comparison(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     return {
         "chart_type": "rating_comparison",
         "data": {
-            # For radar/spider chart  
+            # For radar/spider chart with baseline approach
             "aspects": list(comparison_data.keys()),
             "averages": [data["average"] for data in comparison_data.values()],
+            
+            # NEW: Overall satisfaction baseline for radar chart
+            "overall_satisfaction": overall_satisfaction,
+            "baseline_data": [
+                {
+                    "aspect": aspect,
+                    "value": details["average"],
+                    "baseline": overall_satisfaction,
+                    "performance": details["performance_category"],
+                    "difference": details["vs_overall"]
+                }
+                for aspect, details in comparison_data.items()
+            ],
             
             # Add scatter data for correlation analysis
             "scatter_pairs": scatter_pairs,
@@ -205,11 +230,14 @@ def generate_rating_comparison(data: List[Dict[str, Any]]) -> Dict[str, Any]:
                 for aspect, details in comparison_data.items()
             ],
             
-            # Best and worst performing aspects
+            # Enhanced insights with baseline context
             "insights": {
                 "highest_rated": max(comparison_data.keys(), key=lambda x: comparison_data[x]["average"]) if comparison_data else None,
                 "lowest_rated": min(comparison_data.keys(), key=lambda x: comparison_data[x]["average"]) if comparison_data else None,
-                "rating_spread": max([data["average"] for data in comparison_data.values()]) - min([data["average"] for data in comparison_data.values()]) if len(comparison_data) > 0 else 0
+                "rating_spread": max([data["average"] for data in comparison_data.values()]) - min([data["average"] for data in comparison_data.values()]) if len(comparison_data) > 0 else 0,
+                "strengths": [aspect for aspect, details in comparison_data.items() if details["performance_category"] == "strength"],
+                "weaknesses": [aspect for aspect, details in comparison_data.items() if details["performance_category"] == "weakness"],
+                "overall_satisfaction": overall_satisfaction
             }
         }
     }

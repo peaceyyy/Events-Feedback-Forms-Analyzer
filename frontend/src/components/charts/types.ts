@@ -8,6 +8,7 @@ export interface ChartConfig {
   data: any
   options?: ChartOptions
   allowVariantToggle?: boolean
+  availableVariants?: string[] // Restrict which variants are available for this specific chart
 }
 
 export interface ChartOptions {

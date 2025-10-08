@@ -70,7 +70,7 @@ export default function Home() {
     <div className={`min-h-screen relative overflow-hidden transition-colors duration-500 ${
       darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'
     }`}>
-      <CombinedBackground isDark={darkMode} />
+      {/* <CombinedBackground isDark={darkMode} /> */}
 
       {/* Dark Mode Toggle - Fixed positioning with high z-index */}
       <div className="fixed top-6 right-6 z-50">

@@ -137,8 +137,8 @@ export default function CombinedBackground({
     const buildConstellations = (starData: Star[]): ConstellationLine[] => {
       const lines: ConstellationLine[] = [];
       const k = 2;
-      const maxDist = 22; // percent, more permissive for visibility
-      const connectProb = 0.5; // 50% chance to connect nearest neighbors
+      const maxDist = 18; // percent, more permissive for visibility
+      const connectProb = 0.45; // 50% chance to connect nearest neighbors
       const maxLines = 15; // strict cap to avoid clutter
 
       for (const a of starData) {

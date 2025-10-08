@@ -23,7 +23,7 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
   // Default chart variants based on data type (industry best practices)
   function getDefaultVariant(type: string): string {
     switch (type) {
-      case 'distribution': return 'bar' // Bar charts are clearer than pie for most users
+      case 'distribution': return 'horizontalBar' // Bar charts are clearer than pie for most users
       case 'comparison': return 'horizontalBar' // Better for text labels
       case 'score': return 'gauge' // Most intuitive for single metrics
       case 'relationship': return 'scatter' // Default to scatter for correlation analysis
@@ -32,31 +32,44 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
   }
 
   // Available variants per chart type (extensible system)
-  const getAvailableVariants = (type: string): Array<{value: string, label: string}> => {
+  const getAvailableVariants = (type: string, restrictedVariants?: string[]): Array<{value: string, label: string}> => {
+    let allVariants: Array<{value: string, label: string}> = []
+    
     switch (type) {
       case 'distribution':
-        return [
-          { value: 'bar', label: 'Bar Chart' },
-          { value: 'pie', label: 'Pie Chart' }
+        allVariants = [
+          { value: 'horizontalBar', label: 'Horizontal Bar' },
+          { value: 'donut', label: 'Donut Chart' }
         ]
+        break
       case 'comparison':
-        return [
+        allVariants = [
           { value: 'groupedBar', label: 'Grouped Bar' },
           { value: 'horizontalBar', label: 'Horizontal Bar' },
           { value: 'stackedBar', label: 'Stacked Bar' }
         ]
+        break
       case 'score':
-        return [
+        allVariants = [
           { value: 'gauge', label: 'Gauge' },
         ]
+        break
       case 'relationship':
-        return [
-          { value: 'radar', label: 'Radar Chart' },
+        allVariants = [
           { value: 'scatter', label: 'Scatter Plot' },
           { value: 'line', label: 'Line Chart' }
         ]
-      default: return []
+        break
+      default: 
+        return []
     }
+    
+    // Filter variants if restrictions are provided
+    if (restrictedVariants && restrictedVariants.length > 0) {
+      return allVariants.filter(variant => restrictedVariants.includes(variant.value))
+    }
+    
+    return allVariants
   }
 
   // Render appropriate chart component
@@ -69,7 +82,7 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
 
     switch (config.type) {
       case 'distribution':
-        return <DistributionChart {...baseProps} variant={selectedVariant as 'bar' | 'pie' | 'donut'} />
+        return <DistributionChart {...baseProps} variant={selectedVariant as 'bar' | 'horizontalBar' | 'pie' | 'donut'} />
       case 'comparison':
         return <ComparisonChart {...baseProps} variant={selectedVariant as 'horizontalBar' | 'groupedBar' | 'stackedBar'} />
       case 'score':
@@ -81,7 +94,7 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
     }
   }
 
-  const variants = getAvailableVariants(config.type)
+  const variants = getAvailableVariants(config.type, config.availableVariants)
 
   // Helper function to determine optimal aspect ratio for different chart types
   const getChartAspectRatio = (type: string): string => {
