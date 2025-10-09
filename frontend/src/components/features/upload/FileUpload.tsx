@@ -9,7 +9,7 @@ import {
 } from '@mui/icons-material'
 
 interface FileUploadProps {
-  onUploadSuccess?: (results: any) => void
+  onUploadSuccess?: (results: any, filename?: string) => void
   onUploadError?: (error: string) => void
   onReset?: () => void
   isMinimized?: boolean
@@ -72,7 +72,7 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
         console.log('Ratings data:', result.ratings)
         console.log('Summary data:', result.summary)
         console.log('=== END FLASK RESPONSE ===')
-        if (onUploadSuccess) onUploadSuccess(result)
+        if (onUploadSuccess) onUploadSuccess(result, selectedFile?.name)
       } else {
         const errorMsg = result.error || 'Upload failed'
         if (onUploadError) onUploadError(errorMsg)
@@ -87,34 +87,37 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    // THE FIX: Re-introduce a max-width and center the component to make it more compact.
+    // This was the intended change from the previous request. `w-full` was incorrect
+    // as it caused the component to stretch.
+    <div className="max-w-2xl mx-auto">
       {/* Main Upload Card with Minimize Animation */}
       <div className={`glass-card-dark rounded-3xl elevation-3 mb-8 transition-all duration-500 ease-out overflow-hidden ${
         isMinimized 
           ? 'p-4 h-20' // Minimized state - fixed height instead of max-height
-          : 'p-10 h-auto' // Full state with auto height
+          : 'p-8 h-auto' // Full state with auto height - reduced padding for compact layout
       }`}>
         
         {/* Header Section - Conditionally rendered based on state */}
-        <div className={`text-center mb-10 transition-all duration-500 ease-out ${
+        <div className={`text-center mb-6 transition-all duration-500 ease-out ${
           isMinimized 
             ? 'opacity-0 scale-95 transform -translate-y-4 pointer-events-none absolute inset-0' 
             : 'opacity-100 scale-100 transform translate-y-0 relative'
         }`}>
-          <div className="w-24 h-24 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+          <div className="w-16 h-16 mx-auto mb-3 rounded-2xl flex items-center justify-center"
                style={{background: 'linear-gradient(135deg, var(--color-usc-green), var(--color-google-blue))'}}>
-            <CloudUploadIcon sx={{ fontSize: 40, color: 'white' }} />
+            <CloudUploadIcon sx={{ fontSize: 32, color: 'white' }} />
           </div>
-          <h2 className="text-3xl font-bold mb-3" style={{color: 'var(--color-text-primary)'}}>
+          <h2 className="text-xl font-bold mb-2" style={{color: 'var(--color-text-primary)'}}>
             Upload Feedback Data
           </h2>
-          <p className="text-lg max-w-2xl mx-auto" style={{color: 'var(--color-text-secondary)'}}>
-            Transform your event feedback CSV into comprehensive insights with AI-powered analysis
+          <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
+            Upload your event feedback CSV to generate insights
           </p>
         </div>
 
         {/* Minimized State Content */}
-        <div className={`transition-all duration-700 ease-out delay-200 ${
+        <div className={`transition-all duration-700 ease-out delay-200 ${  
           isMinimized 
             ? 'opacity-100 scale-100 transform translate-y-0 flex items-center justify-between relative' 
             : 'opacity-0 scale-95 transform translate-y-4 pointer-events-none absolute inset-0'
@@ -138,7 +141,7 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
         </div>
 
         {/* File Upload Area - Hidden when minimized */}
-        <div className={`mb-8 transition-all duration-300 ease-out ${
+        <div className={`mb-6 transition-all duration-300 ease-out ${
           isMinimized 
             ? 'opacity-0 scale-95 transform -translate-y-4 pointer-events-none absolute inset-0' 
             : 'opacity-100 scale-100 transform translate-y-0 relative'
@@ -152,30 +155,30 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
               id="file-upload"
             />
             <label htmlFor="file-upload" className="block">
-              <div className="border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 hover:scale-[1.02] cursor-pointer group"
+              <div className="border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 hover:scale-[1.02] cursor-pointer group"
                    style={{
                      borderColor: selectedFile ? 'var(--color-usc-green)' : 'var(--color-border-light)',
                      backgroundColor: selectedFile ? 'rgba(76, 175, 80, 0.05)' : 'transparent'
                    }}>
-                <div className="mb-6">
+                <div className="mb-4">
                   {selectedFile ? (
-                    <CheckCircleIcon sx={{ fontSize: 64, color: 'var(--color-usc-green)' }} />
+                    <CheckCircleIcon sx={{ fontSize: 48, color: 'var(--color-usc-green)' }} />
                   ) : (
                     <DescriptionIcon sx={{ 
-                      fontSize: 64, 
+                      fontSize: 48, 
                       color: 'var(--color-text-tertiary)',
                       transition: 'color 0.3s'
                     }} className="group-hover:text-usc-green" />
                   )}
                 </div>
-                <h3 className="text-xl font-semibold mb-3" 
+                <h3 className="text-lg font-semibold mb-2" 
                     style={{color: selectedFile ? 'var(--color-usc-green)' : 'var(--color-text-primary)'}}>
                   {selectedFile ? 'File Ready for Analysis!' : 'Choose Your CSV File'}
                 </h3>
-                <p className="text-base mb-4" style={{color: 'var(--color-text-secondary)'}}>
+                <p className="text-sm mb-3" style={{color: 'var(--color-text-secondary)'}}>
                   {selectedFile ? 'Click to select a different file' : 'Drag & drop your feedback CSV here or click to browse'}
                 </p>
-                <div className="text-sm" style={{color: 'var(--color-text-tertiary)'}}>
+                <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
                   Supported: .csv files • Max size: 10MB
                 </div>
               </div>
@@ -214,12 +217,12 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
             {isUploading ? (
               <div className="flex items-center justify-center gap-3">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                <span>Processing Analytics...</span>
+                <span>Analyzing Data...</span>
               </div>
             ) : (
               <div className="flex items-center justify-center gap-3">
                 <AnalyticsIcon sx={{ fontSize: 24 }} />
-                <span>Generate AI Insights</span>
+                <span>Generate Insights</span>
               </div>
             )}
           </button>

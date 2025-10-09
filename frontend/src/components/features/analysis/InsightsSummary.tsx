@@ -1,7 +1,7 @@
 // components/InsightsSummary.tsx - Generates narrative insights from aspect ratings
 'use client'
 import React from 'react'
-import AspectComparisonChart from './AspectComparisonChart'
+import AspectComparisonChart from './charts/AspectComparisonChart'
 
 interface InsightsSummaryProps {
   data: any
