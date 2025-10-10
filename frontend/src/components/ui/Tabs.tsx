@@ -120,7 +120,7 @@ export default function Tabs({ tabs, defaultTab, onTabChange, className = '' }: 
 /**
  * Sidebar Theory: Tab Navigation Best Practices
  * 
- * 🎯 ACCESSIBILITY CONSIDERATIONS:
+ * ACCESSIBILITY CONSIDERATIONS:
  * • Keyboard navigation support (arrow keys, tab, enter)
  * • ARIA roles and labels for screen readers
  * • Focus management and visual indicators

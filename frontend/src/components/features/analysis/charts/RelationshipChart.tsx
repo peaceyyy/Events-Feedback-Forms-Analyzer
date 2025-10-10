@@ -340,7 +340,7 @@ const CustomTooltip = ({ active, payload }: any) => {
         <div className="w-full max-w-md aspect-square">
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart data={chartData} margin={{ top: 40, right: 40, bottom: 40, left: 40 }}>
-              <PolarGrid 
+              <PolarGrid
                 stroke="rgba(255,255,255,0.2)"
                 gridType="polygon"
               />
@@ -360,23 +360,23 @@ const CustomTooltip = ({ active, payload }: any) => {
               <Radar
                 name="Overall Satisfaction"
                 dataKey="baseline"
-                stroke="#FFD54F"
+                stroke="var(--color-chart-yellow)"
                 fill="transparent"
                 fillOpacity={0}
                 strokeWidth={4}
                 strokeDasharray="8 4"
-                dot={{ r: 3, fill: '#FFD54F', strokeWidth: 2, stroke: '#FFF' }}
+                dot={{ r: 3, fill: 'var(--color-chart-yellow)', strokeWidth: 2, stroke: 'var(--color-background-card)' }}
               />
               
               {/* Aspect ratings layer */}
               <Radar
                 name="Aspect Ratings"
                 dataKey="value"
-                stroke="#4CAF50"
-                fill="#4CAF50"
+                stroke="var(--color-chart-green)"
+                fill="var(--color-chart-green)"
                 fillOpacity={0.25}
                 strokeWidth={3}
-                dot={{ r: 4, fill: '#4CAF50' }}
+                dot={{ r: 4, fill: 'var(--color-chart-green)' }}
               />
               
               {options?.showTooltip && <Tooltip content={<BaselineTooltip />} />}
@@ -393,7 +393,8 @@ const CustomTooltip = ({ active, payload }: any) => {
   }
 
   // Process scatter plot data - group by satisfaction levels for business insights
-  const scatterData = React.useMemo(() => {
+
+  const scatterData = React.useMemo(() => { 
     if (!chartData || chartData.length === 0) return { grouped: {}, jittered: [] }
     
     // Group by satisfaction levels for meaningful business categories
@@ -405,13 +406,14 @@ const CustomTooltip = ({ active, payload }: any) => {
       return 'Very Dissatisfied (1.0-1.4)'
     }
 
-    // Color mapping for satisfaction categories (business-friendly)
+    // THE FIX: Use theme-aware colors from options
+    const satisfactionColors = options?.satisfactionColors || {};
     const colorMap = {
-      'Highly Satisfied (4.5-5.0)': '#4CAF50',     // Green
-      'Satisfied (3.5-4.4)': '#8BC34A',           // Light Green  
-      'Neutral (2.5-3.4)': '#FF9800',             // Orange
-      'Dissatisfied (1.5-2.4)': '#F44336',        // Red
-      'Very Dissatisfied (1.0-1.4)': '#9C27B0'    // Purple
+      'Highly Satisfied (4.5-5.0)': satisfactionColors['5'] || 'var(--color-chart-green)',
+      'Satisfied (3.5-4.4)': satisfactionColors['4'] || 'var(--color-chart-light-green)',
+      'Neutral (2.5-3.4)': satisfactionColors['3'] || 'var(--color-chart-yellow)',
+      'Dissatisfied (1.5-2.4)': satisfactionColors['2'] || 'var(--color-chart-orange)',
+      'Very Dissatisfied (1.0-1.4)': satisfactionColors['1'] || 'var(--color-chart-red)',
     }
 
     
@@ -459,7 +461,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     }, {})
 
     return { grouped: groupedData, jittered: processedData }
-  }, [chartData])
+  }, [chartData, options?.satisfactionColors])
 
 
 
@@ -482,8 +484,8 @@ const CustomTooltip = ({ active, payload }: any) => {
       <div className="w-full h-full min-h-[400px]">
         <ResponsiveContainer width="100%" height={400}>
           <ScatterChart margin={{ top: 20, right: 30, left: 40, bottom: 60 }}>
-            {/* Axes and Grid are perfect as they are */}
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+            {/* Axes and Grid */}
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
             <XAxis 
               type="number" 
               dataKey="x" // Plots the jittered value
@@ -558,7 +560,7 @@ const renderLine = () => {
           data={chartData}
           margin={{ top: 20, right: 50, left: 20, bottom: 60 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
           <XAxis 
             dataKey="name"
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 10 }}
@@ -573,7 +575,7 @@ const renderLine = () => {
           <YAxis 
             yAxisId="left"
             orientation="left"
-            stroke="var(--color-usc-green)"
+            stroke="var(--color-chart-green)"
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
             domain={yDomain}
             label={{ 
@@ -589,7 +591,7 @@ const renderLine = () => {
             <YAxis 
               yAxisId="right"
               orientation="right"
-              stroke="var(--color-usc-orange)"
+              stroke="var(--color-chart-orange)"
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
               label={{ 
                 value: 'Response Count', 
@@ -627,10 +629,10 @@ const renderLine = () => {
             type="monotone" 
             dataKey="value" 
             name={isRecommendationScale ? "Avg Recommendation" : "Average Rating"}
-            stroke="var(--color-usc-green)"
+            stroke="var(--color-chart-green)"
             strokeWidth={3}
-            dot={{ r: 6, fill: 'var(--color-usc-green)' }}
-            activeDot={{ r: 8, fill: 'var(--color-usc-green)' }}
+            dot={{ r: 6, fill: 'var(--color-chart-green)' }}
+            activeDot={{ r: 8, fill: 'var(--color-chart-green)' }}
           />
           
           {/* Response count line (if available) */}
@@ -640,10 +642,10 @@ const renderLine = () => {
               type="monotone" 
               dataKey="count" 
               name="Response Count"
-              stroke="var(--color-usc-orange)"
+              stroke="var(--color-chart-orange)"
               strokeWidth={2}
               strokeDasharray="5 5"
-              dot={{ r: 4, fill: 'var(--color-usc-orange)' }}
+              dot={{ r: 4, fill: 'var(--color-chart-orange)' }}
             />
           )}
         </LineChart>

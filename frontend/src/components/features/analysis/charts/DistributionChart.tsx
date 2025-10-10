@@ -43,18 +43,9 @@ export default function DistributionChart({ data, variant, options, config }: Di
       }
     }
 
-    // Color scheme that intuitively matches satisfaction levels (red to green)
-    const getSatisfactionColor = (rating: string | number) => {
-      const num = typeof rating === 'string' ? parseInt(rating) : rating
-      switch (num) {
-        case 1: return '#F44336' // Red - Very Dissatisfied
-        case 2: return '#FF9800' // Orange - Dissatisfied
-        case 3: return '#FFC107' // Yellow - Neutral
-        case 4: return '#8BC34A' // Light Green - Satisfied
-        case 5: return '#4CAF50' // Green - Very Satisfied
-        default: return '#9E9E9E' // Gray - Unknown
-      }
-    }
+    // THE FIX: Use theme-aware satisfaction colors from options
+    const satisfactionColors = options?.satisfactionColors || {}
+    const getSatisfactionColor = (rating: string | number) => satisfactionColors[String(rating)] || '#9E9E9E'
 
     // Handle satisfaction distribution data structure
     if (data.categories && data.values) {
@@ -111,7 +102,7 @@ export default function DistributionChart({ data, variant, options, config }: Di
       const percentage = ((data.value / total) * 100).toFixed(1)
       
       return (
-        <div className="glass-card-dark p-3 rounded-lg border border-white/20">
+        <div className="glass-card p-3 rounded-lg border border-white/20">
           <p className="font-medium" style={{color: 'var(--color-text-primary)'}}>
             {data.payload.name}
           </p>
@@ -131,7 +122,7 @@ export default function DistributionChart({ data, variant, options, config }: Di
   const renderBarChart = () => (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />}
+        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />}
         <XAxis 
           dataKey="name" 
           tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
@@ -168,7 +159,7 @@ export default function DistributionChart({ data, variant, options, config }: Di
         data={chartData} 
         margin={{ top: 5, right: 40, left: 0, bottom: 20 }}
       >
-        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />}
+        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />}
         <XAxis 
           type="number" 
           tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}

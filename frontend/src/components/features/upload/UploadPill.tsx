@@ -61,7 +61,7 @@ export default function UploadPill({ filename, onReUpload, className = '' }: Upl
 /**
  * Sidebar Theory: Minimized Status Components
  * 
- * 🎯 UX PRINCIPLES:
+ * UX PRINCIPLES:
  * • Progressive disclosure: Show essential info, hide details
  * • Contextual actions: Keep primary action (re-upload) visible
  * • Visual hierarchy: Success state is prominent, actions are secondary

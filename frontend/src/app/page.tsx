@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import ChartFactory, { createChartConfig } from '../components/features/analysis/charts/ChartFactory';
 import InsightsSummary from '../components/features/analysis/InsightsSummary';
+import AspectComparisonChart from '../components/features/analysis/charts/AspectComparisonChart';
 
 /**
  * The `Home` component serves as the main landing page for the Event Insights Generator web application.
@@ -44,6 +45,7 @@ export default function Home() {
   const [isAnalyzed, setIsAnalyzed] = useState(false) // Track if analysis is complete
   const [activeTab, setActiveTab] = useState('analysis') // Track current tab
   const [uploadedFilename, setUploadedFilename] = useState<string>('') // Store uploaded filename
+  const [aspectChartVariant, setAspectChartVariant] = useState<'diverging' | 'grouped' | 'bullet' | 'radial'>('diverging') // Aspect chart variant
   
   // Apply dark mode class to document
   useEffect(() => {
@@ -405,7 +407,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Aspect Performance Charts */}
+            {/* Top Row - Radar Chart & Aspect Performance */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Radar Chart - Aspect Ratings Comparison */}
               {(analysisResults as any)?.ratings?.data && (
@@ -437,14 +439,51 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Event Strengths & Weaknesses Analysis */}
+            {/* Bottom Row - Visual Comparison (3/4) + AI Insights Card (1/4) */}
             {(analysisResults as any)?.ratings?.data && (
-              <div className="w-full">
-                <InsightsSummary 
-                  data={(analysisResults as any).ratings.data} 
-                  title="Event Strengths & Weaknesses Analysis"
-                  className="w-full"
-                />
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* Left Side - AspectComparisonChart with variant selection (3/4) */}
+                <div className="lg:col-span-2">
+                  <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold" style={{color: 'var(--color-text-primary)'}}>
+                        Visual Comparison Analysis
+                      </h3>
+                      {/* Chart Variant Selector */}
+                      <div className="flex gap-2">
+                        {(['diverging', 'grouped', 'bullet', 'radial'] as const).map((variant) => (
+                          <button
+                            key={variant}
+                            onClick={() => setAspectChartVariant(variant)}
+                            className={`px-3 py-1 text-xs rounded-lg border transition-all ${
+                              aspectChartVariant === variant
+                                ? 'bg-blue-500/20 border-blue-400 text-blue-300'
+                                : 'bg-white/5 border-white/20 text-gray-400 hover:bg-white/10'
+                            }`}
+                          >
+                            {variant.charAt(0).toUpperCase() + variant.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="w-full min-h-[400px]">
+                      <AspectComparisonChart 
+                        data={(analysisResults as any).ratings.data}
+                        variant={aspectChartVariant}
+                        className="w-full h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side - Swipeable AI Insights Card (1/4) */}
+                <div className="lg:col-span-2 ">
+                  <InsightsSummary 
+                    data={(analysisResults as any).ratings.data} 
+                    title="Event Insights"
+                    className="w-full h-full"
+                  />
+                </div>
               </div>
             )}
 

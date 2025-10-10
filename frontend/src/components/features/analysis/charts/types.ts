@@ -13,6 +13,7 @@ export interface ChartConfig {
 
 export interface ChartOptions {
   colors?: string[]
+  satisfactionColors?: Record<string, string>
   showLegend?: boolean
   showTooltip?: boolean
   responsive?: boolean

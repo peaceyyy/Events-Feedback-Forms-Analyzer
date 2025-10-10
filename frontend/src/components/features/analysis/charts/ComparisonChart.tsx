@@ -118,7 +118,7 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
       const data = payload[0]
       
       return (
-        <div className="glass-card-dark p-4 rounded-lg border border-white/20 max-w-xs">
+        <div className="glass-card p-4 rounded-lg border border-white/20 max-w-xs">
           <p className="font-semibold text-sm mb-2 z-100" style={{color: 'var(--color-text-primary)'}}>
             {data.payload.fullName || data.payload.name}
           </p>
@@ -153,7 +153,7 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
 
         margin={{ top: 5, right: 40, left: 20, bottom: 20 }}
       >
-        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" horizontal={false} />}
+        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" horizontal={false} />}
         
   
         <XAxis 
@@ -208,7 +208,7 @@ const renderGroupedBar = () => {
         // Increase margins to make space for the new axis labels
         margin={{ top: 20, right: 40, left: 20, bottom: 20 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
         
         <XAxis 
           dataKey="name" 
@@ -220,8 +220,8 @@ const renderGroupedBar = () => {
         <YAxis 
           yAxisId="left"
           orientation="left"
-          stroke="var(--color-usc-green)" // Color association
-          tick={{ fill: 'var(--color-usc-green)', fontSize: 12, fontWeight: 'bold' }} // Stronger ticks
+          stroke="var(--color-chart-green)" // Color association
+          tick={{ fill: 'var(--color-chart-green)', fontSize: 12, fontWeight: 'bold' }} // Stronger ticks
           domain={[0, 5]}
         >
           {/* THE FIX: Add an explicit label to the axis */}
@@ -229,7 +229,7 @@ const renderGroupedBar = () => {
             value="Average Satisfaction (0-5)" 
             angle={-90} 
             position="insideLeft" 
-            style={{ textAnchor: 'middle', fill: 'var(--color-usc-green)' }} 
+            style={{ textAnchor: 'middle', fill: 'var(--color-chart-green)' }} 
           />
         </YAxis>
         
@@ -237,8 +237,8 @@ const renderGroupedBar = () => {
         <YAxis 
           yAxisId="right"
           orientation="right"
-          stroke="var(--color-usc-orange)" // Color association
-          tick={{ fill: 'var(--color-usc-orange)', fontSize: 12, fontWeight: 'bold' }} // Stronger ticks
+          stroke="var(--color-chart-orange)" // Color association
+          tick={{ fill: 'var(--color-chart-orange)', fontSize: 12, fontWeight: 'bold' }} // Stronger ticks
           domain={[0, 'dataMax + 10']} // Give some headroom above the max attendance
         >
           {/* THE FIX: Add an explicit label to the axis */}
@@ -246,7 +246,7 @@ const renderGroupedBar = () => {
             value="Attendance Count" 
             angle={-90} 
             position="insideRight" 
-            style={{ textAnchor: 'middle', fill: 'var(--color-usc-orange)' }} 
+            style={{ textAnchor: 'middle', fill: 'var(--color-chart-orange)' }} 
           />
         </YAxis>
         
@@ -259,14 +259,14 @@ const renderGroupedBar = () => {
           yAxisId="left"
           dataKey="satisfaction"
           name="Avg Satisfaction" 
-          fill="var(--color-usc-green)" 
+          fill="var(--color-chart-green)" 
           radius={[4, 4, 0, 0]} 
         />
         <Bar 
           yAxisId="right"
           dataKey="attendance"
           name="Attendance" 
-          fill="var(--color-usc-orange)" 
+          fill="var(--color-chart-orange)" 
           radius={[4, 4, 0, 0]} 
         />
       </BarChart>
@@ -277,7 +277,7 @@ const renderGroupedBar = () => {
   const renderStackedBar = () => (
     <ResponsiveContainer width="100%" height="100%" minHeight={300}>
       <BarChart data={chartData} margin={{ top: 15, right: 20, left: 15, bottom: 20 }}>
-        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />}
+        {options?.gridLines && <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />}
         <XAxis 
           dataKey="name" 
           tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
@@ -291,7 +291,7 @@ const renderGroupedBar = () => {
         {options?.showLegend && <Legend />}
         
         {/* Stacked bars - useful for showing breakdowns */}
-        <Bar dataKey="value" stackId="a" fill="var(--color-usc-green)" />
+        <Bar dataKey="value" stackId="a" fill="var(--color-chart-primary)" />
         {/* Add more stacked segments as needed based on data structure */}
       </BarChart>
     </ResponsiveContainer>

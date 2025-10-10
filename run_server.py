@@ -15,7 +15,7 @@ sys.path.insert(0, project_root)
 from backend.app.main import app
 
 if __name__ == '__main__':
-    print("🚀 Starting Feedback Form Analyzer API...")
+    print("Starting Feedback Form Analyzer API...")
     # List available endpoints and their descriptions
     print("Available endpoints:")
     print("   GET  /              - Health check (returns status of the API)")

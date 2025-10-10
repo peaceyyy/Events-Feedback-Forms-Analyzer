@@ -18,6 +18,31 @@ interface ChartFactoryProps {
 
 export default function ChartFactory({ config, className = '' }: ChartFactoryProps) {
   const [selectedVariant, setSelectedVariant] = React.useState(config.chartVariant || getDefaultVariant(config.type))
+  
+  // Force re-render when theme changes by listening to CSS variable changes
+  const [themeKey, setThemeKey] = React.useState(0)
+  
+  React.useEffect(() => {
+    const handleThemeChange = () => {
+      // Force component re-render to pick up new CSS variable values
+      setThemeKey(prev => prev + 1)
+    }
+    
+    // Listen for class changes on document element (theme switching)
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          handleThemeChange()
+        }
+      })
+    })
+    
+    if (typeof document !== 'undefined') {
+      observer.observe(document.documentElement, { attributes: true })
+    }
+    
+    return () => observer.disconnect()
+  }, [])
 
 
   // Default chart variants based on data type (industry best practices)
@@ -74,10 +99,25 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
 
   // Render appropriate chart component
   const renderChart = () => {
+    // Resolve colors dynamically on each render (theme-reactive)
+    const dynamicOptions = {
+      ...config.options,
+      colors: config.options?.colors?.map((color: string) => 
+        color.includes('var(') ? resolveCSSVariable(color) : color
+      ),
+      satisfactionColors: config.options?.satisfactionColors ? 
+        Object.entries(config.options.satisfactionColors).reduce((acc, [key, value]) => {
+          acc[key] = typeof value === 'string' && value.includes('var(') 
+            ? resolveCSSVariable(value) 
+            : value
+          return acc
+        }, {} as any) : {}
+    }
+    
     const baseProps = {
       data: config.data,
-      options: config.options,
-      config
+      options: dynamicOptions,
+      config: { ...config, options: dynamicOptions }
     }
 
     switch (config.type) {
@@ -99,7 +139,7 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
   // Helper function to determine optimal aspect ratio for different chart types
   const getChartAspectRatio = (type: string): string => {
     switch (type) {
-      case 'distribution': return '16/10' // Good for bar/pie charts
+      case 'distribution': return '12/4' // Good for bar/pie charts
       case 'comparison': return '16/9'    // Wide for horizontal bars
       case 'score': return '4/3'          // Square-ish for gauges
       case 'relationship': return '1/1'   // Square for radar charts
@@ -143,7 +183,9 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
       </div>
 
       {/* Chart Content with Responsive Container - Much larger */}
-      <div className="w-full h-96" style={{ minHeight: '400px' }}>
+      {/* THE FIX: Use the getChartAspectRatio function to dynamically set the shape of the chart container.
+          This replaces the fixed h-96 height with a responsive aspect ratio, improving visual consistency. */}
+      <div className="w-full" style={{ aspectRatio: getChartAspectRatio(config.type), minHeight: '400px' }}>
         {renderChart()}
       </div>
 
@@ -158,6 +200,41 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
       )}
     </div>
   )
+}
+
+// Helper function to resolve CSS variables to actual hex values (Recharts compatibility fix)
+function resolveCSSVariable(cssVar: string): string {
+  if (typeof window !== 'undefined') {
+    try {
+      const style = getComputedStyle(document.documentElement)
+      const value = style.getPropertyValue(cssVar.replace('var(', '').replace(')', ''))
+      const trimmedValue = value.trim()
+      // Return the resolved value or fallback if empty
+      return trimmedValue || getFallbackColor(cssVar)
+    } catch (error) {
+      console.warn(`Failed to resolve CSS variable ${cssVar}:`, error)
+      return getFallbackColor(cssVar)
+    }
+  }
+  return getFallbackColor(cssVar)
+}
+
+function getFallbackColor(cssVar: string): string {
+  const fallbacks: Record<string, string> = {
+    '--color-chart-primary': '#4CAF50',
+    '--color-chart-secondary': '#FF9800', 
+    '--color-chart-tertiary': '#4285f4',
+    '--color-chart-quat': '#fbbc05',
+    '--color-chart-quint': '#ea4335',
+    '--color-chart-green': '#4CAF50',
+    '--color-chart-light-green': '#81C784',
+    '--color-chart-yellow': '#FFC107',
+    '--color-chart-orange': '#FF9800',
+    '--color-chart-red': '#F44336',
+    '--color-background-gauge': 'rgba(255, 255, 255, 0.1)',
+    '--color-background-card': 'rgba(0, 0, 0, 0.8)'
+  }
+  return fallbacks[cssVar.replace('var(', '').replace(')', '')] || '#9E9E9E'
 }
 
 // Helper function to create chart configs (makes it easy to add new charts)
@@ -177,7 +254,21 @@ export function createChartConfig(
     subtitle: options.subtitle,
     allowVariantToggle: options.allowVariantToggle ?? true,
     options: {
-      colors: ['#4CAF50', '#FF9800', '#4285f4', '#f28b81', '#fee293'], // USC + Google colors
+      // THE FIX: Resolve CSS variables to actual hex values for Recharts compatibility
+      colors: [
+        resolveCSSVariable('--color-chart-primary'), 
+        resolveCSSVariable('--color-chart-secondary'), 
+        resolveCSSVariable('--color-chart-tertiary'), 
+        resolveCSSVariable('--color-chart-quat'),
+        resolveCSSVariable('--color-chart-quint')
+      ],
+      satisfactionColors: {
+        '5': resolveCSSVariable('--color-chart-green'), 
+        '4': resolveCSSVariable('--color-chart-light-green'),
+        '3': resolveCSSVariable('--color-chart-yellow'), 
+        '2': resolveCSSVariable('--color-chart-orange'), 
+        '1': resolveCSSVariable('--color-chart-red')
+      },
       showLegend: true,
       showTooltip: true,
       responsive: true,
@@ -189,7 +280,7 @@ export function createChartConfig(
 
 function getDefaultVariant(type: string): string {
   switch (type) {
-    case 'distribution': return 'bar'
+    case 'distribution': return 'horizontalBar'
     case 'comparison': return 'horizontalBar' 
     case 'score': return 'gauge'
     case 'relationship': return 'scatter'

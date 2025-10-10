@@ -293,12 +293,7 @@ export default function AspectComparisonChart({
                 />
                 
                 {/* Performance indicator text */}
-                <div className="absolute inset-0 flex items-center px-3 z-30">
-                  <span className="text-xs text-white font-medium">
-                    {item.performance === 'strength' ? '🟢' : 
-                     item.performance === 'weakness' ? '🔴' : '🟡'}
-                  </span>
-                </div>
+                
               </div>
               
               {/* Difference indicator */}

@@ -54,6 +54,24 @@
     --color-status-warning: #f59e0b;
     --color-status-error: #ef4444;
     --color-status-info: #3b82f6;
+
+    /* Chart Colors - Theme Aware */
+    --color-chart-primary: var(--color-usc-green);
+    --color-chart-secondary: var(--color-usc-orange);
+    --color-chart-tertiary: var(--color-google-blue);
+    --color-chart-quat: var(--color-google-yellow);
+    --color-chart-quint: var(--color-google-red);
+    
+    /* Satisfaction Scale Colors */
+    --color-chart-green: #4CAF50;
+    --color-chart-light-green: #81C784;
+    --color-chart-yellow: #FFC107;
+    --color-chart-orange: #FF9800;
+    --color-chart-red: #F44336;
+    
+    /* Gauge Background Colors */
+    --color-background-gauge: rgba(255, 255, 255, 0.1);
+    --color-background-card: rgba(0, 0, 0, 0.8);
   }
 
   /* Light mode colors */
@@ -69,6 +87,17 @@
     --color-text-tertiary: #94a3b8;
     --color-border-light: #e2e8f0;
     --color-border-medium: #cbd5e1;
+    
+    /* Chart colors stay the same for both light and dark modes for consistency */
+    --color-chart-primary: var(--color-usc-green);
+    --color-chart-secondary: var(--color-usc-orange);
+    --color-chart-tertiary: var(--color-google-blue);
+    --color-chart-quat: var(--color-google-yellow);
+    --color-chart-quint: var(--color-google-red);
+    
+    /* Gauge colors for light mode */
+    --color-background-gauge: rgba(0, 0, 0, 0.1);
+    --color-background-card: rgba(255, 255, 255, 0.9);
   }
 
   /* Dark mode colors (active implementation) */

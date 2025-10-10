@@ -106,16 +106,17 @@ export default function ScoreChart({ data, variant, options, config }: ScoreChar
 
   // Color scheme based on score ranges
   const getScoreColor = (score: number, type: 'nps' | 'rating' = 'rating') => {
+    const colors = options?.satisfactionColors || {};
     if (type === 'nps') {
-      if (score >= 50) return '#4CAF50' // Excellent
-      if (score >= 30) return '#FF9800' // Good  
-      if (score >= 0) return '#f28b81' // Fair
-      return '#ed5d51' // Poor
+      if (score >= 50) return colors['5'] || 'var(--color-chart-green)'; // Excellent
+      if (score >= 30) return colors['4'] || 'var(--color-chart-light-green)'; // Good
+      if (score >= 0) return colors['3'] || 'var(--color-chart-yellow)'; // Fair
+      return colors['1'] || 'var(--color-chart-red)'; // Poor
     } else {
-      if (score >= 4.5) return '#4CAF50' // Excellent
-      if (score >= 4) return '#81C784' // Good
-      if (score >= 3) return '#FF9800' // Fair
-      return '#f28b81' // Needs Improvement
+      if (score >= 4.5) return colors['5'] || 'var(--color-chart-green)'; // Excellent
+      if (score >= 4) return colors['4'] || 'var(--color-chart-light-green)'; // Good
+      if (score >= 3) return colors['3'] || 'var(--color-chart-yellow)'; // Fair
+      return colors['1'] || 'var(--color-chart-red)'; // Needs Improvement
     }
   }
 
@@ -129,7 +130,7 @@ export default function ScoreChart({ data, variant, options, config }: ScoreChar
     // This data setup is perfect. No changes needed.
     const gaugeData = [
       { name: 'Score', value: percentage, fill: scoreColor },
-      { name: 'Remaining', value: 100 - percentage, fill: 'rgba(255,255,255,0.1)' }
+      { name: 'Remaining', value: 100 - percentage, fill: 'var(--color-background-gauge)' }
     ];
 
     return (
@@ -234,12 +235,12 @@ export default function ScoreChart({ data, variant, options, config }: ScoreChar
   const renderDonut = () => {
     // For NPS, show breakdown of detractors/passives/promoters
     const donutData = scoreData.detractors !== undefined ? [
-      { name: 'Promoters (9-10)', value: scoreData.promoters, fill: '#4CAF50' },
-      { name: 'Passives (7-8)', value: scoreData.passives, fill: '#FF9800' },
-      { name: 'Detractors (0-6)', value: scoreData.detractors, fill: '#f28b81' }
+      { name: 'Promoters (9-10)', value: scoreData.promoters, fill: options?.satisfactionColors?.['5'] || 'var(--color-chart-green)' },
+      { name: 'Passives (7-8)', value: scoreData.passives, fill: options?.satisfactionColors?.['3'] || 'var(--color-chart-yellow)' },
+      { name: 'Detractors (0-6)', value: scoreData.detractors, fill: options?.satisfactionColors?.['1'] || 'var(--color-chart-red)' }
     ] : [
       { name: 'Score', value: percentage, fill: scoreColor },
-      { name: 'Remaining', value: 100 - percentage, fill: 'rgba(255,255,255,0.1)' }
+      { name: 'Remaining', value: 100 - percentage, fill: 'var(--color-background-gauge)' }
     ]
 
     return (
