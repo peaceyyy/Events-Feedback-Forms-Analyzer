@@ -14,9 +14,15 @@ import {
   Event as EventIcon,
   People as PeopleIcon,
   Info as InfoIcon,
+  CheckCircle as CheckCircleIcon,
+  Assessment as AssessmentIcon,
+  Insights as InsightsIcon,
+  TrendingUp as TrendingUpIcon,
   Brightness4 as Brightness4Icon,
   Brightness7 as Brightness7Icon,
 } from '@mui/icons-material';
+import ChartFactory, { createChartConfig } from '../components/features/analysis/charts/ChartFactory';
+import InsightsSummary from '../components/features/analysis/InsightsSummary';
 
 /**
  * The `Home` component serves as the main landing page for the Event Insights Generator web application.
@@ -136,16 +142,134 @@ export default function Home() {
                 className="mb-4"
               />
               
-              {/* Main Dashboard */}
-              <InsightsCard 
-                results={analysisResults}
-                error={analysisError}
-              />
+              {/* Executive Summary - Main Analysis Tab Content */}
+              {(analysisResults as any)?.summary && (
+                <div className="glass-card-dark p-8 rounded-xl elevation-2">
+                  <div className="flex items-center gap-3 mb-6">
+                    <AssessmentIcon sx={{ fontSize: 28, color: 'var(--color-google-blue)' }} />
+                    <h3 className="text-2xl font-bold" style={{color: 'var(--color-text-primary)'}}>
+                      Executive Summary
+                    </h3>
+                  </div>
+                  
+                  {/* Enhanced KPI Cards */}
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
+                      <CheckCircleIcon sx={{ fontSize: 32, color: 'var(--color-usc-green)' }} />
+                      <div>
+                        <div className="text-2xl font-bold" style={{color: 'var(--color-text-primary)'}}>{(analysisResults as any).summary.total_responses}</div>
+                        <div className="text-sm font-medium" style={{color: 'var(--color-text-secondary)'}}>Total Responses</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
+                      <InsightsIcon sx={{ fontSize: 32, color: 'var(--color-google-blue)' }} />
+                      <div>
+                        <div className="text-2xl font-bold" style={{color: 'var(--color-text-primary)'}}>
+                          {((analysisResults as any)?.satisfaction?.data?.stats?.average || 0).toFixed(1)}<span className="text-lg">/5</span>
+                        </div>
+                        <div className="text-sm font-medium" style={{color: 'var(--color-text-secondary)'}}>Avg. Satisfaction</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
+                      <TrendingUpIcon sx={{ fontSize: 32, color: 'var(--color-usc-orange)' }} />
+                      <div>
+                        <div className="text-2xl font-bold" style={{color: 'var(--color-text-primary)'}}>
+                          {(analysisResults as any)?.nps?.data?.nps_score?.toFixed(0) ?? 'N/A'}
+                        </div>
+                        <div className="text-sm font-medium" style={{color: 'var(--color-text-secondary)'}}>NPS Score</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg opacity-50">
+                      <CategoryIcon sx={{ fontSize: 32, color: 'var(--color-text-tertiary)' }} />
+                      <div>
+                        <div className="text-lg font-bold" style={{color: 'var(--color-text-tertiary)'}}>Coming Soon</div>
+                        <div className="text-sm font-medium" style={{color: 'var(--color-text-tertiary)'}}>Top Aspect</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Main Charts for Analysis Tab */}
+              <div className="space-y-8">
+                {/* Satisfaction Distribution - Core metric */}
+                {(analysisResults as any)?.satisfaction?.data && (
+                  <div className="w-full min-h-[450px]">
+                    <ChartFactory config={createChartConfig(
+                      'satisfaction-dist',
+                      'Satisfaction Distribution', 
+                      'distribution',
+                      (analysisResults as any).satisfaction.data,
+                      {
+                        subtitle: `${(analysisResults as any).satisfaction.data.stats?.total_responses || 0} responses analyzed`,
+                        chartVariant: 'horizontalBar',
+                        allowVariantToggle: true
+                      }
+                    )} className="w-full h-full" />
+                  </div>
+                )}
+
+                {/* NPS Score and Recommendation vs Satisfaction */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {(analysisResults as any)?.nps?.data && (
+                    <div className="w-full min-h-[450px]">
+                      <ChartFactory config={createChartConfig(
+                        'nps-score',
+                        'Net Promoter Score',
+                        'score', 
+                        (analysisResults as any).nps.data,
+                        {
+                          subtitle: `${(analysisResults as any).nps.data.nps_category || 'Score Analysis'}`,
+                          chartVariant: 'gauge',
+                          allowVariantToggle: true
+                        }
+                      )} className="w-full h-full" />
+                    </div>
+                  )}
+
+                  {(analysisResults as any)?.scatter_data?.data && (
+                    <div className="w-full min-h-[450px]">
+                      <ChartFactory config={createChartConfig(
+                        'satisfaction-vs-recommendation',
+                        'Satisfaction vs Recommendation',
+                        'relationship',
+                        (analysisResults as any).scatter_data.data,
+                        {
+                          subtitle: `Correlation analysis (${(analysisResults as any).scatter_data.data.total_points || 0} points)`,
+                          chartVariant: 'scatter',
+                          allowVariantToggle: true,
+                          availableVariants: ['scatter', 'line']
+                        }
+                      )} className="w-full h-full" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Future Charts - Placeholders */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
+                    <h3 className="text-lg font-semibold mb-4 text-usc-green">Pacing Analysis</h3>
+                    <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
+                      Chart showing satisfaction by pacing preference - to be implemented
+                    </p>
+                  </div>
+
+                  <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
+                    <h3 className="text-lg font-semibold mb-4 text-usc-green">One Word Descriptions</h3>
+                    <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
+                      Word cloud of event descriptors - to be implemented
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           ) : (
-            <div className="grid lg:grid-cols-5 gap-8 items-start">
-              {/* Left Column - Upload Card (3/5 width on desktop, full width on mobile) - The component now controls its own max-width */}
-              <div className="lg:col-span-3">
+            <div className="grid lg:grid-cols-2 gap-12 items-start">
+              {/* Left Column - Upload Card */}
+              <div className="lg:col-span-1">
                 <FileUpload 
                   onUploadSuccess={(results, filename) => handleUploadSuccess(results, filename)}
                   onUploadError={handleUploadError}
@@ -161,8 +285,8 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Right Column - How it Works Steps (2/5 width on desktop, full width on mobile) */}
-              <div className="lg:col-span-2 space-y-6 lg:mt-0 mt-8">
+              {/* Right Column - How it Works Steps */}
+              <div className="lg:col-span-1 space-y-6 lg:mt-0 mt-8">
                 <div className="mb-6">
                   <h3 className="text-xl font-bold mb-2" style={{color: 'var(--color-text-primary)'}}>
                     How It Works
@@ -269,16 +393,78 @@ export default function Home() {
         id: 'aspects',
         label: 'Event Aspects', 
         icon: <CategoryIcon sx={{ fontSize: 20 }} />,
-        content: createPlaceholderContent(
-          'Event Component Analysis',
-          'Detailed breakdown of venue, speakers, and content performance',
-          [
-            'Venue satisfaction and facility ratings',
-            'Speaker performance and engagement metrics',
-            'Content quality and relevance scoring',
-            'Cross-aspect correlation analysis',
-            'Improvement recommendations per component'
-          ]
+        content: (
+          <div className="space-y-8">
+            {/* Header */}
+            <div>
+              <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text-primary)'}}>
+                Event Aspects Analysis
+              </h2>
+              <p style={{color: 'var(--color-text-secondary)'}}>
+                Detailed breakdown of venue, speakers, and content performance
+              </p>
+            </div>
+
+            {/* Aspect Performance Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Radar Chart - Aspect Ratings Comparison */}
+              {(analysisResults as any)?.ratings?.data && (
+                <div className="w-full min-h-[450px]">
+                  <ChartFactory config={createChartConfig(
+                    'rating-comparison', 
+                    'Aspect Ratings Comparison',
+                    'relationship',
+                    // Remove insights from data since we have InsightsSummary component below
+                    { ...(analysisResults as any).ratings.data, insights: undefined },
+                    {
+                      subtitle: 'Venue • Speakers • Content performance',
+                      chartVariant: 'radar',
+                      allowVariantToggle: false
+                    }
+                  )} className="w-full h-full" />
+                </div>
+              )}
+
+              {/* Placeholder for Aspect Performance Comparison */}
+              <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
+                <h3 className="text-lg font-semibold mb-4 text-usc-green">Aspect Performance Comparison</h3>
+                <p className="text-sm mb-4" style={{color: 'var(--color-text-secondary)'}}>
+                  Bar chart showing correlation coefficient of each aspect with overall satisfaction
+                </p>
+                <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                  Coming Soon: What drives overall satisfaction analysis
+                </div>
+              </div>
+            </div>
+
+            {/* Event Strengths & Weaknesses Analysis */}
+            {(analysisResults as any)?.ratings?.data && (
+              <div className="w-full">
+                <InsightsSummary 
+                  data={(analysisResults as any).ratings.data} 
+                  title="Event Strengths & Weaknesses Analysis"
+                  className="w-full"
+                />
+              </div>
+            )}
+
+            {/* Future Features Placeholder */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
+                <h4 className="text-base font-semibold mb-3 text-usc-orange">Per Aspect Averages</h4>
+                <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
+                  Individual aspect scoring breakdown - to be implemented
+                </p>
+              </div>
+
+              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
+                <h4 className="text-base font-semibold mb-3 text-usc-orange">Correlation Analysis</h4>
+                <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
+                  Impact analysis: which aspects drive overall satisfaction most
+                </p>
+              </div>
+            </div>
+          </div>
         )
       })
 
@@ -287,16 +473,74 @@ export default function Home() {
         id: 'sessions',
         label: 'Session Analytics',
         icon: <EventIcon sx={{ fontSize: 20 }} />,
-        content: createPlaceholderContent(
-          'Technical Session Performance',
-          'In-depth analysis of session popularity, attendance, and satisfaction',
-          [
-            'Session attendance patterns and trends',
-            'Time-slot effectiveness analysis',
-            'Popular vs. underperforming sessions',
-            'Session format comparison (workshop vs. talk)',
-            'Duration and pacing satisfaction metrics'
-          ]
+        content: (
+          <div className="space-y-8">
+            {/* Header */}
+            <div>
+              <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text-primary)'}}>
+                Session Performance Analysis
+              </h2>
+              <p style={{color: 'var(--color-text-secondary)'}}>
+                In-depth analysis of session popularity, attendance, and satisfaction
+              </p>
+            </div>
+
+            {/* Session Performance Chart */}
+            {(analysisResults as any)?.sessions?.data && (
+              <div className="w-full min-h-[450px]">
+                <ChartFactory config={createChartConfig(
+                  'session-popularity',
+                  'Session Performance Analysis',
+                  'comparison',
+                  (analysisResults as any).sessions.data,
+                  {
+                    subtitle: `Attendance vs Satisfaction for top ${(analysisResults as any).sessions.data.sessions?.length || 0} sessions`,
+                    chartVariant: 'groupedBar',
+                    allowVariantToggle: true
+                  }
+                )} className="w-full h-full" />
+              </div>
+            )}
+
+            {/* Future Session Analytics - Placeholders */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
+                <h3 className="text-lg font-semibold mb-4 text-usc-green">Session Performance Matrix</h3>
+                <p className="text-sm mb-4" style={{color: 'var(--color-text-secondary)'}}>
+                  Bubble chart showing attendance vs satisfaction to identify Stars, Hidden Gems, and Underperformers
+                </p>
+                <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                  Coming Soon: Bubble Chart Implementation
+                </div>
+              </div>
+
+              <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
+                <h3 className="text-lg font-semibold mb-4 text-usc-green">Discovery Channel Analysis</h3>
+                <p className="text-sm mb-4" style={{color: 'var(--color-text-secondary)'}}>
+                  Event discovery channel effectiveness and satisfaction correlation
+                </p>
+                <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                  To be implemented based on discovery channel data
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
+                <h4 className="text-base font-semibold mb-3 text-usc-orange">Preferred Time Analysis</h4>
+                <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
+                  Time slot preferences and effectiveness metrics
+                </p>
+              </div>
+
+              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
+                <h4 className="text-base font-semibold mb-3 text-usc-orange">Venue/Modality Preferences</h4>
+                <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
+                  Online vs in-person preference analysis for hybrid events
+                </p>
+              </div>
+            </div>
+          </div>
         )
       })
 
@@ -305,16 +549,103 @@ export default function Home() {
         id: 'attendee-insights',
         label: 'Attendee Insights',
         icon: <PeopleIcon sx={{ fontSize: 20 }} />,
-        content: createPlaceholderContent(
-          'Attendee Segmentation & Behavior',
-          'Understanding attendee preferences and satisfaction drivers',
-          [
-            'Pacing preference vs. satisfaction correlation',
-            'Discovery channel impact on experience quality',
-            'Venue modality preferences (online vs. in-person)',
-            'Demographic satisfaction patterns',
-            'Repeat attendee vs. first-timer analysis'
-          ]
+        content: (
+          <div className="space-y-8">
+            {/* Header */}
+            <div>
+              <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text-primary)'}}>
+                Attendee Segmentation & Behavior
+              </h2>
+              <p style={{color: 'var(--color-text-secondary)'}}>
+                Understanding attendee preferences and satisfaction drivers across different segments
+              </p>
+            </div>
+
+            {/* Key Behavioral Insights */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
+                <h3 className="text-lg font-semibold mb-4 text-usc-green">Pacing & Engagement Analysis</h3>
+                <p className="text-sm mb-4" style={{color: 'var(--color-text-secondary)'}}>
+                  Event pacing satisfaction patterns and engagement correlation analysis
+                </p>
+                <div className="space-y-3">
+                  <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                    • Pacing feedback distribution across segments
+                  </div>
+                  <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                    • Correlation with overall satisfaction scores
+                  </div>
+                  <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                    • Optimal pacing recommendations
+                  </div>
+                </div>
+              </div>
+
+              <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
+                <h3 className="text-lg font-semibold mb-4 text-usc-green">Discovery Channel Impact</h3>
+                <p className="text-sm mb-4" style={{color: 'var(--color-text-secondary)'}}>
+                  How attendees found the event and its correlation with experience quality
+                </p>
+                <div className="space-y-3">
+                  <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                    • Social media vs word-of-mouth effectiveness
+                  </div>
+                  <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                    • Channel-specific satisfaction patterns
+                  </div>
+                  <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                    • Marketing ROI and quality correlation
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Demographic & Preference Analysis */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
+                <h4 className="text-base font-semibold mb-3 text-usc-orange">Venue Modality Preferences</h4>
+                <p className="text-sm mb-3" style={{color: 'var(--color-text-secondary)'}}>
+                  Online vs in-person satisfaction by attendee demographics
+                </p>
+                <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                  Hybrid event optimization insights
+                </div>
+              </div>
+
+              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
+                <h4 className="text-base font-semibold mb-3 text-usc-orange">Experience Level Impact</h4>
+                <p className="text-sm mb-3" style={{color: 'var(--color-text-secondary)'}}>
+                  First-time vs returning attendee satisfaction patterns
+                </p>
+                <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                  Retention and onboarding optimization
+                </div>
+              </div>
+
+              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
+                <h4 className="text-base font-semibold mb-3 text-usc-orange">Demographic Patterns</h4>
+                <p className="text-sm mb-3" style={{color: 'var(--color-text-secondary)'}}>
+                  Age, background, and affiliation satisfaction drivers
+                </p>
+                <div className="text-xs" style={{color: 'var(--color-text-tertiary)'}}>
+                  Targeted content strategy insights
+                </div>
+              </div>
+            </div>
+
+            {/* Future Advanced Analytics */}
+            <div className="glass-card-dark p-6 rounded-2xl border border-white/10 bg-gradient-to-r from-slate-800/50 to-slate-700/50">
+              <div className="flex items-center gap-3">
+                <PeopleIcon sx={{ fontSize: 24, color: 'var(--usc-green)' }} />
+                <div>
+                  <h4 className="font-semibold text-usc-green">Advanced Segmentation Pipeline</h4>
+                  <p className="text-sm mt-1" style={{color: 'var(--color-text-secondary)'}}>
+                    Machine learning-powered attendee clustering, predictive satisfaction modeling, and personalized experience recommendations will be implemented as comprehensive demographic and behavioral data becomes available.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         )
       })
     }
@@ -389,7 +720,7 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="relative z-20 container mx-auto px-6 py-12">
+      <div className="relative z-20 container mx-auto px-6 py-12 max-w-6xl">
         <header className="text-center mb-12">
 
 
@@ -442,7 +773,7 @@ export default function Home() {
           {/* Spacer for better visual balance - Clean modern look */}
         </header>
 
-        <main className="max-w-7xl mx-auto">
+        <main className="max-w-6xl mx-auto">
           {/* Tabbed Navigation System */}
           <Tabs 
             tabs={createTabs()} 

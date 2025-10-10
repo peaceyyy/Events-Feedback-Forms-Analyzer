@@ -88,14 +88,13 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
 
   return (
     // THE FIX: Re-introduce a max-width and center the component to make it more compact.
-    // This was the intended change from the previous request. `w-full` was incorrect
-    // as it caused the component to stretch.
-    <div className="max-w-2xl mx-auto">
+    // UPDATE: Removing max-width and mx-auto to allow the component to fill its grid container naturally.
+    <div className="w-full">
       {/* Main Upload Card with Minimize Animation */}
       <div className={`glass-card-dark rounded-3xl elevation-3 mb-8 transition-all duration-500 ease-out overflow-hidden ${
         isMinimized 
-          ? 'p-4 h-20' // Minimized state - fixed height instead of max-height
-          : 'p-8 h-auto' // Full state with auto height - reduced padding for compact layout
+          ? 'p-4 h-20' 
+          : 'p-9.5 h-auto mt-1' // Full state with auto height - reduced padding for compact layout
       }`}>
         
         {/* Header Section - Conditionally rendered based on state */}

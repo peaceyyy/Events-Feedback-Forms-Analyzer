@@ -38,7 +38,6 @@ export default function ScrollToTopButton() {
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll)
-    // Cleanup function to remove the listener when the component unmounts
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
@@ -47,7 +46,7 @@ export default function ScrollToTopButton() {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth', // Provides a smooth scrolling animation
+      behavior: 'smooth', 
     })
   }
 
@@ -55,10 +54,7 @@ export default function ScrollToTopButton() {
     <button
       aria-label="Scroll to top"
       onClick={scrollToTop}
-      // THE FIX:
-      // 1. Use CSS variables for colors to support both light and dark modes.
-      // 2. Use calc() for positioning to keep the button relative to the main content area on wide screens.
-      // 3. The hover effect now correctly uses the CSS variable.
+  
       className={`group fixed bottom-8 z-50 p-3 rounded-full shadow-lg transition-all duration-300 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
       }`}
