@@ -9,6 +9,7 @@ import {
 interface AspectComparisonChartProps {
   data: any
   variant?: 'diverging' | 'grouped' | 'bullet' | 'radial'
+  onVariantChange?: (variant: 'diverging' | 'grouped' | 'bullet' | 'radial') => void
   options?: {
     showBaseline?: boolean
     showTooltip?: boolean
@@ -20,7 +21,8 @@ interface AspectComparisonChartProps {
 
 export default function AspectComparisonChart({ 
   data, 
-  variant = 'diverging', 
+  variant = 'diverging',
+  onVariantChange,
   options = { showBaseline: true, showTooltip: true, showLegend: true },
   className = "" 
 }: AspectComparisonChartProps) {
@@ -247,72 +249,75 @@ export default function AspectComparisonChart({
 
   // 3. Bullet Chart Style - Performance indicators
   const renderBulletChart = () => {
-    console.log('Rendering bullet chart with data:', chartData)
     
     if (chartData.length === 0) {
-      return (
-        <div className="p-4 text-center" style={{color: 'var(--color-text-secondary)'}}>
-          No data available for bullet chart
-        </div>
-      )
+      // ... your placeholder ...
     }
 
     return (
-      <div className="space-y-4 p-4">
+      // Add some vertical padding to the container
+      <div className="space-y-6 p-4">
         {chartData.map((item: any, index: number) => {
-          const progressPercentage = Math.min((item.value / 5) * 100, 100)
-          const baselinePercentage = Math.min((item.baseline / 5) * 100, 100)
+          // --- Data preparation is perfect, no changes needed ---
+          const progressPercentage = Math.min((item.value / 5) * 100, 100);
+          const baselinePercentage = Math.min((item.baseline / 5) * 100, 100);
           
           return (
-            <div key={index} className="relative">
-              {/* Aspect name */}
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-medium text-sm" style={{color: 'var(--color-text-primary)'}}>
+            <div key={index}>
+              {/* --- Header: Aspect name and score --- */}
+              <div className="flex justify-between items-baseline mb-1">
+                <span className="font-semibold text-sm" style={{color: 'var(--color-text-primary)'}}>
                   {item.aspect}
                 </span>
-                <span className="text-xs" style={{color: 'var(--color-text-secondary)'}}>
-                  {item.value.toFixed(1)}/5.0
+                <span className="font-bold text-lg" style={{color: item.fill || 'var(--color-text-primary)'}}>
+                  {item.value.toFixed(1)}
+                  <span className="text-xs font-medium" style={{color: 'var(--color-text-secondary)'}}>/5.0</span>
                 </span>
               </div>
               
-              {/* Progress bar background */}
-              <div className="relative h-6 bg-white/10 rounded-full overflow-hidden">
-                {/* Baseline indicator */}
-                <div 
-                  className="absolute top-0 h-full w-1 bg-yellow-400 z-20"
-                  style={{ left: `${baselinePercentage}%` }}
-                />
+              {/* --- THE CORE VISUAL REWORK --- */}
+              <div className="relative h-4 bg-slate-700/50 rounded-md">
                 
-                {/* Actual performance bar */}
+                {/* Background Performance Ranges (Optional but very professional) */}
+                {/* These add context, like a "poor" to "excellent" scale */}
+                <div className="absolute top-0 left-0 h-full w-1/2 bg-red-500/10 rounded-l-md"></div>
+                <div className="absolute top-0 left-1/2 h-full w-1/4 bg-yellow-500/10"></div>
+                <div className="absolute top-0 left-3/4 h-full w-1/4 bg-green-500/10 rounded-r-md"></div>
+
+                {/* Actual Performance Bar (Thinner than the background) */}
                 <div 
-                  className="h-full rounded-full transition-all duration-500 relative z-10"
+                  className="absolute top-1/2 left-0 h-2 bg-green-400 rounded-md transition-all duration-500 transform -translate-y-1/2 z-10"
                   style={{ 
                     width: `${progressPercentage}%`,
                     backgroundColor: item.fill || '#4CAF50'
                   }}
                 />
                 
-                {/* Performance indicator text */}
-                
+                {/* Baseline Indicator (A vertical line) */}
+                <div 
+                  className="absolute top-0 h-full w-1 bg-white z-20"
+                  style={{ left: `${baselinePercentage}%` }}
+                  title={`Baseline: ${item.baseline.toFixed(1)}`} // Add a tooltip for accessibility
+                />
               </div>
               
-              {/* Difference indicator */}
-              <div className="flex justify-end mt-1">
+              {/* --- Difference Indicator --- */}
+              <div className="text-right mt-1">
                 <span 
-                  className={`text-xs ${
+                  className={`text-xs font-medium ${
                     item.difference > 0 ? 'text-green-400' : 
-                    item.difference < 0 ? 'text-red-400' : 'text-yellow-400'
+                    item.difference < 0 ? 'text-red-400' : 'text-gray-400'
                   }`}
                 >
-                  {item.difference > 0 ? '+' : ''}{item.difference.toFixed(1)} vs baseline
+                  {item.difference > 0 ? '▲' : '▼'} {Math.abs(item.difference).toFixed(1)} vs. baseline
                 </span>
               </div>
             </div>
-          )
+          );
         })}
       </div>
-    )
-  }
+    );
+}
 
   // 4. Radial Comparison - Circular performance view
   const renderRadialChart = () => {
@@ -362,7 +367,9 @@ export default function AspectComparisonChart({
     return (
       <div className={`glass-card p-6 ${className}`}>
         <div className="text-center" style={{color: 'var(--color-text-secondary)'}}>
-          <div className="text-4xl mb-2">📊</div>
+          <div className="text-center mb-2">
+            <div className="text-lg font-semibold text-gray-500">No Data</div>
+          </div>
           <p>No aspect comparison data available</p>
           <div className="mt-2 text-xs">
             Debug: {JSON.stringify(data, null, 2).substring(0, 200)}...
@@ -373,11 +380,40 @@ export default function AspectComparisonChart({
   }
 
   return (
-    <div className={`glass-card p-4 ${className}`}>
+    <div className={`glass-card p-4 flex flex-col ${className}`}>
       <div className="mb-4">
-        <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text-primary)'}}>
-          Aspect Performance Comparison
-        </h3>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-lg font-semibold" style={{color: 'var(--color-text-primary)'}}>
+            Aspect Performance Comparison
+          </h3>
+          
+          {/* Variant Toggle Buttons */}
+          {onVariantChange && (
+            <div className="flex gap-1 p-1 bg-white/5 rounded-lg">
+              {(['diverging', 'grouped', 'bullet', 'radial'] as const).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => onVariantChange(v)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded transition-all duration-200 ${
+                    variant === v 
+                      ? 'bg-white/20 text-white' 
+                      : 'text-white/60 hover:text-white/80 hover:bg-white/10'
+                  }`}
+                  title={
+                    v === 'diverging' ? 'Diverging Bar Chart' :
+                    v === 'grouped' ? 'Grouped Bar Chart' :
+                    v === 'bullet' ? 'Bullet Chart' : 'Radial Chart'
+                  }
+                >
+                  {v === 'diverging' ? 'Diverging' :
+                   v === 'grouped' ? 'Grouped' :
+                   v === 'bullet' ? 'Bullet' : 'Radial'}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        
         <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
           {variant === 'diverging' && 'Performance deviation from overall satisfaction baseline'}
           {variant === 'grouped' && 'Direct comparison of aspect ratings vs baseline'}
@@ -386,7 +422,7 @@ export default function AspectComparisonChart({
         </p>
       </div>
       
-      <div className="min-h-[300px]">
+      <div className="flex-1 min-h-[300px]">
         {variant === 'diverging' && renderDivergingBar()}
         {variant === 'grouped' && renderGroupedBar()}
         {variant === 'bullet' && renderBulletChart()}

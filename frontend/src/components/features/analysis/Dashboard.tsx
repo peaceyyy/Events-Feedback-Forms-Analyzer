@@ -69,7 +69,7 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
                              Array.isArray(analysisData.sessions.data.average_satisfaction)
       const variant = hassatisfaction ? 'groupedBar' : 'horizontalBar'
       
-      console.log(`📊 Sessions chart variant: ${variant} (has satisfaction: ${hassatisfaction})`)
+      console.log(`Sessions chart variant: ${variant} (has satisfaction: ${hassatisfaction})`)
       
       configs.push(createChartConfig(
         'session-popularity',
@@ -281,18 +281,18 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
 /*
 EFFECTIVE DASHBOARD ARCHITECTURE:
 
-🏗️ LAYOUT STRATEGY:
+LAYOUT STRATEGY:
 • F-Pattern: Most important metrics top-left (where eyes start)
 • Progressive disclosure: Key metrics → Detailed breakdowns → Context
 • Responsive breakpoints: 1 col (mobile) → 2 cols (tablet) → 2-4 cols (desktop)
 
-📊 CHART HIERARCHY:
+CHART HIERARCHY:
 1. Scorecards/KPIs: Single metrics users care about most (NPS, Avg Satisfaction)  
 2. Distributions: Show the "shape" of your data (rating breakdowns)
 3. Comparisons: Rank categories for decision-making (session popularity)
 4. Relationships: Explore correlations for insights (aspect ratings)
 
-🎯 COGNITIVE LOAD MANAGEMENT:
+COGNITIVE LOAD MANAGEMENT:
 • Limit to 4-6 charts maximum per view
 • Group related metrics together
 • Use consistent color schemes across charts

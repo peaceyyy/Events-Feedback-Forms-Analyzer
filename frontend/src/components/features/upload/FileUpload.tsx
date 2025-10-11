@@ -46,7 +46,7 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
       formData.append('file', selectedFile)
 
       console.log('Starting file upload process...')
-      console.log('📁 Selected file:', selectedFile.name, selectedFile.size, 'bytes')
+      console.log('Selected file:', selectedFile.name, selectedFile.size, 'bytes')
 
       // Send to Flask backend
       const response = await fetch('http://localhost:5000/api/upload', {

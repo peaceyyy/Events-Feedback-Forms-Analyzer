@@ -61,28 +61,23 @@ export default function Tabs({ tabs, defaultTab, onTabChange, className = '' }: 
                 disabled={isDisabled}
                 className={`
                   group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200
-                  ${isActive 
-                    ? 'border-usc-green text-usc-green' 
-                    : 'border-transparent hover:text-gray-300 hover:border-gray-300'
-                  }
                   ${isDisabled 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'cursor-pointer'
+                    ? 'opacity-50 cursor-not-allowed text-text-tertiary' 
+                    : `cursor-pointer ${
+                        isActive 
+                          ? 'border-usc-green text-usc-green' 
+                          : 'text-text-secondary border-transparent hover:text-usc-orange hover:border-usc-orange'
+                      }`
                   }
                 `}
                 style={{
-                  borderBottomColor: isActive ? 'var(--color-usc-green)' : 'transparent',
-                  color: isActive 
-                    ? 'var(--color-usc-green)' 
-                    : isDisabled 
-                      ? 'var(--color-text-tertiary)' 
-                      : 'var(--color-text-secondary)'
+                  borderBottomColor: isActive ? 'var(--color-usc-green)' : undefined,
                 }}
               >
                 {tab.icon && (
                   <span className={`mr-2 transition-colors duration-200 ${
-                    isActive ? 'text-usc-green' : 'text-gray-400 group-hover:text-gray-300'
-                  }`}>
+                    isActive ? 'text-usc-green' : 'text-text-tertiary group-hover:text-usc-orange'
+                  } group-hover:text-usc-orange`}>
                     {tab.icon}
                   </span>
                 )}
@@ -116,35 +111,3 @@ export default function Tabs({ tabs, defaultTab, onTabChange, className = '' }: 
     </div>
   )
 }
-
-/**
- * Sidebar Theory: Tab Navigation Best Practices
- * 
- * ACCESSIBILITY CONSIDERATIONS:
- * • Keyboard navigation support (arrow keys, tab, enter)
- * • ARIA roles and labels for screen readers
- * • Focus management and visual indicators
- * • Disabled state handling
- * 
- * 📱 RESPONSIVE DESIGN:
- * • Horizontal scroll on mobile when tabs overflow
- * • Touch-friendly tap targets (minimum 44px)
- * • Consistent spacing across breakpoints
- * 
- * 🎨 VISUAL HIERARCHY:
- * • Active state uses brand color (USC Green)
- * • Hover states provide clear feedback
- * • Smooth transitions enhance perceived performance
- * • Icon + text combination improves recognition
- * 
- * ⚡ PERFORMANCE OPTIMIZATION:
- * • Content lazy loading for heavy components
- * • Memoized tab content to prevent unnecessary re-renders
- * • CSS transitions over JavaScript animations
- * 
- * 🔧 INTEGRATION PATTERNS:
- * • Controlled component pattern with optional callback
- * • Flexible content rendering via render props
- * • Support for dynamic tab addition/removal
- * • State persistence across navigation
- */

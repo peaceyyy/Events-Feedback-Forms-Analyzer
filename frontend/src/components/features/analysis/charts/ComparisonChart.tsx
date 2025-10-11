@@ -118,7 +118,7 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
       const data = payload[0]
       
       return (
-        <div className="glass-card p-4 rounded-lg border border-white/20 max-w-xs">
+        <div className="glass-card-dark p-4 rounded-lg border border-white/20 max-w-xs">
           <p className="font-semibold text-sm mb-2 z-100" style={{color: 'var(--color-text-primary)'}}>
             {data.payload.fullName || data.payload.name}
           </p>
@@ -199,7 +199,6 @@ const renderGroupedBar = () => {
     // ...
   }
   
-  // ... console logs ...
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -224,7 +223,6 @@ const renderGroupedBar = () => {
           tick={{ fill: 'var(--color-chart-green)', fontSize: 12, fontWeight: 'bold' }} // Stronger ticks
           domain={[0, 5]}
         >
-          {/* THE FIX: Add an explicit label to the axis */}
           <Label 
             value="Average Satisfaction (0-5)" 
             angle={-90} 
@@ -250,9 +248,7 @@ const renderGroupedBar = () => {
           />
         </YAxis>
         
-        {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
-        
-        {/* Place the legend at the top for better initial context */}
+        {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 255, 255, 0.08)' }} />}
         {options?.showLegend && <Legend verticalAlign="top" height={36} />}
         
         <Bar 
@@ -260,14 +256,14 @@ const renderGroupedBar = () => {
           dataKey="satisfaction"
           name="Avg Satisfaction" 
           fill="var(--color-chart-green)" 
-          radius={[4, 4, 0, 0]} 
+          maxBarSize={100} // Increase max bar size for thickness
         />
-        <Bar 
-          yAxisId="right"
+        <Bar             yAxisId="right"
           dataKey="attendance"
           name="Attendance" 
           fill="var(--color-chart-orange)" 
-          radius={[4, 4, 0, 0]} 
+          radius={[0, 0, 0, 0]} // Increase radius for rounder bars
+          maxBarSize={100} // Increase max bar size for thickness
         />
       </BarChart>
     </ResponsiveContainer>
@@ -302,7 +298,9 @@ const renderGroupedBar = () => {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center min-h-[300px] p-8">
         <div className="text-gray-400 text-center">
-          <div className="text-6xl mb-4">📊</div>
+          <div className="text-center mb-4">
+            <div className="text-lg font-semibold text-gray-500">No Data</div>
+          </div>
           <h3 className="text-lg font-semibold mb-2">No Session Data Available</h3>
           <p className="text-sm">
             Waiting for session attendance data...

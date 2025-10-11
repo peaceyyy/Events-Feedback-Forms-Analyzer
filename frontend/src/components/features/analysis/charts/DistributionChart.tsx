@@ -102,7 +102,7 @@ export default function DistributionChart({ data, variant, options, config }: Di
       const percentage = ((data.value / total) * 100).toFixed(1)
       
       return (
-        <div className="glass-card p-3 rounded-lg border border-white/20">
+        <div className="glass-card-dark p-3 rounded-lg border border-white/20">
           <p className="font-medium" style={{color: 'var(--color-text-primary)'}}>
             {data.payload.name}
           </p>
@@ -137,11 +137,12 @@ export default function DistributionChart({ data, variant, options, config }: Di
           stroke="rgba(255,255,255,0.3)"
           label={{ value: 'Response Count', angle: -90, position: 'insideLeft' }}
         />
-        {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
+        {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 255, 255, 0.08)' }} />}
         <Bar 
           dataKey="value" 
           name="Response Count" // Override the default "value" legend label
           fill="var(--color-usc-green)"
+          maxBarSize={60}
           radius={[4, 4, 0, 0]} // Rounded tops for modern look
         >
           {chartData.map((entry: any, index: number) => (
@@ -175,10 +176,11 @@ export default function DistributionChart({ data, variant, options, config }: Di
           tickLine={false} // Hide the small tick lines for a cleaner look
           axisLine={false} // Hide the vertical axis line itself
         />
-        {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
+        {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 255, 255, 0.08)' }} />}
         <Bar 
           dataKey="value"
           name="Response Count" // Override the default "value" legend label
+          maxBarSize={40}
           fill="var(--color-usc-green)"
           radius={[0, 4, 4, 0]} // Rounded right side for horizontal bars
         >

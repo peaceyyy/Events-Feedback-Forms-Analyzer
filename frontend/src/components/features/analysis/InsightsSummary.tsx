@@ -186,7 +186,7 @@ export default function InsightsSummary({
 
   return (
     <div
-      className={`glass-card-dark p-6 rounded-2xl border border-white/10 ${className}`}
+      className={`glass-card-dark p-6 rounded-2xl border border-white/10 h-full flex flex-col ${className}`}
     >
       {/* Card Header with Navigation */}
       <div className="flex items-center justify-between mb-4">
@@ -242,20 +242,20 @@ export default function InsightsSummary({
         </div>
       </div>
 
-      {/* Card Content */}
-      <div className="min-h-[200px]">{views[currentView].content}</div>
+      {/* Card Content - Optimized for compact display */}
+      <div className="flex-1 overflow-y-auto max-h-[350px]">{views[currentView].content}</div>
 
-      {/* Future Gemini Integration Note */}
+      {/* Future Gemini Integration Note - More compact */}
       {currentView === "summary" && (
-        <div className="mt-4 p-3 bg-purple-500/10 rounded-lg border border-purple-400/30">
+        <div className="mt-3 p-2 bg-purple-500/10 rounded-lg border border-purple-400/30">
           <div className="text-xs text-purple-300 font-medium">
-            🤖 Enhanced AI Analysis Coming Soon
+            Enhanced AI Analysis Coming Soon
           </div>
           <div
             className="text-xs mt-1"
             style={{ color: "var(--color-text-tertiary)" }}
           >
-            Powered by Google's Gemini API for deeper, context-aware insights
+            Powered by Gemini API
           </div>
         </div>
       )}
