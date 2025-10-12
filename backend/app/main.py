@@ -3,6 +3,7 @@ Main API entry point for the Feedback Form Analyzer.
 This creates a simple Flask API that your frontend can call.
 """
 
+import pandas as pd
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os

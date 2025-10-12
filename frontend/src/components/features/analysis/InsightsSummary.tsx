@@ -76,10 +76,7 @@ export default function InsightsSummary({
               />
               <p>
                 <span className="font-semibold text-green-400">Strengths:</span>{" "}
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi
-                eligendi quisquam quae iste maiores quasi soluta voluptatum
-                atque expedita voluptas dolores obcaecati, voluptatibus quia
-                incidunt qui. Mollitia, eveniet repellendus? Eveniet.{" "}
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. {" "}
               </p>
             </div>
             <div className="flex items-start gap-2">
@@ -93,9 +90,7 @@ export default function InsightsSummary({
               <p>
                 <span className="font-semibold text-red-400">Priority:</span>{" "}
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Repellendus sed, illo facilis enim odit impedit tempore, tenetur
-                placeat ea sint iure asperiores perspiciatis magni consequatur
-                deserunt. Unde possimus dolores laudantium?
+        
               </p>
             </div>
             <div className="flex items-start gap-2">
@@ -108,7 +103,7 @@ export default function InsightsSummary({
               />
               <p>
                 <span className="font-semibold text-yellow-400">Adequate:</span>{" "}
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fuga quam dicta, blanditiis molestias debitis eaque aliquid, recusandae repellendus impedit excepturi pariatur fugiat possimus harum mollitia nostrum! Facere eos tenetur iure.
+                Lorem ipsum dolor sit, amet consectetur adipisicing elit. 
               </p>
             </div>
           </div>

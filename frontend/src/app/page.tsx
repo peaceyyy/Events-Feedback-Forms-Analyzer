@@ -584,7 +584,7 @@ export default function Home() {
                       "rating-comparison",
                       "Aspect Ratings Comparison",
                       "relationship",
-    
+
                       {
                         ...(analysisResults as any).ratings.data,
                         insights: undefined,
@@ -621,30 +621,36 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Second Row - Event Aspects Analysis (3/4 + 1/4 layout) */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-              {/* Left Side - Visual Comparisons (3/4 width) */}
-              <div className="lg:col-span-3 min-h-[500px]">
-                {(analysisResults as any)?.ratings?.data && (
-                  <AspectComparisonChart
-                    data={(analysisResults as any).ratings.data}
-                    variant={aspectChartVariant}
-                    onVariantChange={setAspectChartVariant}
-                    className="h-full"
-                  />
-                )}
-              </div>
+            {/* Second Row - Unified Aspect Performance Card */}
+            <div className="glass-card-dark rounded-2xl p-6">
+              {/* Flexible internal layout - chart takes available space, insights get optimal width */}
+              <div className="flex flex-col lg:flex-row gap-8 lg:items-stretch">
+                
+                {/* Left Side - Chart Area (flexible, takes remaining space) */}
+                <div className="flex-1 min-w-0 min-h-[500px]">
+                  {(analysisResults as any)?.ratings?.data && (
+                    <AspectComparisonChart
+                      data={(analysisResults as any).ratings.data}
+                      variant={aspectChartVariant}
+                      onVariantChange={setAspectChartVariant}
+                      className="h-full"
+                    />
+                  )}
+                </div>
 
-              {/* Right Side - AI Insights Summary (1/4 width) */}
-              <div className="lg:col-span-1 h-[500px]">
-                {(analysisResults as any)?.ratings?.data && (
-                  <InsightsSummary 
-                    data={(analysisResults as any).ratings.data} 
-                    className="h-full"
-                  />
-                )}
+                {/* Right Side - AI Insights (optimal fixed width, not squished) */}
+                <div className="w-full lg:w-[450px] flex-shrink-0">
+                  {(analysisResults as any)?.ratings?.data && (
+                    <InsightsSummary 
+                      data={(analysisResults as any).ratings.data} 
+                      className="h-full"
+                    />
+                  )}
+                </div>
+                
               </div>
-            </div>            {/* Future Features Placeholder */}
+            </div>
+            {/* Future Features Placeholder */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
                 <h4 className="text-base font-semibold mb-3 text-usc-orange">

@@ -2,8 +2,8 @@
 'use client'
 import React from 'react'
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
-  ResponsiveContainer, Cell, ReferenceLine, LineChart, Line, RadialBarChart, RadialBar
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList,
+  ResponsiveContainer, Cell, ReferenceLine, PolarAngleAxis,  RadialBarChart, RadialBar
 } from 'recharts'
 
 interface AspectComparisonChartProps {
@@ -99,11 +99,47 @@ export default function AspectComparisonChart({
   }, [data])
 
   // Enhanced tooltip for comparative insights
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  // Unified CustomTooltip that adapts to chart type (radial or bar)
+  const CustomTooltip = ({ active, payload, label, radial }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
+
+      // If 'radial' prop is true, use the radial style
+      if (radial) {
+        return (
+          <div className="glass-card-dark p-4 rounded-lg border border-white/20 w-64">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: data.fill }} />
+              <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                {data.aspect}
+              </p>
+            </div>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span style={{ color: 'var(--color-text-secondary)' }}>Performance Score:</span>
+                <span className="font-bold" style={{ color: data.fill }}>
+                  {data.value.toFixed(1)} / 5.0
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span style={{ color: 'var(--color-text-secondary)' }}>Baseline Score:</span>
+                <span className="font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+                  {data.baseline.toFixed(1)}
+                </span>
+              </div>
+              <div className="flex justify-between border-t border-white/10 mt-2 pt-2">
+                <span style={{ color: 'var(--color-text-secondary)' }}>Deviation:</span>
+                <span className={`font-bold ${data.difference > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {data.difference > 0 ? '+' : ''}{data.difference.toFixed(1)}
+                </span>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      // Default (bar) tooltip style
       const isStrength = data.difference > 0
-      
       return (
         <div className="glass-card-dark p-3 rounded-lg border border-white/20 max-w-xs">
           <p className="font-semibold text-sm mb-2" style={{color: 'var(--color-text-primary)'}}>
@@ -123,22 +159,25 @@ export default function AspectComparisonChart({
               data.performance === 'strength' ? 'bg-green-500/20 text-green-300' : 
               data.performance === 'weakness' ? 'bg-red-500/20 text-red-300' : 
               'bg-yellow-500/20 text-yellow-300'
-            }`}>
-              {data.performance === 'strength' ? '🟢 Strength' : 
-               data.performance === 'weakness' ? '🔴 Needs Improvement' : '🟡 Adequate'}
-            </div>
+            }`}></div>
+           <div className="flex justify-between border-t border-white/10 mt-2 pt-2">
+            <span style={{ color: 'var(--color-text-secondary)' }}>Deviation:</span>
+            <span className={`font-bold ${data.difference > 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {data.difference > 0 ? '+' : ''}{data.difference.toFixed(1)}
+            </span>
           </div>
         </div>
-      )
-    }
-    return null
+      </div>
+    );
   }
+  return null;
+};
 
   // 1. Diverging Bar Chart - Shows positive/negative deviation from baseline
   const renderDivergingBar = () => {
     if (chartData.length === 0) {
       return (
-        <div className="flex items-center justify-center h-64">
+        <div className="flex items-center justify-center h-[400px]">
           <p style={{color: 'var(--color-text-secondary)'}}>No data for diverging chart</p>
         </div>
       )
@@ -156,47 +195,46 @@ export default function AspectComparisonChart({
     console.log('Diverging chart data:', divergingData)
 
     return (
-      <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-        <BarChart 
-          layout="vertical"
-          data={divergingData}
-          margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-          <XAxis 
-            type="number" 
-            domain={['dataMin - 0.2', 'dataMax + 0.2']}
-            tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
-            stroke="rgba(255,255,255,0.3)"
-            label={{ value: 'Performance vs Baseline', position: 'insideBottom', offset: -10 }}
-          />
-          <YAxis 
-            type="category" 
-            dataKey="aspect"
-            tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-            stroke="rgba(255,255,255,0.3)"
-            width={75}
-          />
-          
-          {/* Baseline reference line */}
-          {options?.showBaseline && (
-            <ReferenceLine x={0} stroke="#FFC107" strokeWidth={2} strokeDasharray="5 5" />
-          )}
-          
-          {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
-          
-          {/* Single bar showing deviation */}
-          <Bar dataKey="deviation" name="Performance vs Baseline">
-            {divergingData.map((entry: any, index: number) => (
-              <Cell key={`cell-${index}`} fill={entry.barColor} />
-            ))}
-          </Bar>
-          
-          {options?.showLegend && <Legend />}
-        </BarChart>
+      <ResponsiveContainer width="100%" height={400}>
+      <BarChart 
+        layout="vertical"
+        data={divergingData}
+        margin={{ top: 20, right: 30, left: 30, bottom: 10 }} // Increased left/right margins for width
+      >
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+        <XAxis 
+        type="number" 
+        domain={['dataMin - 0.2', 'dataMax + 0.2']}
+        tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
+        stroke="rgba(255,255,255,0.3)"
+        label={{ value: 'Performance vs Baseline', position: 'insideBottom', offset: -10 }}
+        tickFormatter={(value) => Number(value).toFixed(1)}
+        />
+        <YAxis 
+        type="category" 
+        dataKey="aspect"
+        tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
+        stroke="rgba(255,255,255,0.3)"
+        width={0} // Make Y axis wider for longer aspect names
+        />
+        
+        {/* Baseline reference line */}
+        {options?.showBaseline && (
+        <ReferenceLine x={0} stroke="#FFC107" strokeWidth={2} strokeDasharray="5 5" />
+        )}
+        
+        {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
+        
+        {/* Single bar showing deviation */}
+        <Bar dataKey="deviation" name="Performance vs Baseline" barSize={32}>
+        {divergingData.map((entry: any, index: number) => (
+          <Cell key={`cell-${index}`} fill={entry.barColor} />
+        ))}
+        </Bar>
+      </BarChart>
       </ResponsiveContainer>
     )
-  }
+    }
 
   // 2. Grouped Bar Chart - Shows actual vs baseline side by side
   const renderGroupedBar = () => {
@@ -204,17 +242,17 @@ export default function AspectComparisonChart({
     
     if (chartData.length === 0) {
       return (
-        <div className="flex items-center justify-center h-64">
+        <div className="flex items-center justify-center h-[400px]">
           <p style={{color: 'var(--color-text-secondary)'}}>No data for grouped chart</p>
         </div>
       )
     }
     
     return (
-      <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+      <ResponsiveContainer width="100%" height={400}>
         <BarChart 
           data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
           <XAxis 
@@ -223,7 +261,7 @@ export default function AspectComparisonChart({
             stroke="rgba(255,255,255,0.3)"
             angle={-45}
             textAnchor="end"
-            height={80}
+            height={0}
             interval={0}
           />
           <YAxis 
@@ -234,12 +272,22 @@ export default function AspectComparisonChart({
           />
           
           {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
-          {options?.showLegend && <Legend />}
+          {options?.showLegend && (
+            <Legend 
+              wrapperStyle={{ 
+                color: 'var(--color-text-primary)',
+                fontSize: '16px',
+                marginTop: '32px'
+              }}
+              iconType="rect"
+            />
+          )}
           
-          <Bar dataKey="baseline" fill="#FFC107" fillOpacity={0.7} name="Overall Satisfaction (Baseline)" />
-          <Bar dataKey="value" fill="#4CAF50" name="Aspect Rating">
+          {/* Baseline bar is now orange */}
+          <Bar dataKey="baseline" fill="#FF9800" name="Baseline" />
+          <Bar dataKey="value" fill="var(--color-usc-green)" name="Aspect Rating">
             {chartData.map((entry: any, index: number) => (
-              <Cell key={`cell-${index}`} fill={entry.fill || '#4CAF50'} />
+              <Cell key={`cell-${index}`} fill={entry.fill} />
             ))}
           </Bar>
         </BarChart>
@@ -251,12 +299,15 @@ export default function AspectComparisonChart({
   const renderBulletChart = () => {
     
     if (chartData.length === 0) {
-      // ... your placeholder ...
+      return (
+        <div className="flex items-center justify-center h-[400px]">
+          <p style={{color: 'var(--color-text-secondary)'}}>No data for bullet chart</p>
+        </div>
+      )
     }
 
     return (
-      // Add some vertical padding to the container
-      <div className="space-y-6 p-4">
+      <div className="space-y-6 p-4 h-[400px] overflow-y-auto">
         {chartData.map((item: any, index: number) => {
           // --- Data preparation is perfect, no changes needed ---
           const progressPercentage = Math.min((item.value / 5) * 100, 100);
@@ -319,44 +370,113 @@ export default function AspectComparisonChart({
     );
 }
 
+
+// A custom legend that acts as a summary panel
+const CustomLegend = ({ payload }: any) => {
+  if (!payload || !payload.length) return null;
+
+  return (
+    <div className="w-32 space-y-2">
+      {payload.map((entry: any, index: number) => {
+        const { payload: data } = entry; // Destructure the nested payload
+        return (
+          <div key={`item-${index}`} className="p-2 bg-white/5 rounded-md text-xs">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: data.fill }} />
+                <span style={{ color: 'var(--color-text-secondary)' }}>{data.aspect}</span>
+              </div>
+              <span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                {data.value.toFixed(1)}
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
   // 4. Radial Comparison - Circular performance view
   const renderRadialChart = () => {
     if (chartData.length === 0) {
       return (
-        <div className="flex items-center justify-center h-64">
+        <div className="flex items-center justify-center h-[400px]">
           <p style={{color: 'var(--color-text-secondary)'}}>No data for radial chart</p>
         </div>
       )
     }
 
-    return (
-      <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-        <RadialBarChart 
-          cx="50%" 
-          cy="50%" 
-          innerRadius="20%" 
-          outerRadius="80%" 
-          data={chartData}
-          startAngle={90}
-          endAngle={450}
-        >
-          <RadialBar 
-            dataKey="percentage" 
-            cornerRadius={10} 
-            fill="#4CAF50"
-          >
-            {chartData.map((entry: any, index: number) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} />
-            ))}
-          </RadialBar>
-          
-          {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
-          {options?.showLegend && <Legend />}
-        </RadialBarChart>
-      </ResponsiveContainer>
-    )
-  }
+    // Enhanced data with more distinguishing colors
+    const radialData = chartData.map((item: any, index: number) => {
+      // Create more varied colors for better distinction
+      const colorPalette = [
+        '#4CAF50', // Green
+        '#FF9800', // Orange  
+        '#2196F3', // Blue
+        '#9C27B0', // Purple
+        '#F44336', // Red
+        '#00BCD4', // Cyan
+        '#FFEB3B', // Yellow
+        '#795548'  // Brown
+      ];
+      
+      return {
+        ...item,
+        // Use palette color or fallback to performance color
+        fill: colorPalette[index % colorPalette.length] || item.fill,
+        // Ensure proper percentage for radial display
+        percentage: (item.value / 5) * 100
+      }
+    });
 
+    return (
+      <div className="flex items-center justify-center h-full">
+        <ResponsiveContainer width="100%" height={400}>
+          <RadialBarChart 
+            cx="50%" 
+            cy="50%" 
+            innerRadius="15%" 
+            outerRadius="85%" 
+            data={radialData}
+            startAngle={90}
+            endAngle={-270} 
+            margin={{ top: 10, right: 120, bottom: 10, left: 10 }}
+          >
+            <PolarAngleAxis
+              type="number"
+              domain={[0, 5]}
+              angleAxisId={0}
+              tick={false}
+            />
+            
+            <RadialBar 
+              angleAxisId={0} 
+              dataKey="value"
+              cornerRadius={8} 
+              background={{ fill: 'rgba(255,255,255,0.08)' }}
+            >
+              {radialData.map((entry: any, index: number) => (
+                <Cell key={`cell-${index}`} fill={entry.fill} />
+              ))}
+            </RadialBar>
+            
+            <Tooltip content={(props) => <CustomTooltip {...props} radial={true} />} />
+            <Legend 
+              content={<CustomLegend />}
+              wrapperStyle={{
+                position: 'absolute',
+                right: '5px',
+                top: '70%',
+                // transform: 'translateY(50%)',
+                width: '110px'
+              }}
+            />
+          </RadialBarChart>
+        </ResponsiveContainer>
+      </div>
+    );
+}
   // Debug logging
   console.log('=== ASPECT COMPARISON CHART DEBUG ===')
   console.log('Raw data:', data)
