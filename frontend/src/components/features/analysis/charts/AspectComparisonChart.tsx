@@ -94,7 +94,7 @@ export default function AspectComparisonChart({
         actual: aspectValue,
         // For radial chart
         percentage: (aspectValue / 5) * 100
-      }
+      } 
     }).sort((a: any, b: any) => b.difference - a.difference) // Sort by performance (best first)
   }, [data])
 
