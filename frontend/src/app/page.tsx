@@ -5,7 +5,9 @@ import UploadPill from "../components/features/upload/UploadPill";
 import Image from "next/image";
 import ScrollToTopButton from "../components/ui/ScrollToTopButton";
 import AspectComparisonChart from "../components/features/analysis/charts/AspectComparisonChart";
-import InsightsSummary from "../components/features/analysis/InsightsSummary";
+import WordCloudComponent from "../components/features/analysis/charts/WordCloud";
+import { getSampleWordCloudData } from "../components/features/analysis/charts/WordCloud/utils";
+import EventAspects from "../components/features/analysis/EventAspects";
 
 import {
   UploadFile as UploadFileIcon,
@@ -35,6 +37,8 @@ import {
 import ChartFactory, {
   createChartConfig,
 } from "../components/features/analysis/charts/ChartFactory";
+import AIInsightsContainer from "../components/features/analysis/AIInsights";
+import RecurringTopics from "../components/features/analysis/text/RecurringTopics";
 
 /**
  * The `Home` component serves as the main landing page for the Event Insights Generator web application.
@@ -45,6 +49,12 @@ import ChartFactory, {
  */
 import { useState, useEffect } from "react";
 
+// Define a type for our aspect highlights for better type safety.
+type AspectHighlight = {
+  aspect: string;
+  value: number;
+} | null;
+
 export default function Home() {
   console.log("=== PAGE COMPONENT LOADING ===");
 
@@ -54,9 +64,13 @@ export default function Home() {
   const [isAnalyzed, setIsAnalyzed] = useState(false); // Track if analysis is complete
   const [activeTab, setActiveTab] = useState("analysis"); // Track current tab
   const [uploadedFilename, setUploadedFilename] = useState<string>(""); // Store uploaded filename
+  const [feedbackData, setFeedbackData] = useState<any[]>([]); // Store raw feedback data for AI analysis
+  const [aiInsights, setAiInsights] = useState<any>(null); // Cache AI insights across tab switches
   const [aspectChartVariant, setAspectChartVariant] = useState<
     "diverging" | "grouped" | "bullet" | "radial"
   >("diverging"); // Aspect chart variant
+  const [topAspect, setTopAspect] = useState<AspectHighlight>(null);
+  const [lowestAspect, setLowestAspect] = useState<AspectHighlight>(null);
 
   // Apply dark mode class to document
   useEffect(() => {
@@ -69,12 +83,45 @@ export default function Home() {
     setDarkMode(!darkMode);
   };
 
+  // Effect to calculate top and lowest aspects when analysis results are available
+  useEffect(() => {
+    if (analysisResults && (analysisResults as any).ratings?.data) {
+      const ratingsData = (analysisResults as any).ratings.data;
+      let baselineData = null;
+
+      // This logic mirrors the data handling in AspectComparisonChart
+      if (ratingsData.baseline_data && Array.isArray(ratingsData.baseline_data)) {
+        baselineData = ratingsData.baseline_data;
+      } else if (ratingsData.detailed_comparison && Array.isArray(ratingsData.detailed_comparison)) {
+        baselineData = ratingsData.detailed_comparison;
+      } else if (ratingsData.aspects && ratingsData.averages && Array.isArray(ratingsData.aspects)) {
+        baselineData = ratingsData.aspects.map((aspect: string, index: number) => ({
+          aspect: aspect,
+          value: ratingsData.averages[index] || 0,
+        }));
+      }
+
+      if (baselineData && baselineData.length > 0) {
+        // Sort by value descending to find the top and lowest aspects
+        const sortedAspects = [...baselineData].sort((a: any, b: any) => (b.value || 0) - (a.value || 0));
+        
+        setTopAspect(sortedAspects[0]);
+        setLowestAspect(sortedAspects[sortedAspects.length - 1]);
+      }
+    }
+  }, [analysisResults]);
+
   // Handle successful upload results
   const handleUploadSuccess = (results: any, filename?: string) => {
     setAnalysisResults(results);
     setAnalysisError("");
     setIsAnalyzed(true); // Trigger transition to analysis view
     if (filename) setUploadedFilename(filename);
+    
+    // Extract raw feedback data for AI analysis
+    if (results && results.data) {
+      setFeedbackData(results.data);
+    }
 
     // Stay on current tab after analysis - no auto-switching needed
   };
@@ -92,6 +139,8 @@ export default function Home() {
     setAnalysisError("");
     setIsAnalyzed(false);
     setUploadedFilename("");
+    setFeedbackData([]); // Clear feedback data
+    setAiInsights(null); // Clear AI insights cache
     setActiveTab("analysis"); // Stay on analysis tab
   };
 
@@ -258,26 +307,46 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg opacity-50">
+                    {/* Top Aspect KPI Card */}
+                    <div className={`flex items-center gap-4 p-4 bg-white/5 rounded-lg ${!topAspect ? 'opacity-50' : ''}`}>
                       <CategoryIcon
                         sx={{
                           fontSize: 32,
-                          color: "var(--color-text-tertiary)",
+                          color: topAspect ? "var(--color-google-yellow)" : "var(--color-text-tertiary)",
                         }}
                       />
                       <div>
-                        <div
-                          className="text-lg font-bold"
-                          style={{ color: "var(--color-text-tertiary)" }}
-                        >
-                          Coming Soon
-                        </div>
-                        <div
-                          className="text-sm font-medium"
-                          style={{ color: "var(--color-text-tertiary)" }}
-                        >
-                          Top Aspect
-                        </div>
+                        {topAspect ? (
+                          <>
+                            <div
+                              className="text-xl font-bold"
+                              style={{ color: "var(--color-text-primary)" }}
+                            >
+                              {topAspect.aspect}
+                            </div>
+                            <div
+                              className="text-sm font-medium"
+                              style={{ color: "var(--color-text-secondary)" }}
+                            >
+                              Top Aspect ({topAspect.value.toFixed(1)}/5)
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div
+                              className="text-lg font-bold"
+                              style={{ color: "var(--color-text-tertiary)" }}
+                            >
+                              N/A
+                            </div>
+                            <div
+                              className="text-sm font-medium"
+                              style={{ color: "var(--color-text-tertiary)" }}
+                            >
+                              Top Aspect
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -372,17 +441,11 @@ export default function Home() {
                     </p>
                   </div>
 
-                  <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
-                    <h3 className="text-lg font-semibold mb-4 text-usc-green">
-                      One Word Descriptions
-                    </h3>
-                    <p
-                      className="text-sm"
-                      style={{ color: "var(--color-text-secondary)" }}
-                    >
-                      Word cloud of event descriptors - to be implemented
-                    </p>
-                  </div>
+                  <WordCloudComponent
+                    title="One Word Descriptions"
+                    data={analysisResults ? getSampleWordCloudData() : []} // Will be populated with AI-extracted keywords
+                    height={300}
+                  />
                 </div>
               </div>
             </div>
@@ -541,16 +604,54 @@ export default function Home() {
         id: "text-insights",
         label: "Text Insights",
         icon: <TextFieldsIcon sx={{ fontSize: 20 }} />,
-        content: createPlaceholderContent(
-          "Open-Ended Response Analysis",
-          "Comprehensive text analytics for qualitative feedback",
-          [
-            "Sentiment analysis on free-text responses",
-            "Keyword frequency and topic modeling",
-            "Comment categorization and themes",
-            "Word clouds and semantic analysis",
-            "Response length and engagement metrics",
-          ]
+        content: (
+          <div className="space-y-8">
+            {/* Header */}
+            <div>
+              <h2
+                className="text-2xl font-bold mb-2"
+                style={{ color: "var(--color-text-primary)" }}
+              >
+                AI-Powered Text Analysis
+              </h2>
+              <p style={{ color: "var(--color-text-secondary)" }}>
+                Advanced sentiment analysis, theme extraction, and strategic insights powered by Google Gemini AI
+              </p>
+            </div>
+
+            {/* Feedback Samples - Placeholder for sliding window */}
+            <div className="glass-card-dark p-8 rounded-xl border border-white/10">
+              <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
+                Feedback Samples
+              </h3>
+              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                Interactive sliding window to browse actual feedback responses - to be implemented
+              </p>
+              <div className="mt-4 p-4 bg-blue-500/10 rounded-lg">
+                <p className="text-sm text-blue-300">
+                  Coming Soon: Sliding window interface to explore individual feedback responses  
+                </p>
+              </div>
+            </div>
+
+            {/* Recurring Topics */}
+            {aiInsights?.themes?.data?.recurring_topics && (
+              <RecurringTopics 
+                topics={aiInsights.themes.data.recurring_topics}
+                error={aiInsights.themes.error}
+              />
+            )}
+
+            {/* AI Insights Container - Complete AI Analysis Suite */}
+            <AIInsightsContainer 
+              feedbackData={feedbackData}
+              analysisData={analysisResults}
+              cachedInsights={aiInsights}
+              onInsightsGenerated={setAiInsights}
+            />
+
+            
+          </div>
         ),
       });
 
@@ -641,8 +742,9 @@ export default function Home() {
                 {/* Right Side - AI Insights (optimal fixed width, not squished) */}
                 <div className="w-full lg:w-[450px] flex-shrink-0">
                   {(analysisResults as any)?.ratings?.data && (
-                    <InsightsSummary 
+                    <EventAspects 
                       data={(analysisResults as any).ratings.data} 
+                      themeData={aiInsights?.themes?.data}
                       className="h-full"
                     />
                   )}

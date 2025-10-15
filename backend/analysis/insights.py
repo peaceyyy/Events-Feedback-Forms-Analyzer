@@ -243,6 +243,52 @@ def generate_rating_comparison(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
+def generate_one_word_descriptions(data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Analyzes one-word descriptions from feedback data.
+    Prepares data for WordCloud visualization.
+    """
+    df = pd.DataFrame(data)
+    
+    if 'one_word_desc' not in df.columns:
+        return {"error": "No one-word description data found"}
+    
+    # Extract and clean one-word descriptions
+    descriptions = df['one_word_desc'].dropna()
+    descriptions = descriptions[descriptions != '']
+    descriptions = descriptions[descriptions != 'No comment']
+    
+    if descriptions.empty:
+        return {"error": "No valid one-word descriptions found"}
+    
+    # Count occurrences and prepare for WordCloud
+    description_counts = Counter(descriptions.str.strip().str.title())
+    
+    # Format for WordCloud component (Carbon Charts format)
+    word_cloud_data = [
+        {"word": word, "count": count}
+        for word, count in description_counts.most_common()
+    ]
+    
+    # Calculate statistics
+    total_descriptions = len(descriptions)
+    unique_descriptions = len(description_counts)
+    
+    return {
+        "chart_type": "one_word_descriptions",
+        "data": {
+            "word_cloud": word_cloud_data,
+            "top_descriptions": description_counts.most_common(10),
+            "stats": {
+                "total_responses": total_descriptions,
+                "unique_words": unique_descriptions,
+                "most_common": description_counts.most_common(1)[0] if description_counts else None,
+                "response_rate": round((total_descriptions / len(df)) * 100, 1)
+            }
+        }
+    }
+
+
 def generate_text_insights(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Analyzes text feedback for common themes and sentiment.
@@ -373,6 +419,13 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     except Exception as e:
         print(f"DEBUG: Feedback analysis failed: {e}")
         analysis_result["feedback"] = {"error": str(e)}
+    
+    try:
+        analysis_result["one_word_descriptions"] = generate_one_word_descriptions(data)
+        print("DEBUG: One-word descriptions analysis completed")
+    except Exception as e:
+        print(f"DEBUG: One-word descriptions analysis failed: {e}")
+        analysis_result["one_word_descriptions"] = {"error": str(e)}
     
     # Add scatter data
     analysis_result["scatter_data"] = {

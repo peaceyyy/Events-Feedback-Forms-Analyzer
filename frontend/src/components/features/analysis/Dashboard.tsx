@@ -2,7 +2,8 @@
 'use client'
 import React from 'react'
 import ChartFactory, { createChartConfig, ChartConfig } from './charts/ChartFactory'
-import InsightsSummary from './InsightsSummary'
+import InsightsSummary from './EventAspects'
+import WordCloudContainer from './charts/WordCloud'
 import { Refresh as RefreshIcon, Dashboard as DashboardIcon } from '@mui/icons-material'
 
 interface DashboardProps {
@@ -210,6 +211,16 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
             </div>
           </div>
         ))}
+
+        {/* Row 5: One-Word Descriptions WordCloud (Full Width) */}
+        {analysisData.one_word_descriptions?.data && (
+          <div className="grid grid-cols-1 gap-8">
+            <WordCloudContainer 
+              data={analysisData.one_word_descriptions.data} 
+              className="w-full"
+            />
+          </div>
+        )}
       </div>
 
       {/* Summary Insights Card */}

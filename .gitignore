@@ -1,3 +1,5 @@
 /.qodo
 /.vscode
 /.github
+/.venv
+node_modules

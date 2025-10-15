@@ -101,84 +101,101 @@ export default function AspectComparisonChart({
   // Enhanced tooltip for comparative insights
   // Unified CustomTooltip that adapts to chart type (radial or bar)
   const CustomTooltip = ({ active, payload, label, radial }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload
+    if (!active || !payload || !payload.length) {
+      return null;
+    }
 
-      // If 'radial' prop is true, use the radial style
-      if (radial) {
-        return (
-          <div className="glass-card-dark p-4 rounded-lg border border-white/20 w-64">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: data.fill }} />
-              <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                {data.aspect}
-              </p>
+    // Get data from payload - handle different structures
+    const data = payload[0]?.payload || payload.payload;
+    
+    // Safety check for data existence
+    if (!data) {
+      return null;
+    }
+
+    // Extract values with fallbacks
+    const aspect = data.aspect || 'Unknown';
+    const value = data.value || 0;
+    const baseline = data.baseline || 0;
+    const difference = data.difference !== undefined ? data.difference : (value - baseline);
+    const fill = data.fill || '#4CAF50';
+    const performance = data.performance || 'adequate';
+
+    // If 'radial' prop is true, use the radial style
+    if (radial) {
+      return (
+        <div className="glass-card-dark p-4 rounded-lg border border-white/20 w-64">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: fill }} />
+            <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+              {aspect}
+            </p>
+          </div>
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span style={{ color: 'var(--color-text-secondary)' }}>Performance Score:</span>
+              <span className="font-bold" style={{ color: fill }}>
+                {value.toFixed(1)} / 5.0
+              </span>
             </div>
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span style={{ color: 'var(--color-text-secondary)' }}>Performance Score:</span>
-                <span className="font-bold" style={{ color: data.fill }}>
-                  {data.value.toFixed(1)} / 5.0
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span style={{ color: 'var(--color-text-secondary)' }}>Baseline Score:</span>
-                <span className="font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-                  {data.baseline.toFixed(1)}
-                </span>
-              </div>
-              <div className="flex justify-between border-t border-white/10 mt-2 pt-2">
-                <span style={{ color: 'var(--color-text-secondary)' }}>Deviation:</span>
-                <span className={`font-bold ${data.difference > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {data.difference > 0 ? '+' : ''}{data.difference.toFixed(1)}
-                </span>
-              </div>
+            <div className="flex justify-between">
+              <span style={{ color: 'var(--color-text-secondary)' }}>Baseline Score:</span>
+              <span className="font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+                {baseline.toFixed(1)}
+              </span>
+            </div>
+            <div className="flex justify-between border-t border-white/10 mt-2 pt-2">
+              <span style={{ color: 'var(--color-text-secondary)' }}>Deviation:</span>
+              <span className={`font-bold ${difference > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {difference > 0 ? '+' : ''}{difference.toFixed(1)}
+              </span>
             </div>
           </div>
-        )
-      }
+        </div>
+      )
+    }
 
-      // Default (bar) tooltip style
-      const isStrength = data.difference > 0
-      return (
-        <div className="glass-card-dark p-3 rounded-lg border border-white/20 max-w-xs">
-          <p className="font-semibold text-sm mb-2" style={{color: 'var(--color-text-primary)'}}>
-            {data.aspect}
+    // Default (bar) tooltip style
+    const isStrength = difference > 0;
+    return (
+      <div className="glass-card-dark p-3 rounded-lg border border-white/20 max-w-xs">
+        <p className="font-semibold text-sm mb-2" style={{color: 'var(--color-text-primary)'}}>
+          {aspect}
+        </p>
+        <div className="space-y-1 text-xs">
+          <p style={{color: 'var(--color-text-secondary)'}}>
+            Rating: <span className="font-semibold">{value.toFixed(1)}/5.0</span>
           </p>
-          <div className="space-y-1 text-xs">
-            <p style={{color: 'var(--color-text-secondary)'}}>
-              Rating: <span className="font-semibold">{data.value.toFixed(1)}/5.0</span>
-            </p>
-            <p style={{color: 'var(--color-text-secondary)'}}>
-              Baseline: <span className="font-semibold">{data.baseline.toFixed(1)}/5.0</span>
-            </p>
-            <p style={{color: isStrength ? '#4CAF50' : '#F44336'}}>
-              {isStrength ? '▲' : '▼'} {Math.abs(data.difference).toFixed(1)} {isStrength ? 'above' : 'below'} expectation
-            </p>
-            <div className={`text-xs px-2 py-1 rounded text-center ${
-              data.performance === 'strength' ? 'bg-green-500/20 text-green-300' : 
-              data.performance === 'weakness' ? 'bg-red-500/20 text-red-300' : 
-              'bg-yellow-500/20 text-yellow-300'
-            }`}></div>
-           <div className="flex justify-between border-t border-white/10 mt-2 pt-2">
+          <p style={{color: 'var(--color-text-secondary)'}}>
+            Baseline: <span className="font-semibold">{baseline.toFixed(1)}/5.0</span>
+          </p>
+          <p style={{color: isStrength ? '#4CAF50' : '#F44336'}}>
+            {isStrength ? '▲' : '▼'} {Math.abs(difference).toFixed(1)} {isStrength ? 'above' : 'below'} expectation
+          </p>
+          <div className={`text-xs px-2 py-1 rounded text-center ${
+            performance === 'strength' ? 'bg-green-500/20 text-green-300' : 
+            performance === 'weakness' ? 'bg-red-500/20 text-red-300' : 
+            'bg-yellow-500/20 text-yellow-300'
+          }`}>
+            {performance.charAt(0).toUpperCase() + performance.slice(1)}
+          </div>
+          <div className="flex justify-between border-t border-white/10 mt-2 pt-2">
             <span style={{ color: 'var(--color-text-secondary)' }}>Deviation:</span>
-            <span className={`font-bold ${data.difference > 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {data.difference > 0 ? '+' : ''}{data.difference.toFixed(1)}
+            <span className={`font-bold ${difference > 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {difference > 0 ? '+' : ''}{difference.toFixed(1)}
             </span>
           </div>
         </div>
       </div>
     );
-  }
-  return null;
-};
+  };
 
   // 1. Diverging Bar Chart - Shows positive/negative deviation from baseline
   const renderDivergingBar = () => {
     if (chartData.length === 0) {
       return (
         <div className="flex items-center justify-center h-[400px]">
-          <p style={{color: 'var(--color-text-secondary)'}}>No data for diverging chart</p>
+          <p className="text-center" style={{color: 'var(--color-text-secondary)'}}>No data available for diverging chart</p>
         </div>
       )
     }
@@ -196,42 +213,72 @@ export default function AspectComparisonChart({
 
     return (
       <ResponsiveContainer width="100%" height={400}>
-      <BarChart 
-        layout="vertical"
-        data={divergingData}
-        margin={{ top: 20, right: 30, left: 30, bottom: 10 }} // Increased left/right margins for width
-      >
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-        <XAxis 
-        type="number" 
-        domain={['dataMin - 0.2', 'dataMax + 0.2']}
-        tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
-        stroke="rgba(255,255,255,0.3)"
-        label={{ value: 'Performance vs Baseline', position: 'insideBottom', offset: -10 }}
-        tickFormatter={(value) => Number(value).toFixed(1)}
-        />
-        <YAxis 
-        type="category" 
-        dataKey="aspect"
-        tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-        stroke="rgba(255,255,255,0.3)"
-        width={0} // Make Y axis wider for longer aspect names
-        />
-        
-        {/* Baseline reference line */}
-        {options?.showBaseline && (
-        <ReferenceLine x={0} stroke="#FFC107" strokeWidth={2} strokeDasharray="5 5" />
-        )}
-        
-        {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
-        
-        {/* Single bar showing deviation */}
-        <Bar dataKey="deviation" name="Performance vs Baseline" barSize={32}>
-        {divergingData.map((entry: any, index: number) => (
-          <Cell key={`cell-${index}`} fill={entry.barColor} />
-        ))}
-        </Bar>
-      </BarChart>
+        <BarChart 
+          layout="vertical"
+          data={divergingData}
+          margin={{ top: 20, right: 60, left: 80, bottom: 60 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <XAxis 
+            type="number" 
+            domain={['dataMin - 0.3', 'dataMax + 0.3']}
+            tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
+            stroke="rgba(255,255,255,0.3)"
+            label={{ value: 'Performance vs Baseline', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
+            tickFormatter={(value) => Number(value).toFixed(1)}
+          />
+          <YAxis 
+            type="category" 
+            dataKey="aspect"
+            tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
+            stroke="rgba(255,255,255,0.3)"
+            width={70}
+          />
+          
+          {/* Baseline reference line */}
+          {options?.showBaseline && (
+            <ReferenceLine x={0} stroke="#FFC107" strokeWidth={2} strokeDasharray="5 5" />
+          )}
+          
+          {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
+          
+          {/* Legend for diverging chart */}
+          {options?.showLegend && (
+            <Legend 
+              verticalAlign="bottom"
+              height={40}
+              wrapperStyle={{ 
+                color: 'var(--color-text-primary)',
+                fontSize: '13px',
+                paddingTop: '15px'
+              }}
+              iconType="rect"
+              content={() => (
+                <div className="flex justify-center items-center gap-6 mt-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded"></div>
+                    <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>Above Baseline</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded"></div>
+                    <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>Below Baseline</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-0.5 bg-yellow-500 border-dashed"></div>
+                    <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>Baseline Reference</span>
+                  </div>
+                </div>
+              )}
+            />
+          )}
+          
+          {/* Single bar showing deviation */}
+          <Bar dataKey="deviation" name="Performance vs Baseline" barSize={24}>
+            {divergingData.map((entry: any, index: number) => (
+              <Cell key={`cell-${index}`} fill={entry.barColor} />
+            ))}
+          </Bar>
+        </BarChart>
       </ResponsiveContainer>
     )
     }
@@ -243,7 +290,7 @@ export default function AspectComparisonChart({
     if (chartData.length === 0) {
       return (
         <div className="flex items-center justify-center h-[400px]">
-          <p style={{color: 'var(--color-text-secondary)'}}>No data for grouped chart</p>
+          <p className="text-center" style={{color: 'var(--color-text-secondary)'}}>No data available for grouped chart</p>
         </div>
       )
     }
@@ -252,40 +299,43 @@ export default function AspectComparisonChart({
       <ResponsiveContainer width="100%" height={400}>
         <BarChart 
           data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+          margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+          barGap={8}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
           <XAxis 
             dataKey="aspect"
-            tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
+            tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
             stroke="rgba(255,255,255,0.3)"
-            angle={-45}
+            angle={-30}
             textAnchor="end"
-            height={0}
+            height={55}
             interval={0}
           />
           <YAxis 
             domain={[0, 5]}
-            tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
+            tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
             stroke="rgba(255,255,255,0.3)"
-            label={{ value: 'Rating (0-5)', angle: -90, position: 'insideLeft' }}
+            label={{ value: 'Rating (0-5)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
           />
           
           {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
           {options?.showLegend && (
             <Legend 
+              verticalAlign="bottom"
+              height={40}
               wrapperStyle={{ 
                 color: 'var(--color-text-primary)',
-                fontSize: '16px',
-                marginTop: '32px'
+                fontSize: '13px',
+                paddingTop: '15px'
               }}
               iconType="rect"
             />
           )}
           
           {/* Baseline bar is now orange */}
-          <Bar dataKey="baseline" fill="#FF9800" name="Baseline" />
-          <Bar dataKey="value" fill="var(--color-usc-green)" name="Aspect Rating">
+          <Bar dataKey="baseline" fill="#FF9800" name="Baseline" barSize={30} />
+          <Bar dataKey="value" fill="var(--color-usc-green)" name="Aspect Rating" barSize={30}>
             {chartData.map((entry: any, index: number) => (
               <Cell key={`cell-${index}`} fill={entry.fill} />
             ))}
@@ -301,7 +351,7 @@ export default function AspectComparisonChart({
     if (chartData.length === 0) {
       return (
         <div className="flex items-center justify-center h-[400px]">
-          <p style={{color: 'var(--color-text-secondary)'}}>No data for bullet chart</p>
+          <p className="text-center" style={{color: 'var(--color-text-secondary)'}}>No data available for bullet chart</p>
         </div>
       )
     }
@@ -402,7 +452,7 @@ const CustomLegend = ({ payload }: any) => {
     if (chartData.length === 0) {
       return (
         <div className="flex items-center justify-center h-[400px]">
-          <p style={{color: 'var(--color-text-secondary)'}}>No data for radial chart</p>
+          <p className="text-center" style={{color: 'var(--color-text-secondary)'}}>No data available for radial chart</p>
         </div>
       )
     }
@@ -431,17 +481,18 @@ const CustomLegend = ({ payload }: any) => {
     });
 
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center h-full w-full">
         <ResponsiveContainer width="100%" height={400}>
           <RadialBarChart 
             cx="50%" 
             cy="50%" 
-            innerRadius="15%" 
+            innerRadius="25%" 
             outerRadius="85%" 
             data={radialData}
             startAngle={90}
             endAngle={-270} 
-            margin={{ top: 10, right: 120, bottom: 10, left: 10 }}
+            barSize={25}
+            margin={{ top: 20, right: 80, bottom: 20, left: 20 }}
           >
             <PolarAngleAxis
               type="number"
@@ -463,13 +514,14 @@ const CustomLegend = ({ payload }: any) => {
             
             <Tooltip content={(props) => <CustomTooltip {...props} radial={true} />} />
             <Legend 
-              content={<CustomLegend />}
-              wrapperStyle={{
-                position: 'absolute',
-                right: '5px',
-                top: '70%',
-                // transform: 'translateY(50%)',
-                width: '110px'
+              iconType="circle"
+              layout="vertical"
+              verticalAlign="middle"
+              align="right"
+              wrapperStyle={{ 
+                fontSize: '13px', 
+                color: 'var(--color-text-secondary)',
+                paddingLeft: '10px'
               }}
             />
           </RadialBarChart>
@@ -542,7 +594,7 @@ const CustomLegend = ({ payload }: any) => {
         </p>
       </div>
       
-      <div className="flex-1 min-h-[300px]">
+      <div className="flex-1 min-h-[400px] h-[400px]">
         {variant === 'diverging' && renderDivergingBar()}
         {variant === 'grouped' && renderGroupedBar()}
         {variant === 'bullet' && renderBulletChart()}

@@ -8,13 +8,15 @@ import {
   TrendingUp as TrendingUpIcon
 } from '@mui/icons-material'
 import Dashboard from './Dashboard'
+import AIInsightsContainer from './AIInsights'
 
 interface InsightsCardProps {
   results?: any
   error?: string
+  feedbackData?: any[]
 }
 
-export default function InsightsCard({ results, error }: InsightsCardProps) {
+export default function InsightsCard({ results, error, feedbackData }: InsightsCardProps) {
   console.log('=== INSIGHTS CARD RECEIVED ===', results, error)
   
   // Don't render anything if no results or error
@@ -88,6 +90,14 @@ export default function InsightsCard({ results, error }: InsightsCardProps) {
 
           {/* Interactive Dashboard with Charts */}
           <Dashboard analysisData={results} />
+
+          {/* AI-Powered Insights */}
+          {feedbackData && (
+            <AIInsightsContainer 
+              feedbackData={feedbackData}
+              analysisData={results}
+            />
+          )}
         </>
       )}
     </div>

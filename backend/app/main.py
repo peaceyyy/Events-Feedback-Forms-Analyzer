@@ -12,6 +12,7 @@ from backend.app.handlers import process_feedback_csv, validate_csv_content
 from backend.analysis.insights import generate_comprehensive_report
 from backend.processing.feedback_service import extract_feedback_data
 from backend.utils.file_helpers import get_default_csv_path
+from backend.analysis.gemini_service import get_gemini_service
 
 app = Flask(__name__)
 CORS(app)  # Allow frontend to call this API
@@ -143,5 +144,53 @@ def test_with_sample():
         return jsonify({
             "success": False,
             "error": "Test failed",
+            "message": str(e)
+        }), 500
+
+@app.route('/api/ai-analysis', methods=['POST'])
+def ai_enhanced_analysis():
+    """
+    Generate AI-powered insights using Gemini API.
+    Combines traditional analysis with AI-generated insights.
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'data' not in data:
+            return jsonify({
+                "success": False,
+                "error": "No data provided"
+            }), 400
+        
+        feedback_data = data['data']
+        existing_analysis = data.get('analysis', {})
+        
+        # Initialize Gemini service
+        gemini_service = get_gemini_service()
+        
+        # Generate AI insights
+        ai_results = {}
+        
+        # Sentiment analysis
+        ai_results['sentiment'] = gemini_service.generate_sentiment_analysis(feedback_data)
+        
+        # Theme extraction
+        ai_results['themes'] = gemini_service.generate_theme_extraction(feedback_data)
+        
+        # Strategic insights (if we have existing analysis)
+        if existing_analysis:
+            ai_results['strategic_insights'] = gemini_service.generate_actionable_insights(
+                feedback_data, existing_analysis
+            )
+        
+        return jsonify({
+            "success": True,
+            "ai_analysis": ai_results
+        })
+    
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": "AI analysis failed",
             "message": str(e)
         }), 500
