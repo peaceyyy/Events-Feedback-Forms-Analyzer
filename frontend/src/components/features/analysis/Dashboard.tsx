@@ -23,6 +23,7 @@ interface DashboardProps {
 export default function Dashboard({ analysisData, className = '' }: DashboardProps) {
   
   console.log('=== DASHBOARD RECEIVED ===', analysisData)
+  console.log('=== ONE WORD DESCRIPTIONS CHECK ===', analysisData?.one_word_descriptions)
   
   // Transform backend analysis data into chart configurations
   const chartConfigs = React.useMemo((): ChartConfig[] => {

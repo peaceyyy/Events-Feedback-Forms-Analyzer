@@ -5,8 +5,7 @@ import UploadPill from "../components/features/upload/UploadPill";
 import Image from "next/image";
 import ScrollToTopButton from "../components/ui/ScrollToTopButton";
 import AspectComparisonChart from "../components/features/analysis/charts/AspectComparisonChart";
-import WordCloudComponent from "../components/features/analysis/charts/WordCloud";
-import { getSampleWordCloudData } from "../components/features/analysis/charts/WordCloud/utils";
+import WordCloudComponent from "../components/features/analysis/charts/WordCloud/WordCloud";
 import EventAspects from "../components/features/analysis/EventAspects";
 
 import {
@@ -113,6 +112,8 @@ export default function Home() {
 
   // Handle successful upload results
   const handleUploadSuccess = (results: any, filename?: string) => {
+    console.log('=== UPLOAD SUCCESS RESULTS ===', results);
+    console.log('=== ONE WORD DESCRIPTIONS IN RESULTS ===', results?.analysis?.one_word_descriptions);
     setAnalysisResults(results);
     setAnalysisError("");
     setIsAnalyzed(true); // Trigger transition to analysis view
@@ -441,9 +442,40 @@ export default function Home() {
                     </p>
                   </div>
 
+                  {/* DEBUG: Log WordCloud data transformation */}
+                  {(() => {
+                    const oneWordData = (analysisResults as any)?.one_word_descriptions?.data?.word_cloud;
+                    const transformedData = oneWordData
+                      ? oneWordData.map((item: any) => ({
+                          word: item.word,
+                          value: item.count,
+                          group: 'descriptions'
+                        }))
+                      : [];
+                    
+                    console.log('=== WORDCLOUD DATA DEBUG ===');
+                    console.log('analysisResults:', analysisResults);
+                    console.log('one_word_descriptions path:', (analysisResults as any)?.one_word_descriptions);
+                    console.log('word_cloud data:', oneWordData);
+                    console.log('word_cloud length:', oneWordData?.length);
+                    console.log('🚀 TRANSFORMED DATA:', transformedData);
+                    console.log('🚀 TRANSFORMED LENGTH:', transformedData?.length);
+                    console.log('🚀 PASSING TO WORDCLOUD:', transformedData?.length > 0 ? 'YES' : 'NO');
+                    console.log('=== END WORDCLOUD DEBUG ===');
+                    return null;
+                  })()}
+                  
                   <WordCloudComponent
                     title="One Word Descriptions"
-                    data={analysisResults ? getSampleWordCloudData() : []} // Will be populated with AI-extracted keywords
+                    data={
+                      (analysisResults as any)?.one_word_descriptions?.data?.word_cloud
+                        ? (analysisResults as any).one_word_descriptions.data.word_cloud.map((item: any) => ({
+                            word: item.word,
+                            value: item.count,
+                            group: 'descriptions'
+                          }))
+                        : []
+                    }
                     height={300}
                   />
                 </div>
@@ -702,24 +734,34 @@ export default function Home() {
               )}
 
               {/* Placeholder for Aspect Performance Comparison */}
-              <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
-                <h3 className="text-lg font-semibold mb-4 text-usc-green">
-                  Aspect Performance Comparison
-                </h3>
+                 <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
+                <h4 className="text-base font-semibold mb-3 text-usc-orange">
+                  Correlation Analysis
+                </h4>
                 <p
-                  className="text-sm mb-4"
+                  className="text-sm"
                   style={{ color: "var(--color-text-secondary)" }}
                 >
-                  Bar chart showing correlation coefficient of each aspect with
-                  overall satisfaction
+                  Impact analysis: which aspects drive overall satisfaction most
                 </p>
-                <div
-                  className="text-xs"
-                  style={{ color: "var(--color-text-tertiary)" }}
-                >
-                  Coming Soon: What drives overall satisfaction analysis
-                </div>
               </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
+                <h4 className="text-base font-semibold mb-3 text-usc-orange">
+                  Per Aspect Averages
+                </h4>
+                <p
+                  className="text-sm"
+                  style={{ color: "var(--color-text-secondary)" }}
+                >
+                  Individual aspect scoring breakdown - to be implemented
+                </p>
+              </div>
+
+           
+            </div>
+
             </div>
 
             {/* Second Row - Unified Aspect Performance Card */}
@@ -752,32 +794,8 @@ export default function Home() {
                 
               </div>
             </div>
-            {/* Future Features Placeholder */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
-                <h4 className="text-base font-semibold mb-3 text-usc-orange">
-                  Per Aspect Averages
-                </h4>
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  Individual aspect scoring breakdown - to be implemented
-                </p>
-              </div>
-
-              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
-                <h4 className="text-base font-semibold mb-3 text-usc-orange">
-                  Correlation Analysis
-                </h4>
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  Impact analysis: which aspects drive overall satisfaction most
-                </p>
-              </div>
-            </div>
+          
+            
           </div>
         ),
       });

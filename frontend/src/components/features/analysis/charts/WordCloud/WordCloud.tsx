@@ -24,7 +24,20 @@ export default function WordCloudComponent({
   height = 400 
 }: WordCloudProps) {
   const chartRef = useRef<HTMLDivElement>(null)
-  const [useFallback, setUseFallback] = useState(false)
+  // DEBUG: Force fallback to SimpleWordCloud to test if data flows correctly
+  const [useFallback, setUseFallback] = useState(true) // Changed from false to true for testing
+
+  // DEBUG: Log received data
+  console.log('🚨🚨🚨 WORDCLOUD COMPONENT RECEIVED 🚨🚨🚨');
+  console.log('WordCloud data prop:', data);
+  console.log('WordCloud data length:', data?.length);
+  console.log('WordCloud data sample:', data?.[0]);
+  console.log('🚨🚨🚨 END WORDCLOUD COMPONENT 🚨🚨🚨');
+  
+  // Force an alert to make sure this component is loading
+  if (typeof window !== 'undefined') {
+    console.log('🔥 WORDCLOUD: This should appear in browser console!');
+  }
 
   // Load Carbon Charts CSS dynamically
   useEffect(() => {
@@ -129,7 +142,7 @@ export default function WordCloudComponent({
         </h3>
         <div className="flex items-center justify-center" style={{ height: `${height}px` }}>
           <p className="text-center" style={{ color: 'var(--color-text-secondary)' }}>
-            Generate AI analysis to see one-word descriptions from feedback
+            Upload a CSV file with "One-Word Description" column to see word cloud visualization
           </p>
         </div>
         <div className="text-xs mt-4 text-center" style={{ color: 'var(--color-text-tertiary)' }}>

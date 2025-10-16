@@ -2,4 +2,5 @@
 /.vscode
 /.github
 /.venv
+/.roo
 node_modules

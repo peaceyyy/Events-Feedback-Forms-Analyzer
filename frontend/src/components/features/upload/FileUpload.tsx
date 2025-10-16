@@ -20,6 +20,9 @@ interface FileUploadProps {
  * Follows single responsibility principle - only manages file upload logic
  */
 export default function FileUpload({ onUploadSuccess, onUploadError, onReset, isMinimized = false }: FileUploadProps) {
+  // 🚨 TEST LOG - This should appear immediately when component loads
+  console.log('🚨 FILEUPLOAD COMPONENT LOADED - If you see this, console logging works!')
+  
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState<boolean>(false)
 
@@ -71,6 +74,11 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
         console.log('Sessions data:', result.sessions) 
         console.log('Ratings data:', result.ratings)
         console.log('Summary data:', result.summary)
+        console.log('*** ONE WORD DESCRIPTIONS CHECK ***:', result.one_word_descriptions)
+        if (result.analysis) {
+          console.log('Analysis keys:', Object.keys(result.analysis))
+          console.log('*** ANALYSIS ONE WORD DESCRIPTIONS ***:', result.analysis.one_word_descriptions)
+        }
         console.log('=== END FLASK RESPONSE ===')
         if (onUploadSuccess) onUploadSuccess(result, selectedFile?.name)
       } else {

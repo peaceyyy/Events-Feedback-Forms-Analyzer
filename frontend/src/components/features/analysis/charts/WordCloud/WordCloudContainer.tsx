@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import WordCloudComponent from './WordCloud'
+import WordCloudVisualization from './WordCloud'
 
 interface WordCloudContainerProps {
   data: {
@@ -56,7 +56,7 @@ export default function WordCloudContainer({ data, className = '' }: WordCloudCo
   return (
     <div className={`space-y-4 ${className}`}>
       {/* WordCloud Visualization */}
-      <WordCloudComponent
+      <WordCloudVisualization
         data={transformedData}
         title="One-Word Descriptions"
         className="w-full"

@@ -5,11 +5,17 @@ Debug script to test one-word descriptions processing
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Find the project root by looking for a known directory ('backend' in this case)
+# This makes the script runnable from different locations within the project.
+project_root = os.path.abspath(__file__)
+while not os.path.isdir(os.path.join(project_root, 'backend')):
+    project_root = os.path.dirname(project_root)
+    if project_root == os.path.dirname(project_root): # Reached the filesystem root
+        raise FileNotFoundError("Could not find the 'backend' directory. Is the script inside the project?")
+sys.path.append(project_root)
 
 from backend.processing.feedback_service import extract_feedback_data
 from backend.analysis.insights import generate_one_word_descriptions
-import json
 
 def test_one_word_descriptions():
     """Test the one-word descriptions processing pipeline"""

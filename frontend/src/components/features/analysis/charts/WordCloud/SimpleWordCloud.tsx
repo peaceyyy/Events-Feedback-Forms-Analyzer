@@ -22,6 +22,13 @@ export default function SimpleWordCloud({
   height = 400 
 }: SimpleWordCloudProps) {
 
+  // DEBUG: Log what SimpleWordCloud receives
+  console.log('🔥 SIMPLE WORDCLOUD RECEIVED 🔥');
+  console.log('SimpleWordCloud data:', data);
+  console.log('SimpleWordCloud data length:', data?.length);
+  console.log('SimpleWordCloud data sample:', data?.[0]);
+  console.log('🔥 END SIMPLE WORDCLOUD 🔥');
+
   // If no data provided, show placeholder
   if (!data || data.length === 0) {
     return (
@@ -31,7 +38,7 @@ export default function SimpleWordCloud({
         </h3>
         <div className="flex items-center justify-center" style={{ height: `${height}px` }}>
           <p className="text-center" style={{ color: 'var(--color-text-secondary)' }}>
-            Generate AI analysis to see one-word descriptions from feedback
+            Upload a CSV file with "One-Word Description" column to see word cloud visualization
           </p>
         </div>
       </div>
