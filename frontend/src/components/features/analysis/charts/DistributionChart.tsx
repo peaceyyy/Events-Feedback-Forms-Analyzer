@@ -53,8 +53,9 @@ export default function DistributionChart({ data, variant, options, config }: Di
         const rating = typeof category === 'string' ? parseInt(category) : category
         const color = getSatisfactionColor(rating) // Use rating for color, not index
         
-        console.log(`Rating ${rating} (${getSatisfactionLabel(rating)}) -> Color: ${color}`)
-        
+        if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+          console.log(`Rating ${rating} (${getSatisfactionLabel(rating)}) -> Color: ${color}`)
+        }
         return {
           name: getSatisfactionLabel(category),
           shortName: `${category}★`, // For horizontal charts where space is limited

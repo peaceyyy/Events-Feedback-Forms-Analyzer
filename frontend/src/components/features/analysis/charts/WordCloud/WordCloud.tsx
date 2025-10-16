@@ -1,192 +1,221 @@
-
-// Attribution: Powered by Carbon Charts (https://github.com/carbon-design-system/carbon-charts)
-'use client'
-import React, { useEffect, useRef, useState } from 'react'
-import SimpleWordCloud from './SimpleWordCloud'
+// UnifiedWordCloud.tsx - Single component handling both Carbon Charts and fallback
+'use client';
+import React, { useEffect, useState } from 'react';
+import { WordCloudChart } from '@carbon/charts-react';
+import '@carbon/charts-react/styles.css';
 
 interface WordCloudData {
-  word: string
-  value: number
-  group?: string
+  word: string;
+  value: number;
+  group?: string;
 }
 
-interface WordCloudProps {
-  data?: WordCloudData[]
-  title?: string
-  className?: string
-  height?: number
+interface WordCloudStats {
+  total_responses: number;
+  unique_words: number;
+  most_common?: [string, number];
+  response_rate: number;
 }
 
-export default function WordCloudComponent({ 
-  data = [], 
-  title = "One Word Descriptions", 
-  className = "",
-  height = 400 
-}: WordCloudProps) {
-  const chartRef = useRef<HTMLDivElement>(null)
-  // DEBUG: Force fallback to SimpleWordCloud to test if data flows correctly
-  const [useFallback, setUseFallback] = useState(true) // Changed from false to true for testing
+interface UnifiedWordCloudProps {
+  data?: WordCloudData[];
+  stats?: WordCloudStats;
+  title?: string;
+  className?: string;
+  height?: number;
+  showStats?: boolean;
+}
 
-  // DEBUG: Log received data
-  console.log('🚨🚨🚨 WORDCLOUD COMPONENT RECEIVED 🚨🚨🚨');
-  console.log('WordCloud data prop:', data);
-  console.log('WordCloud data length:', data?.length);
-  console.log('WordCloud data sample:', data?.[0]);
-  console.log('🚨🚨🚨 END WORDCLOUD COMPONENT 🚨🚨🚨');
-  
-  // Force an alert to make sure this component is loading
-  if (typeof window !== 'undefined') {
-    console.log('🔥 WORDCLOUD: This should appear in browser console!');
-  }
-
-  // Load Carbon Charts CSS dynamically
-  useEffect(() => {
-    // Load Carbon Design System fonts and styles
-    const loadCarbonStyles = () => {
-      // Check if styles are already loaded
-      if (document.querySelector('#carbon-charts-styles')) return
-
-      // Create link elements for Carbon fonts
-      const plexSans = document.createElement('link')
-      plexSans.rel = 'stylesheet'
-      plexSans.href = 'https://1.www.s81c.com/common/carbon/plex/sans.css'
-      plexSans.id = 'carbon-plex-sans'
-
-      const plexSansCondensed = document.createElement('link')
-      plexSansCondensed.rel = 'stylesheet'
-      plexSansCondensed.href = 'https://1.www.s81c.com/common/carbon/plex/sans-condensed.css'
-      plexSansCondensed.id = 'carbon-plex-sans-condensed'
-
-      // Add a marker to avoid duplicate loading
-      const marker = document.createElement('style')
-      marker.id = 'carbon-charts-styles'
-      marker.textContent = '/* Carbon Charts styles loaded */'
-
-      document.head.appendChild(plexSans)
-      document.head.appendChild(plexSansCondensed)
-      document.head.appendChild(marker)
-    }
-
-    loadCarbonStyles()
-  }, [])
+export default function UnifiedWordCloud({
+  data = [],
+  stats,
+  title = 'One Word Descriptions',
+  className = '',
+  height = 450,
+  showStats = false,
+}: UnifiedWordCloudProps) {
+  const [useFallback, setUseFallback] = useState(false);
 
   useEffect(() => {
-    if (!data || data.length === 0 || !chartRef.current) return
-
-    // Dynamically import and render the chart to avoid SSR issues
-    const initChart = async () => {
-      try {
-        const { WordCloudChart } = await import('@carbon/charts-react')
-        const React = await import('react')
-        const ReactDOM = await import('react-dom/client')
-        
-        const chartOptions = {
-          title: '',
-          resizable: true,
-          color: {
-            pairing: {
-              option: 3
-            }
-          },
-          height: `${height}px`,
-          theme: 'dark',
-          toolbar: {
-            enabled: false
-          },
-          legend: {
-            enabled: false
-          }
-        }
-
-        // Clear previous content
-        if (chartRef.current) {
-          chartRef.current.innerHTML = ''
-          
-          // Create chart element
-          const chartElement = React.createElement(WordCloudChart as any, {
-            data: data,
-            options: chartOptions
-          })
-          
-          // Render using React 18 createRoot API
-          const root = ReactDOM.createRoot(chartRef.current)
-          root.render(chartElement)
-        }
-      } catch (error) {
-        console.error('Failed to load Carbon Charts, using fallback:', error)
-        setUseFallback(true)
-      }
+    if (!WordCloudChart) {
+      console.log('Carbon Charts not available, using fallback');
+      setUseFallback(true);
     }
+  }, []);
 
-      initChart()
-  }, [data, height])
+  const options = {
+    title: title,
+    resizable: true,
+    theme: 'dark',
+    height: `${height - (showStats ? 100 : 0)}px`,
+    wordCloud: {
+      fontFamily: 'IBM Plex Sans, sans-serif',
+      fontSizeRange: () => [16, 72],
 
-  // Use simple fallback if Carbon Charts fails to load
-  if (useFallback) {
+      padding: 12,
+    },
+    color: {
+      scale: {
+        descriptions: '#78a9ff',
+      },
+    },
+    tooltip: { enabled: false },
+    legend: { enabled: false },
+    grid: { x: { show: false }, y: { show: false } },
+    toolbar: { enabled: false },
+    animations: { enabled: true },
+  };
+
+  // Fallback word cloud implementation
+  const renderFallbackWordCloud = () => {
+    if (!data.length) return null;
+
+    const maxValue = Math.max(...data.map((item) => item.value));
+
+    const getWordSize = (value: number) => {
+      const ratio = value / maxValue;
+      return Math.max(1, ratio * 3); // Min 1rem, max 3rem
+    };
+
+    const getWordColor = (value: number) => {
+      const intensity = value / maxValue;
+      if (intensity > 0.8) return '#78a9ff'; // High frequency - bright blue
+      if (intensity > 0.5) return '#82cfff'; // Medium frequency - cyan
+      if (intensity > 0.3) return '#42be65'; // Lower frequency - green
+      return '#ffab00'; // Low frequency - yellow
+    };
+
     return (
-      <SimpleWordCloud 
-        data={data}
-        title={title}
-        className={className}
-        height={height}
-      />
-    )
-  }
-
-  // If no data provided, show placeholder
-  if (!data || data.length === 0) {
-    return (
-      <div className={`glass-card-dark p-6 rounded-xl ${className}`}>
-        <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-          {title}
-        </h3>
-        <div className="flex items-center justify-center" style={{ height: `${height}px` }}>
-          <p className="text-center" style={{ color: 'var(--color-text-secondary)' }}>
-            Upload a CSV file with "One-Word Description" column to see word cloud visualization
-          </p>
-        </div>
-        <div className="text-xs mt-4 text-center" style={{ color: 'var(--color-text-tertiary)' }}>
-          Powered by IBM Carbon Charts
-        </div>
+      <div
+        className="flex flex-wrap items-center justify-center gap-3 p-6"
+        style={{
+          height: `${height - 100}px`,
+          overflowY: 'auto',
+          background:
+            'linear-gradient(135deg, rgba(38, 38, 38, 0.9), rgba(57, 57, 57, 0.5))',
+          borderRadius: '12px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+        }}
+      >
+        {data.map((item, index) => (
+          <span
+            key={`${item.word}-${index}`}
+            className="font-bold transition-all duration-300 hover:scale-110 cursor-default select-none"
+            style={{
+              fontSize: `${getWordSize(item.value)}rem`,
+              color: getWordColor(item.value),
+              opacity: 0.85 + (item.value / maxValue) * 0.15,
+              lineHeight: 1.2,
+              margin: '0.25rem',
+              textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+              fontWeight: Math.min(900, 400 + (item.value / maxValue) * 500),
+            }}
+            title={`"${item.word}" - mentioned ${item.value} times`}
+          >
+            {item.word}
+          </span>
+        ))}
       </div>
-    )
-  }
+    );
+  };
+
 
   return (
-    <div className={`glass-card-dark p-6 rounded-xl ${className}`}>
-      <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-        {title}
-      </h3>
-      
-      <div 
-        ref={chartRef} 
-        className="word-cloud-container"
-        style={{ 
-          width: '100%', 
-          height: `${height}px`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }} 
-      />
-      
-      {/* Attribution */}
-      <div className="text-xs mt-4 text-center" style={{ color: 'var(--color-text-tertiary)' }}>
-        Powered by IBM Carbon Charts
+    <div className={`space-y-4 ${className}`}>
+      {/* Main Word Cloud */}
+      <div className="glass-card-dark p-6 rounded-xl">
+        <h3
+          className="text-lg font-semibold mb-4"
+          style={{ color: 'var(--color-text-primary)' }}
+        >
+          {title}
+        </h3>
+
+        {useFallback ? (
+          renderFallbackWordCloud()
+        ) : (
+          <WordCloudChart data={data} options={options as any} />
+        )}
+
+        {/* Attribution */}
+        <div
+          className="text-xs mt-4 text-center"
+          style={{ color: 'var(--color-text-tertiary)' }}
+        >
+          {useFallback
+            ? 'Custom Word Cloud Implementation'
+            : 'Powered by IBM Carbon Charts'}
+        </div>
       </div>
-      
-      {/* Internal styles for Carbon Charts */}
-      <style jsx>{`
-        .word-cloud-container :global(.bx--cc--word-cloud) {
-          background: transparent !important;
-        }
-        .word-cloud-container :global(.bx--cc--chart-wrapper) {
-          background: transparent !important;
-        }
-        .word-cloud-container :global(svg) {
-          background: transparent !important;
-        }
-      `}</style>
+
+      {/* Statistics Panel (optional) */}
+      {showStats && stats && (
+        <div className="glass-card-dark p-4 rounded-xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div>
+              <div
+                className="text-xl font-bold mb-1"
+                style={{ color: '#42be65' }}
+              >
+                {stats.total_responses}
+              </div>
+              <div
+                className="text-sm"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
+                Total Descriptions
+              </div>
+            </div>
+
+            <div>
+              <div
+                className="text-xl font-bold mb-1"
+                style={{ color: '#78a9ff' }}
+              >
+                {stats.unique_words}
+              </div>
+              <div
+                className="text-sm"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
+                Unique Words
+              </div>
+            </div>
+
+            <div>
+              <div
+                className="text-xl font-bold mb-1"
+                style={{ color: '#ffab00' }}
+              >
+                {stats.response_rate}%
+              </div>
+              <div
+                className="text-sm"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
+                Response Rate
+              </div>
+            </div>
+
+            {stats.most_common && (
+              <div>
+                <div
+                  className="text-xl font-bold mb-1"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  "{stats.most_common[0]}"
+                </div>
+                <div
+                  className="text-sm"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                >
+                  Most Common ({stats.most_common[1]}x)
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }

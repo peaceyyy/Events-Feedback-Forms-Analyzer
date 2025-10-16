@@ -32,7 +32,9 @@ export default function ScoreChart({ data, variant, options, config }: ScoreChar
   
   // Extract score and metadata from data
   const scoreData = React.useMemo(() => {
-    console.log('ScoreChart received data:', data)
+    if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+      console.log('ScoreChart received data:', data)
+    }
     if (!data) return { value: 0, max: 100, category: 'No Data' }
 
     // NPS Score data structure

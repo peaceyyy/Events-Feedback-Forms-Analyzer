@@ -1,3 +1,3 @@
-export { default } from './WordCloudContainer'
-export { default as WordCloudComponent } from './WordCloud'
-export { default as WordCloudContainer } from './WordCloudContainer'
+// Unified WordCloud component - handles both Carbon Charts and fallback
+export { default } from './WordCloud'
+export { default as UnifiedWordCloud } from './WordCloud'

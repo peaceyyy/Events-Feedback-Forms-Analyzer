@@ -142,7 +142,7 @@ export default function AIInsightsContainer({
         </p>
         <button
           onClick={generateAIInsights}
-          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all transform hover:scale-105 flex items-center gap-2"
+          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2"
         >
           <AIIcon sx={{ fontSize: 20 }} />
           Generate AI Insights

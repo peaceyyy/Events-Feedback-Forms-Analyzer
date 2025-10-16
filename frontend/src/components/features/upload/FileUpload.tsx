@@ -20,9 +20,6 @@ interface FileUploadProps {
  * Follows single responsibility principle - only manages file upload logic
  */
 export default function FileUpload({ onUploadSuccess, onUploadError, onReset, isMinimized = false }: FileUploadProps) {
-  // 🚨 TEST LOG - This should appear immediately when component loads
-  console.log('🚨 FILEUPLOAD COMPONENT LOADED - If you see this, console logging works!')
-  
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState<boolean>(false)
 
@@ -48,38 +45,19 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
       const formData = new FormData()
       formData.append('file', selectedFile)
 
-      console.log('Starting file upload process...')
-      console.log('Selected file:', selectedFile.name, selectedFile.size, 'bytes')
-
       // Send to Flask backend
       const response = await fetch('http://localhost:5000/api/upload', {
         method: 'POST',
         body: formData,
       })
 
-      console.log('=== FETCH RESPONSE ===')
-      console.log('Response status:', response.status)
-      console.log('Response headers:', response.headers)
-      console.log('Response ok:', response.ok)
-
       const result = await response.json()
-      console.log('=== RAW RESULT ===')
-      console.log('Raw result:', result)
 
       if (result.success) {
-        console.log('=== FLASK RESPONSE SUCCESS ===')
-        console.log('Full result:', result)
-        console.log('Result keys:', Object.keys(result))
-        console.log('NPS data:', result.nps)
-        console.log('Sessions data:', result.sessions) 
-        console.log('Ratings data:', result.ratings)
-        console.log('Summary data:', result.summary)
-        console.log('*** ONE WORD DESCRIPTIONS CHECK ***:', result.one_word_descriptions)
-        if (result.analysis) {
-          console.log('Analysis keys:', Object.keys(result.analysis))
-          console.log('*** ANALYSIS ONE WORD DESCRIPTIONS ***:', result.analysis.one_word_descriptions)
+        // Conditional log for debugging the full API response.
+        if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+          console.log('FileUpload API Response:', result)
         }
-        console.log('=== END FLASK RESPONSE ===')
         if (onUploadSuccess) onUploadSuccess(result, selectedFile?.name)
       } else {
         const errorMsg = result.error || 'Upload failed'

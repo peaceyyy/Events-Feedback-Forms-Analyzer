@@ -3,7 +3,7 @@
 import React from 'react'
 import ChartFactory, { createChartConfig, ChartConfig } from './charts/ChartFactory'
 import InsightsSummary from './EventAspects'
-import WordCloudContainer from './charts/WordCloud'
+import { UnifiedWordCloud } from './charts/WordCloud'
 import { Refresh as RefreshIcon, Dashboard as DashboardIcon } from '@mui/icons-material'
 
 interface DashboardProps {
@@ -22,8 +22,10 @@ interface DashboardProps {
  */
 export default function Dashboard({ analysisData, className = '' }: DashboardProps) {
   
-  console.log('=== DASHBOARD RECEIVED ===', analysisData)
-  console.log('=== ONE WORD DESCRIPTIONS CHECK ===', analysisData?.one_word_descriptions)
+  // Conditional log for debugging the main analysis data object.
+  if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+    console.log('Dashboard received analysisData:', analysisData)
+  }
   
   // Transform backend analysis data into chart configurations
   const chartConfigs = React.useMemo((): ChartConfig[] => {
@@ -48,7 +50,6 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
 
     // 2. NPS SCORE GAUGE (Gauge/Progress/Donut options)
     if (analysisData.nps?.data) {
-      console.log('=== NPS DATA FOR CHART ===', analysisData.nps.data)
       configs.push(createChartConfig(
         'nps-score',
         'Net Promoter Score',
@@ -64,14 +65,10 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
 
     // 3. SESSION POPULARITY COMPARISON (Grouped Bar when satisfaction data available)
     if (analysisData.sessions?.data) {
-      console.log('=== SESSIONS DATA FOR CHART ===', analysisData.sessions.data)
-      
       // Use grouped bar if we have satisfaction data, otherwise horizontal bar
-      const hassatisfaction = analysisData.sessions.data.average_satisfaction && 
+      const hassatisfaction = analysisData.sessions.data.average_satisfaction &&
                              Array.isArray(analysisData.sessions.data.average_satisfaction)
       const variant = hassatisfaction ? 'groupedBar' : 'horizontalBar'
-      
-      console.log(`Sessions chart variant: ${variant} (has satisfaction: ${hassatisfaction})`)
       
       configs.push(createChartConfig(
         'session-popularity',
@@ -90,9 +87,8 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
 
     // 4. RATING COMPARISON RADAR (Multi-dimensional analysis)
     if (analysisData.ratings?.data) {
-      console.log('=== RATINGS DATA FOR CHART ===', analysisData.ratings.data)
       configs.push(createChartConfig(
-        'rating-comparison', 
+        'rating-comparison',
         'Aspect Ratings Comparison',
         'relationship',
         analysisData.ratings.data,
@@ -106,7 +102,6 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
 
     // 5. CORRELATION ANALYSIS (Individual response correlation - scatter/line only)
     if (analysisData.scatter_data?.data) {
-      console.log('=== SCATTER DATA FOR CHART ===', analysisData.scatter_data.data)
       configs.push(createChartConfig(
         'satisfaction-vs-recommendation',
         'Satisfaction vs Recommendation Correlation',
@@ -216,8 +211,20 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
         {/* Row 5: One-Word Descriptions WordCloud (Full Width) */}
         {analysisData.one_word_descriptions?.data && (
           <div className="grid grid-cols-1 gap-8">
-            <WordCloudContainer 
-              data={analysisData.one_word_descriptions.data} 
+            <UnifiedWordCloud 
+              data={
+                analysisData.one_word_descriptions.data.word_cloud
+                  ? analysisData.one_word_descriptions.data.word_cloud.map((item: any) => ({
+                      word: item.word,
+                      value: item.count,
+                      group: 'descriptions'
+                    }))
+                  : []
+              }
+              stats={analysisData.one_word_descriptions.data.stats}
+              title="One-Word Descriptions Analysis"
+              showStats={true}
+              height={500}
               className="w-full"
             />
           </div>

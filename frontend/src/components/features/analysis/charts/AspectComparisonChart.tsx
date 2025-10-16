@@ -29,7 +29,6 @@ export default function AspectComparisonChart({
 
   // Transform data for comparative visualization
   const chartData = React.useMemo(() => {
-    console.log('Processing data for AspectComparisonChart:', data)
     
     // Handle multiple possible data structures
     let baselineData = null
@@ -56,12 +55,8 @@ export default function AspectComparisonChart({
     }
 
     if (!baselineData || baselineData.length === 0) {
-      console.log('No valid baseline data found')
       return []
     }
-
-    console.log('Using baseline data:', baselineData)
-    console.log('Overall satisfaction:', overallSatisfaction)
     
     return baselineData.map((item: any) => {
       const aspectValue = item.value || item.average || 0
@@ -106,10 +101,11 @@ export default function AspectComparisonChart({
     }
 
     // Get data from payload - handle different structures
-    const data = payload[0]?.payload || payload.payload;
-    
+    // More robustly get the nested payload
+    const data = payload && payload ? payload.payload : null;
+
     // Safety check for data existence
-    if (!data) {
+    if (!active || !payload || !payload.length || !data) {
       return null;
     }
 
@@ -209,8 +205,6 @@ export default function AspectComparisonChart({
       barColor: (item.difference || 0) > 0 ? '#4CAF50' : '#F44336'
     }))
 
-    console.log('Diverging chart data:', divergingData)
-
     return (
       <ResponsiveContainer width="100%" height={400}>
         <BarChart 
@@ -285,8 +279,6 @@ export default function AspectComparisonChart({
 
   // 2. Grouped Bar Chart - Shows actual vs baseline side by side
   const renderGroupedBar = () => {
-    console.log('Rendering grouped bar with data:', chartData)
-    
     if (chartData.length === 0) {
       return (
         <div className="flex items-center justify-center h-[400px]">
@@ -313,7 +305,7 @@ export default function AspectComparisonChart({
             interval={0}
           />
           <YAxis 
-            domain={[0, 5]}
+            domain={ [0, 5] }
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
             stroke="rgba(255,255,255,0.3)"
             label={{ value: 'Rating (0-5)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
@@ -496,7 +488,7 @@ const CustomLegend = ({ payload }: any) => {
           >
             <PolarAngleAxis
               type="number"
-              domain={[0, 5]}
+              domain={ [0, 5] }
               angleAxisId={0}
               tick={false}
             />
@@ -523,17 +515,28 @@ const CustomLegend = ({ payload }: any) => {
                 color: 'var(--color-text-secondary)',
                 paddingLeft: '10px'
               }}
-            />
+                formatter={(value, entry: any) => {
+                  // The data for the legend item is in the payload.
+                  const { payload } = entry;
+                  if (payload && payload.aspect) {
+                    return (
+                      <span style={{ color: 'var(--color-text-primary)' }}>
+                        {payload.aspect}
+                      </span>
+                    );
+                  }
+                  return value; // Fallback to the default value
+                }}
+              />
           </RadialBarChart>
         </ResponsiveContainer>
       </div>
     );
 }
   // Debug logging
-  console.log('=== ASPECT COMPARISON CHART DEBUG ===')
-  console.log('Raw data:', data)
-  console.log('Processed chartData:', chartData)
-  console.log('Chart variant:', variant)
+  if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+    console.log('AspectComparisonChart processed chartData:', chartData)
+  }
 
   if (chartData.length === 0) {
     return (

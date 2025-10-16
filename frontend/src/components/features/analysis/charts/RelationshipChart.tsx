@@ -39,7 +39,6 @@ export default function RelationshipChart({ data, variant, options, config }: Re
 
     // Handle detailed comparison data with baseline
     if (data.detailed_comparison) {
-      console.log('Using detailed_comparison structure for radar with baseline:', data.overall_satisfaction)
       return data.detailed_comparison.map((item: any) => ({
         aspect: item.aspect || 'Unknown Aspect',
         value: item.average || 0,
@@ -53,7 +52,6 @@ export default function RelationshipChart({ data, variant, options, config }: Re
 
     // Handle Flask ratings data structure for radar charts
     if (data.detailed_ratings && Array.isArray(data.detailed_ratings)) {
-      console.log('Using detailed_ratings structure for radar')
       return data.detailed_ratings.map((item: any) => ({
         aspect: item.aspect || item.name || 'Unknown Aspect',
         value: item.average || item.value || 0,
@@ -62,8 +60,6 @@ export default function RelationshipChart({ data, variant, options, config }: Re
     }
 
     if (data.points && Array.isArray(data.points)) {
-      console.log('Using scatter_data.points structure', data.points.length, 'points for variant:', variant)
-      
       if (variant === 'line') {
         // Transform scatter data into line chart format (satisfaction categories)
         const satisfactionGroups = data.points.reduce((acc: any, point: any) => {
@@ -115,8 +111,6 @@ export default function RelationshipChart({ data, variant, options, config }: Re
 
     // Handle legacy scatter plot data (satisfaction vs recommendation) - Flask structure
     if (data.scatter_data && Array.isArray(data.scatter_data)) {
-      console.log('Using legacy scatter_data structure for variant:', variant)
-      
       if (variant === 'line') {
         // Transform to line format - group by satisfaction ranges
         const satisfactionGroups = data.scatter_data.reduce((acc: any, point: any) => {
@@ -154,9 +148,7 @@ export default function RelationshipChart({ data, variant, options, config }: Re
     }
 
     // Handle direct array scatter plot data
-    if (Array.isArray(data) && data.length > 0 && (data[0].satisfaction !== undefined || data[0].x !== undefined)) {
-      console.log('Using direct array structure for variant:', variant)
-      
+    if (Array.isArray(data) && data.length > 0 && ('satisfaction' in data[0] || 'x' in data[0])) {
       if (variant === 'line') {
         // Transform direct array to line format
         const satisfactionGroups = data.reduce((acc: any, point: any) => {
@@ -195,7 +187,6 @@ export default function RelationshipChart({ data, variant, options, config }: Re
 
     // Handle line chart data (trends over categories)
     if (Array.isArray(data)) {
-      console.log('Using generic array structure for line chart')
       return data.map((item: any, index: number) => ({
         name: item.name || item.category || `Point ${index + 1}`,
         value: item.value || item.average || 0,
@@ -205,12 +196,10 @@ export default function RelationshipChart({ data, variant, options, config }: Re
 
     // Fallback: try to create scatter data from any object with numeric properties
     if (typeof data === 'object' && !Array.isArray(data)) {
-      console.log('Attempting fallback data extraction for relationship chart')
       const keys = Object.keys(data)
       
       // Look for potential scatter plot data
       if (keys.includes('satisfaction') || keys.includes('ratings') || keys.includes('scores')) {
-        console.log('Creating test scatter data from available data')
         // Create some test scatter points based on available data
         return [
           { x: 3.2, y: 7.1, name: 'Response 1' },
@@ -222,7 +211,6 @@ export default function RelationshipChart({ data, variant, options, config }: Re
       }
     }
 
-    console.log('No matching relationship data structure found')
     return []
   }, [data, variant, options?.colors])
 
@@ -240,11 +228,18 @@ export default function RelationshipChart({ data, variant, options, config }: Re
   // Custom tooltip for business insights (with debug info)
 const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
+      // Safely access the nested payload from the first item in the array
+      // Safely access the nested payload from the first item in the array
+      const data = payload[0]?.payload;;
+
+      // If data is still not valid, exit early
+      if (!data) {
+        return null;
+      }
 
       return (
         <div className="glass-card-dark p-4 rounded-lg border border-white/20 max-w-xs">
-          <p className="font-semibold mb-2" style={{ color: data.fill || data.category?.color || 'var(--color-text-primary)' }}>
+          <p className="font-semibold mb-2" style={{ color: data.fill || 'var(--color-text-primary)' }}>
             {data.category || data.name || 'Data Point'}
           </p>
           <div className="space-y-1 text-sm">
@@ -300,7 +295,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     // Enhanced tooltip for baseline comparison
     const BaselineTooltip = ({ active, payload, label }: any) => {
       if (active && payload && payload.length) {
-        const aspectData = payload[0]?.payload
+        const aspectData = payload?.payload
         if (!aspectData) return null
         
         const isStrength = aspectData.value > aspectData.baseline
@@ -417,14 +412,11 @@ const CustomTooltip = ({ active, payload }: any) => {
     }
 
     
-
     
     const processedData = chartData.map((point: any, index: number) => {
       // Store original values BEFORE any processing
       const originalSatisfaction = point.x || point.satisfaction || 0
       const originalRecommendation = point.y || point.recommendation_score || 0
-      
-      console.log(`Point ${index}: original=(${originalSatisfaction}, ${originalRecommendation})`)
       
       // Group based on ORIGINAL satisfaction score
       const satisfactionLevel = groupBySatisfaction(originalSatisfaction)
@@ -444,11 +436,12 @@ const CustomTooltip = ({ active, payload }: any) => {
         debugInfo: `Sat:${originalSatisfaction}, Rec:${originalRecommendation}, Cat:${satisfactionLevel}`
       }
       
-      console.log(`Point ${index}: processed category="${satisfactionLevel}", color="${colorMap[satisfactionLevel]}"`)
       return processed
     })
     
-    console.log('=== PROCESSED DATA SAMPLE ===', processedData.slice(0, 2))
+    if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+      console.log('RelationshipChart processed scatter data sample:', processedData.slice(0, 5))
+    }
 
     // Group by satisfaction categories
     const groupedData = processedData.reduce((acc: any, point: any) => {
@@ -472,7 +465,6 @@ const CustomTooltip = ({ active, payload }: any) => {
     const flatChartData = scatterData.jittered;
 
     if (!flatChartData || flatChartData.length === 0) {
-      console.log('=== SCATTER: No valid data available ===')
       return (
         <div className="w-full h-full flex items-center justify-center min-h-[300px]">
           <p style={{color: 'var(--color-text-secondary)'}}>No scatter plot data available</p>
@@ -491,7 +483,6 @@ const CustomTooltip = ({ active, payload }: any) => {
               dataKey="x" // Plots the jittered value
               name="Satisfaction"
               domain={[0.5, 5.5]} // Widen domain for jitter
-              ticks={[1, 2, 3, 4, 5]}
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
               stroke="rgba(255,255,255,0.3)"
               label={{ value: 'Satisfaction Rating (1-5)', position: 'insideBottom', offset: -10 }}
@@ -536,7 +527,6 @@ const CustomTooltip = ({ active, payload }: any) => {
 const renderLine = () => {
   // Defensive check
   if (!chartData || !Array.isArray(chartData) || chartData.length === 0) {
-    console.log('=== LINE CHART: No valid data available ===')
     return (
       <div className="w-full h-full flex items-center justify-center min-h-[300px]">
         <p style={{color: 'var(--color-text-secondary)'}}>No trend data available</p>
@@ -544,13 +534,14 @@ const renderLine = () => {
     )
   }
   
-  console.log('=== RENDERING LINE CHART ===', chartData.length, 'items')
-  console.log('Line chart data structure:', chartData)
+  if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+    console.log('RelationshipChart line chart data:', chartData)
+  }
 
   // Determine if this is recommendation data (0-10 scale) or satisfaction data (0-5 scale)
   const maxValue = Math.max(...chartData.map((item: any) => item.value || 0))
   const isRecommendationScale = maxValue > 6 // Likely 0-10 scale
-  const yDomain = isRecommendationScale ? [0, 10] : [0, 5]
+  const yDomain = isRecommendationScale ? [0, 10] : [0, 5];
   const yLabel = isRecommendationScale ? 'Average Recommendation Score (0-10)' : 'Average Rating (0-5)'
 
   return (

@@ -17,7 +17,9 @@ interface InsightsCardProps {
 }
 
 export default function InsightsCard({ results, error, feedbackData }: InsightsCardProps) {
-  console.log('=== INSIGHTS CARD RECEIVED ===', results, error)
+  if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+    console.log('InsightsCard received results:', results, 'error:', error)
+  }
   
   // Don't render anything if no results or error
   if (!results && !error) return null

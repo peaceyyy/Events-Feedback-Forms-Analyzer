@@ -5,8 +5,9 @@ import UploadPill from "../components/features/upload/UploadPill";
 import Image from "next/image";
 import ScrollToTopButton from "../components/ui/ScrollToTopButton";
 import AspectComparisonChart from "../components/features/analysis/charts/AspectComparisonChart";
-import WordCloudComponent from "../components/features/analysis/charts/WordCloud/WordCloud";
+import UnifiedWordCloud from "../components/features/analysis/charts/WordCloud/WordCloud";
 import EventAspects from "../components/features/analysis/EventAspects";
+import PerAspectAveragesChart from "../components/features/analysis/charts/PerAspectAveragesChart";
 
 import {
   UploadFile as UploadFileIcon,
@@ -43,7 +44,7 @@ import RecurringTopics from "../components/features/analysis/text/RecurringTopic
  * The `Home` component serves as the main landing page for the Event Insights Generator web application.
  * It provides users with an interface to upload event feedback CSV files, explains the workflow of the app,
  * and highlights key features such as data processing, NPS analysis, and insights generation.
-
+ *
  * @returns {JSX.Element}
  */
 import { useState, useEffect } from "react";
@@ -55,8 +56,9 @@ type AspectHighlight = {
 } | null;
 
 export default function Home() {
-  console.log("=== PAGE COMPONENT LOADING ===");
-
+  if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+    console.log("Home page component loaded.");
+  }
   const [darkMode, setDarkMode] = useState(true); // Start with dark mode (GDG style)
   const [analysisResults, setAnalysisResults] = useState(null);
   const [analysisError, setAnalysisError] = useState("");
@@ -112,8 +114,9 @@ export default function Home() {
 
   // Handle successful upload results
   const handleUploadSuccess = (results: any, filename?: string) => {
-    console.log('=== UPLOAD SUCCESS RESULTS ===', results);
-    console.log('=== ONE WORD DESCRIPTIONS IN RESULTS ===', results?.analysis?.one_word_descriptions);
+    if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+      console.log('UPLOAD SUCCESS RESULTS:', results);
+    }
     setAnalysisResults(results);
     setAnalysisError("");
     setIsAnalyzed(true); // Trigger transition to analysis view
@@ -147,7 +150,6 @@ export default function Home() {
 
   // Handle tab changes
   const handleTabChange = (tabId: string) => {
-    console.log("Tab changed to:", tabId);
     setActiveTab(tabId);
   };
 
@@ -441,32 +443,9 @@ export default function Home() {
                       implemented
                     </p>
                   </div>
-
-                  {/* DEBUG: Log WordCloud data transformation */}
-                  {(() => {
-                    const oneWordData = (analysisResults as any)?.one_word_descriptions?.data?.word_cloud;
-                    const transformedData = oneWordData
-                      ? oneWordData.map((item: any) => ({
-                          word: item.word,
-                          value: item.count,
-                          group: 'descriptions'
-                        }))
-                      : [];
-                    
-                    console.log('=== WORDCLOUD DATA DEBUG ===');
-                    console.log('analysisResults:', analysisResults);
-                    console.log('one_word_descriptions path:', (analysisResults as any)?.one_word_descriptions);
-                    console.log('word_cloud data:', oneWordData);
-                    console.log('word_cloud length:', oneWordData?.length);
-                    console.log('🚀 TRANSFORMED DATA:', transformedData);
-                    console.log('🚀 TRANSFORMED LENGTH:', transformedData?.length);
-                    console.log('🚀 PASSING TO WORDCLOUD:', transformedData?.length > 0 ? 'YES' : 'NO');
-                    console.log('=== END WORDCLOUD DEBUG ===');
-                    return null;
-                  })()}
                   
-                  <WordCloudComponent
-                    title="One Word Descriptions"
+                  <UnifiedWordCloud
+                    title="Word Cloud"
                     data={
                       (analysisResults as any)?.one_word_descriptions?.data?.word_cloud
                         ? (analysisResults as any).one_word_descriptions.data.word_cloud.map((item: any) => ({
@@ -476,7 +455,9 @@ export default function Home() {
                           }))
                         : []
                     }
-                    height={300}
+                    stats={(analysisResults as any)?.one_word_descriptions?.data?.stats}
+                    height={450}
+                    showStats={true}
                   />
                 </div>
               </div>
@@ -746,22 +727,15 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
-                <h4 className="text-base font-semibold mb-3 text-usc-orange">
-                  Per Aspect Averages
-                </h4>
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  Individual aspect scoring breakdown - to be implemented
-                </p>
+              {/* Per Aspect Averages - Spanning full width */}
+              {/* Per Aspect Averages Chart - Now implemented */}
+              <div className="lg:col-span-2">
+                {(analysisResults as any)?.ratings?.data && (
+                  <PerAspectAveragesChart
+                    data={(analysisResults as any).ratings.data}
+                  />
+                )}
               </div>
-
-           
-            </div>
-
             </div>
 
             {/* Second Row - Unified Aspect Performance Card */}
@@ -867,7 +841,7 @@ export default function Home() {
 
               <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
                 <h3 className="text-lg font-semibold mb-4 text-usc-green">
-                  Discovery Channel Analysis
+                  Discovery Channel Impact
                 </h3>
                 <p
                   className="text-sm mb-4"
@@ -1275,27 +1249,7 @@ export default function Home() {
       <div className="relative z-20 container mx-auto px-6 py-12 max-w-6xl">
         <header className="text-center mb-12">
           {/* Google-style brand badge */}
-          <div
-            className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-6 backdrop-blur-md border transition-all duration-300 ${
-              darkMode
-                ? "bg-white/10 border-white/20"
-                : "bg-white/60 border-white/40"
-            }`}
-          >
-            <Image
-              src="/assets/GDG-logo.png"
-              alt="Google Developer Groups Logo"
-              width={24}
-              height={24}
-            />
-            <span
-              className={`font-medium ${
-                darkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
-              Powered by Google Developer Groups - USC
-            </span>
-          </div>
+          
 
           <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">
             <span
@@ -1317,6 +1271,28 @@ export default function Home() {
               Generator
             </span>
           </h1>
+
+          <div
+            className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-6 backdrop-blur-md border transition-all duration-300 ${
+              darkMode
+                ? "bg-white/10 border-white/20"
+                : "bg-white/60 border-white/40"
+            }`}
+          >
+            <Image
+              src="/assets/GDG-logo.png"
+              alt="Google Developer Groups Logo"
+              width={24}
+              height={24}
+            />
+            <span
+              className={`font-medium ${
+                darkMode ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
+              Powered by Google Developer Groups - USC
+            </span>
+          </div>
 
           <p
             className={`text-xl max-w-3xl mx-auto mb-8 leading-relaxed transition-colors duration-500 ${

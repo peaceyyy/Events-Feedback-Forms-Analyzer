@@ -25,13 +25,11 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
     
     
     if (!data) {
-      console.log('No data provided')
       return []
     }
 
     // Handle attendance_rates data structure (most common from Flask)
     if (data.attendance_rates && Array.isArray(data.attendance_rates)) {
-      console.log('Using attendance_rates structure')
       return data.attendance_rates.map((item: any, index: number) => ({
         name: item.session && item.session.length > 25 ? `${item.session.substring(0, 25)}...` : (item.session || `Session ${index + 1}`),
         fullName: item.session || `Session ${index + 1}`,
@@ -44,8 +42,6 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
 
     // Handle session popularity data with optional satisfaction (for grouped bars)
     if (data.sessions && data.attendance && Array.isArray(data.sessions) && Array.isArray(data.attendance)) {
-      console.log('Using sessions/attendance structure')
-      console.log('Sessions data includes average_satisfaction:', !!data.average_satisfaction)
       return data.sessions.map((session: string, index: number) => ({
         name: session && session.length > 30 ? `${session.substring(0, 30)}...` : (session || `Session ${index + 1}`),
         fullName: session || `Session ${index + 1}`,
@@ -59,7 +55,6 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
 
     // Handle multi-metric comparison (e.g., venue vs speaker vs content)
     if (data.detailed_comparison && Array.isArray(data.detailed_comparison)) {
-      console.log('Using detailed_comparison structure')
       return data.detailed_comparison.map((item: any, index: number) => ({
         name: item.aspect || `Aspect ${index + 1}`,
         value: item.average || 0,
@@ -71,7 +66,6 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
 
     // Handle generic array data
     if (Array.isArray(data)) {
-      console.log('Using generic array structure')
       return data.map((item, index) => ({
         name: item.name || item.label || item.session || `Item ${index + 1}`,
         value: item.value || item.count || item.attendance || 0,
@@ -81,13 +75,11 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
     }
 
     // Fallback: try to extract any meaningful data
-    console.log('Attempting fallback data extraction')
     const keys = Object.keys(data)
     if (keys.length > 0) {
       // Look for arrays that might contain chart data
       for (const key of keys) {
         if (Array.isArray(data[key]) && data[key].length > 0) {
-          console.log(`Found array data in key: ${key}`)
           return data[key].map((item: any, index: number) => ({
             name: (typeof item === 'object' ? (item.name || item.session || item.label || `${key} ${index + 1}`) : String(item)),
             value: (typeof item === 'object' ? (item.value || item.count || item.attendance || 1) : 1),
@@ -98,7 +90,6 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
       }
     }
 
-    console.log('No matching data structure found - creating test data')
     // Create some test data to ensure charts can render
     return [
       { name: 'Opening Session', value: 45, attendance: 45, fill: '#4CAF50' },
@@ -108,7 +99,9 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
     ]
   }, [data, options?.colors])
 
-  console.log('=== CHART DATA PROCESSED ===', chartData)
+  if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+    console.log('ComparisonChart processed data:', chartData)
+  }
 
   // Sort data by value (descending) for better readability
   const sortedData = [...chartData].sort((a, b) => (b.value || b.attendance || 0) - (a.value || a.attendance || 0))
@@ -141,8 +134,7 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
   const renderHorizontalBar = () => {
 
   if (!sortedData || sortedData.length === 0) {
-    console.log('No data available to render the horizontal bar chart.');
-    return <div>No data to display</div>; // Or a loading spinner, etc.
+    return <div>No data to display</div>; // 
   }
   
   return (
