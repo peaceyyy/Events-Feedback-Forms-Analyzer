@@ -38,7 +38,7 @@ export default function UnifiedWordCloud({
 
   useEffect(() => {
     if (!WordCloudChart) {
-      console.log('Carbon Charts not available, using fallback');
+      console.log('Carbon Charts not available!');
       setUseFallback(true);
     }
   }, []);
