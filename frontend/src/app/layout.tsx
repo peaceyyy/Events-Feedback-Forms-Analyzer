@@ -37,6 +37,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* IBM Plex Sans font for Carbon Charts */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        {/* Carbon Charts stylesheet */}
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/@carbon/charts@1.12.0/styles.css"
+        />
+      </head>
       <body
         className={`${productSans.variable} antialiased`}
       >

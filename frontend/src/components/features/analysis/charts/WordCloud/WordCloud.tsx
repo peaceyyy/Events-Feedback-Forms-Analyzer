@@ -36,12 +36,6 @@ export default function UnifiedWordCloud({
 }: UnifiedWordCloudProps) {
   const [useFallback, setUseFallback] = useState(false);
 
-  useEffect(() => {
-    if (!WordCloudChart) {
-      console.log('Carbon Charts not available!');
-      setUseFallback(true);
-    }
-  }, []);
 
   const options = {
     title: title,
@@ -79,7 +73,7 @@ export default function UnifiedWordCloud({
 
     const getWordColor = (value: number) => {
       const intensity = value / maxValue;
-      if (intensity > 0.8) return '#78a9ff'; // High frequency - bright blue
+    if (intensity > 0.8) return '#78a9ff'; // High frequency - bright blue
       if (intensity > 0.5) return '#82cfff'; // Medium frequency - cyan
       if (intensity > 0.3) return '#42be65'; // Lower frequency - green
       return '#ffab00'; // Low frequency - yellow
