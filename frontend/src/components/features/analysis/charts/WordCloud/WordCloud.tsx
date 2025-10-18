@@ -47,12 +47,12 @@ export default function UnifiedWordCloud({
     title: title,
     resizable: true,
     theme: 'dark',
-    height: `${height - (showStats ? 100 : 0)}px`,
+    height: `${height}px`,
     wordCloud: {
       fontFamily: 'IBM Plex Sans, sans-serif',
-      fontSizeRange: () => [16, 72],
+      fontSizeRange: () => [20, 80], // Larger font range for better visibility
 
-      padding: 12,
+      padding: 18, // More generous spacing between words
     },
     color: {
       scale: {
@@ -66,7 +66,7 @@ export default function UnifiedWordCloud({
     animations: { enabled: true },
   };
 
-  // Fallback word cloud implementation
+  // Fallback word cloud implementation with generous spacing
   const renderFallbackWordCloud = () => {
     if (!data.length) return null;
 
@@ -74,7 +74,7 @@ export default function UnifiedWordCloud({
 
     const getWordSize = (value: number) => {
       const ratio = value / maxValue;
-      return Math.max(1, ratio * 3); // Min 1rem, max 3rem
+      return Math.max(1.2, ratio * 4.5); // Min 1.2rem, max 4.5rem - bigger range
     };
 
     const getWordColor = (value: number) => {
@@ -87,9 +87,9 @@ export default function UnifiedWordCloud({
 
     return (
       <div
-        className="flex flex-wrap items-center justify-center gap-3 p-6"
+        className="flex flex-wrap items-center justify-center gap-4 p-8"
         style={{
-          height: `${height - 100}px`,
+          height: `${height}px`,
           overflowY: 'auto',
           background:
             'linear-gradient(135deg, rgba(38, 38, 38, 0.9), rgba(57, 57, 57, 0.5))',
@@ -104,11 +104,12 @@ export default function UnifiedWordCloud({
             style={{
               fontSize: `${getWordSize(item.value)}rem`,
               color: getWordColor(item.value),
-              opacity: 0.85 + (item.value / maxValue) * 0.15,
-              lineHeight: 1.2,
-              margin: '0.25rem',
+              opacity: 0.9 + (item.value / maxValue) * 0.1,
+              lineHeight: 1.3,
+              margin: '0.5rem', // More generous margins
+              padding: '0.25rem 0.5rem', // Add padding for better spacing
               textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-              fontWeight: Math.min(900, 400 + (item.value / maxValue) * 500),
+              fontWeight: Math.min(900, 500 + (item.value / maxValue) * 400),
             }}
             title={`"${item.word}" - mentioned ${item.value} times`}
           >

@@ -6,6 +6,7 @@ import Image from "next/image";
 import ScrollToTopButton from "../components/ui/ScrollToTopButton";
 import AspectComparisonChart from "../components/features/analysis/charts/AspectComparisonChart";
 import UnifiedWordCloud from "../components/features/analysis/charts/WordCloud/WordCloud";
+import PacingAnalysisChart from "../components/features/analysis/charts/PacingAnalysisChart";
 import EventAspects from "../components/features/analysis/EventAspects";
 import PerAspectAveragesChart from "../components/features/analysis/charts/PerAspectAveragesChart";
 
@@ -429,23 +430,18 @@ export default function Home() {
                   )}
                 </div>
 
-                {/* Future Charts - Placeholders */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
-                    <h3 className="text-lg font-semibold mb-4 text-usc-green">
-                      Pacing Analysis
-                    </h3>
-                    <p
-                      className="text-sm"
-                      style={{ color: "var(--color-text-secondary)" }}
-                    >
-                      Chart showing satisfaction by pacing preference - to be
-                      implemented
-                    </p>
-                  </div>
+                {/* Pacing & Word Cloud Analysis - Aligned & Uniform */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                  {/* Pacing Analysis Chart */}
+                  <PacingAnalysisChart
+                    data={(analysisResults as any)?.pacing?.data}
+                    title="Pacing vs Satisfaction"
+                    height={350}
+                  />
                   
+                  {/* Word Cloud - Larger with More Words */}
                   <UnifiedWordCloud
-                    title="Word Cloud"
+                    title="One-Word Descriptions"
                     data={
                       (analysisResults as any)?.one_word_descriptions?.data?.word_cloud
                         ? (analysisResults as any).one_word_descriptions.data.word_cloud.map((item: any) => ({
@@ -456,7 +452,7 @@ export default function Home() {
                         : []
                     }
                     stats={(analysisResults as any)?.one_word_descriptions?.data?.stats}
-                    height={450}
+                    height={465}
                     showStats={true}
                   />
                 </div>

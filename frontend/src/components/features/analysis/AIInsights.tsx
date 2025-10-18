@@ -1,4 +1,4 @@
-// components/features/analysis/text/AIInsightsContainer.tsx
+// components/features/analysis/text/AIInsights.tsx
 'use client'
 import { useState, useEffect } from 'react'
 import { 

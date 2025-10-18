@@ -343,6 +343,97 @@ def generate_text_insights(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
+def generate_pacing_analysis(data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Analyzes pacing satisfaction correlation.
+    Shows how event pacing affects overall satisfaction.
+    """
+    df = pd.DataFrame(data)
+    
+    required_columns = ['pacing', 'satisfaction']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    
+    if missing_columns:
+        return {"error": f"Missing required columns: {missing_columns}"}
+    
+    # Clean data - remove null values
+    clean_df = df[['pacing', 'satisfaction']].dropna()
+    
+    if clean_df.empty:
+        return {"error": "No valid pacing/satisfaction data found"}
+    
+    # Group by pacing and calculate satisfaction stats
+    pacing_groups = clean_df.groupby('pacing')['satisfaction'].agg([
+        'count', 'mean', 'std'
+    ]).round(2)
+    
+    # Prepare chart data
+    chart_data = []
+    stats_summary = {}
+    
+    # Convert pandas groupby result to dictionary for easier type handling
+    pacing_stats = pacing_groups.to_dict('index')
+    
+    for pacing_category, stats in pacing_stats.items():
+        count = int(stats['count'])
+        mean_satisfaction = float(stats['mean'])
+        std_satisfaction = float(stats['std']) if not pd.isna(stats['std']) else 0.0
+        
+        chart_data.append({
+            "category": pacing_category,
+            "value": mean_satisfaction,
+            "count": count,
+            "std_dev": std_satisfaction
+        })
+        
+        stats_summary[pacing_category] = {
+            "count": count,
+            "avg_satisfaction": mean_satisfaction,
+            "percentage": round((count / len(clean_df)) * 100, 1)
+        }
+    
+    # Sort by satisfaction (highest first)
+    chart_data.sort(key=lambda x: x['value'], reverse=True)
+    
+    # Calculate overall insights
+    total_responses = len(clean_df)
+    best_pacing = max(chart_data, key=lambda x: x['value'])
+    worst_pacing = min(chart_data, key=lambda x: x['value'])
+    
+    # Generate insights
+    insights = []
+    if best_pacing['value'] - worst_pacing['value'] > 1.0:
+        insights.append(f"Pacing significantly affects satisfaction - '{best_pacing['category']}' leads to {best_pacing['value']:.1f}/5 satisfaction")
+    
+    if any(cat['category'].lower() in ['just right', 'perfect', 'good'] for cat in chart_data):
+        optimal_count = sum(cat['count'] for cat in chart_data if cat['category'].lower() in ['just right', 'perfect', 'good'])
+        insights.append(f"{round((optimal_count/total_responses)*100)}% found pacing optimal")
+    
+    return {
+        "chart_type": "pacing_analysis",
+        "data": {
+            "categories": [item["category"] for item in chart_data],
+            "values": [item["value"] for item in chart_data],
+            "counts": [item["count"] for item in chart_data],
+            "chart_data": chart_data,  # Detailed data for advanced charts
+            
+            "stats": {
+                "total_responses": total_responses,
+                "pacing_distribution": stats_summary,
+                "satisfaction_range": {
+                    "highest": best_pacing['value'],
+                    "lowest": worst_pacing['value'],
+                    "difference": round(best_pacing['value'] - worst_pacing['value'], 2)
+                },
+                "best_pacing": best_pacing['category'],
+                "worst_pacing": worst_pacing['category']
+            },
+            
+            "insights": insights
+        }
+    }
+
+
 def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Generates a complete analysis report combining all insights.
@@ -426,6 +517,13 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     except Exception as e:
         print(f"DEBUG: One-word descriptions analysis failed: {e}")
         analysis_result["one_word_descriptions"] = {"error": str(e)}
+    
+    try:
+        analysis_result["pacing"] = generate_pacing_analysis(data)
+        print("DEBUG: Pacing analysis completed")
+    except Exception as e:
+        print(f"DEBUG: Pacing analysis failed: {e}")
+        analysis_result["pacing"] = {"error": str(e)}
     
     # Add scatter data
     analysis_result["scatter_data"] = {

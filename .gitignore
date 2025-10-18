@@ -2,5 +2,8 @@
 /.vscode
 /.github
 /.venv
-/.roo
+__pycache__/
+.roo/
+.gitignore
 node_modules
+Notes

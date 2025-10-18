@@ -46,7 +46,8 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
       formData.append('file', selectedFile)
 
       // Send to Flask backend
-      const response = await fetch('http://localhost:5000/api/upload', {
+      // Send to our Next.js API route proxy instead of directly to the Flask backend
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       })
