@@ -283,6 +283,141 @@ class GeminiAnalysisService:
         """Parse insights response"""
         return self._parse_gemini_response(response_text)
 
+    # ============================================================================
+    # SESSION & MARKETING ANALYTICS AI INSIGHTS
+    # ============================================================================
+    
+    def generate_session_insights(self, session_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Generate AI-powered insights for session performance matrix.
+        Analyzes session categorization and provides strategic recommendations.
+        """
+        try:
+            if not session_data or 'sessions' not in session_data:
+                return {"error": "No session data available"}
+            
+            # Build context for AI
+            sessions_summary = []
+            for session in session_data['sessions'][:10]:  # Limit to top 10
+                sessions_summary.append(
+                    f"- {session['session']}: {session['attendance']} attendees, "
+                    f"{session['avg_satisfaction']}/5 satisfaction ({session['category']})"
+                )
+            
+            quadrants = session_data.get('quadrants', {})
+            stats = session_data.get('stats', {})
+            
+            prompt = f"""Analyze this event's session performance data and provide strategic insights:
+
+SESSION PERFORMANCE DATA:
+{chr(10).join(sessions_summary)}
+
+QUADRANT BREAKDOWN:
+- Stars (High Attendance + High Satisfaction): {quadrants.get('stars', 0)} sessions
+- Hidden Gems (Low Attendance + High Satisfaction): {quadrants.get('hidden_gems', 0)} sessions
+- Crowd Favorites (High Attendance + Low Satisfaction): {quadrants.get('crowd_favorites', 0)} sessions
+- Needs Improvement (Low Attendance + Low Satisfaction): {quadrants.get('needs_improvement', 0)} sessions
+
+OVERALL STATS:
+- Total sessions: {stats.get('total_sessions', 0)}
+- Average attendance: {stats.get('avg_attendance', 0):.1f}
+- Average satisfaction: {stats.get('avg_satisfaction', 0):.2f}/5
+
+TASK: Provide actionable strategic insights in JSON format:
+{{
+  "key_insights": [
+    "3-4 bullet points analyzing the performance patterns",
+    "Focus on what's working well and what needs attention"
+  ],
+  "strategic_recommendations": [
+    "3-4 specific, actionable recommendations for next event",
+    "Prioritize by impact and feasibility"
+  ],
+  "growth_opportunities": [
+    "2-3 opportunities to maximize session success",
+    "Include specific session types or formats to explore"
+  ],
+  "risk_areas": [
+    "1-2 areas of concern that need immediate attention"
+  ]
+}}
+
+Guidelines:
+- Be specific and actionable (not generic advice)
+- Reference actual session names when relevant
+- Consider resource allocation and ROI
+- Think like an event strategist making data-driven decisions"""
+
+            response = self.model.generate_content(prompt)
+            return self._parse_gemini_response(response.text)
+            
+        except Exception as e:
+            return {"error": f"Failed to generate session insights: {str(e)}"}
+    
+    def generate_marketing_insights(self, channel_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Generate AI-powered insights for discovery channel impact.
+        Analyzes marketing attribution and provides campaign recommendations.
+        """
+        try:
+            if not channel_data or 'channels' not in channel_data:
+                return {"error": "No channel data available"}
+            
+            # Build context for AI
+            channels_summary = []
+            for channel in channel_data['channels'][:8]:  # Limit to top 8
+                channels_summary.append(
+                    f"- {channel['event_discovery']}: {channel['avg_satisfaction']:.2f}/5 satisfaction, "
+                    f"{channel['count']} attendees, {channel['effectiveness_score']:.1f}% effectiveness"
+                )
+            
+            stats = channel_data.get('stats', {})
+            
+            prompt = f"""Analyze this event's marketing channel performance and provide strategic insights:
+
+CHANNEL PERFORMANCE DATA:
+{chr(10).join(channels_summary)}
+
+OVERALL STATS:
+- Total channels used: {stats.get('total_channels', 0)}
+- Total responses tracked: {stats.get('total_responses', 0)}
+- Overall average satisfaction: {stats.get('overall_avg_satisfaction', 0):.2f}/5
+
+EFFECTIVENESS FORMULA: 70% satisfaction quality + 30% reach volume
+
+TASK: Provide marketing strategy insights in JSON format:
+{{
+  "key_insights": [
+    "3-4 bullet points analyzing channel effectiveness patterns",
+    "Highlight which channels deliver quality attendees"
+  ],
+  "marketing_recommendations": [
+    "3-4 specific recommendations for marketing budget allocation",
+    "Include tactics for scaling high-performers and fixing low-performers"
+  ],
+  "growth_opportunities": [
+    "2-3 opportunities to expand reach while maintaining quality",
+    "Focus on underutilized high-satisfaction channels"
+  ],
+  "budget_allocation": [
+    "2-3 suggestions for reallocating marketing spend",
+    "Be specific about which channels to invest in vs cut"
+  ]
+}}
+
+Guidelines:
+- Think like a marketing strategist optimizing ROI
+- Be specific about channel names and tactics
+- Consider both quality (satisfaction) and quantity (reach)
+- Prioritize recommendations by expected impact
+- Reference industry best practices where relevant"""
+
+            response = self.model.generate_content(prompt)
+            return self._parse_gemini_response(response.text)
+            
+        except Exception as e:
+            return {"error": f"Failed to generate marketing insights: {str(e)}"}
+
 
 # Convenience function for easy import
 def get_gemini_service() -> GeminiAnalysisService:

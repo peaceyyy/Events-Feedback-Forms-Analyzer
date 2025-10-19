@@ -7,6 +7,9 @@ import ScrollToTopButton from "../components/ui/ScrollToTopButton";
 import AspectComparisonChart from "../components/features/analysis/charts/AspectComparisonChart";
 import UnifiedWordCloud from "../components/features/analysis/charts/WordCloud/WordCloud";
 import PacingAnalysisChart from "../components/features/analysis/charts/PacingAnalysisChart";
+import CorrelationAnalysisChart from "../components/features/analysis/charts/CorrelationAnalysisChart";
+import SessionPerformanceMatrixChart from "../components/features/analysis/charts/SessionPerformanceMatrixChart";
+import DiscoveryChannelImpactChart from "../components/features/analysis/charts/DiscoveryChannelImpactChart";
 import EventAspects from "../components/features/analysis/EventAspects";
 import PerAspectAveragesChart from "../components/features/analysis/charts/PerAspectAveragesChart";
 
@@ -69,7 +72,7 @@ export default function Home() {
   const [feedbackData, setFeedbackData] = useState<any[]>([]); // Store raw feedback data for AI analysis
   const [aiInsights, setAiInsights] = useState<any>(null); // Cache AI insights across tab switches
   const [aspectChartVariant, setAspectChartVariant] = useState<
-    "diverging" | "grouped" | "bullet" | "radial"
+    "diverging" | "grouped" | "bullet" | "radar"
   >("diverging"); // Aspect chart variant
   const [topAspect, setTopAspect] = useState<AspectHighlight>(null);
   const [lowestAspect, setLowestAspect] = useState<AspectHighlight>(null);
@@ -152,6 +155,57 @@ export default function Home() {
   // Handle tab changes
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
+  };
+
+  // AI Insight Handlers
+  const handleGenerateSessionInsights = async (sessionData: any[]) => {
+    try {
+      const response = await fetch('/api/ai/session-insights', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ session_data: sessionData }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to generate session insights');
+      }
+
+      return result.insights;
+    } catch (error) {
+      console.error('Session insights generation error:', error);
+      return {
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  };
+
+  const handleGenerateMarketingInsights = async (channelData: any[]) => {
+    try {
+      const response = await fetch('/api/ai/marketing-insights', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ channel_data: channelData }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to generate marketing insights');
+      }
+
+      return result.insights;
+    } catch (error) {
+      console.error('Marketing insights generation error:', error);
+      return {
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
   };
 
   // Create placeholder content for future tabs
@@ -611,7 +665,7 @@ export default function Home() {
       // TEXT ANALYTICS TAB - For open-ended responses
       tabs.push({
         id: "text-insights",
-        label: "Text Insights",
+        label: "Text Insights [AI]",
         icon: <TextFieldsIcon sx={{ fontSize: 20 }} />,
         content: (
           <div className="space-y-8">
@@ -684,59 +738,8 @@ export default function Home() {
               </p>
             </div>
 
-            {/* First Row - Radar Chart & Aspect Performance Placeholder */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Radar Chart - Aspect Ratings Comparison */}
-              {(analysisResults as any)?.ratings?.data && (
-                <div className="w-full min-h-[450px]">
-                  <ChartFactory
-                    config={createChartConfig(
-                      "rating-comparison",
-                      "Aspect Ratings Comparison",
-                      "relationship",
-
-                      {
-                        ...(analysisResults as any).ratings.data,
-                        insights: undefined,
-                      },
-                      {
-                        subtitle: "Venue • Speakers • Content performance",
-                        chartVariant: "radar",
-                        allowVariantToggle: true,
-                      }
-                    )}
-                    className="w-full h-full"
-                  />
-                </div>
-              )}
-
-              {/* Placeholder for Aspect Performance Comparison */}
-                 <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
-                <h4 className="text-base font-semibold mb-3 text-usc-orange">
-                  Correlation Analysis
-                </h4>
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  Impact analysis: which aspects drive overall satisfaction most
-                </p>
-              </div>
-
-              {/* Per Aspect Averages - Spanning full width */}
-              {/* Per Aspect Averages Chart - Now implemented */}
-              <div className="lg:col-span-2">
-                {(analysisResults as any)?.ratings?.data && (
-                  <PerAspectAveragesChart
-                    data={(analysisResults as any).ratings.data}
-                  />
-                )}
-              </div>
-            </div>
-
-            {/* Second Row - Unified Aspect Performance Card */}
             <div className="glass-card-dark rounded-2xl p-6">
-              {/* Flexible internal layout - chart takes available space, insights get optimal width */}
+          
               <div className="flex flex-col lg:flex-row gap-8 lg:items-stretch">
                 
                 {/* Left Side - Chart Area (flexible, takes remaining space) */}
@@ -763,7 +766,27 @@ export default function Home() {
                 </div>
                 
               </div>
+            </div>  
+
+            {/* First Row - Correlation Analysis (Full Width for Detailed View) */}
+            <div className="grid grid-cols-1 gap-8">
+              <CorrelationAnalysisChart
+                data={(analysisResults as any)?.correlation?.data}
+                title="Aspect Impact Analysis"
+                height={450}
+              />
             </div>
+
+            {/* Second Row - Per Aspect Averages (Full Width) */}
+            <div className="grid grid-cols-1 gap-8">
+              {(analysisResults as any)?.ratings?.data && (
+                <PerAspectAveragesChart
+                  data={(analysisResults as any).ratings.data}
+                />
+              )}
+            </div>
+
+            
           
             
           </div>
@@ -814,47 +837,26 @@ export default function Home() {
               </div>
             )}
 
-            {/* Future Session Analytics - Placeholders */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
-                <h3 className="text-lg font-semibold mb-4 text-usc-green">
-                  Session Performance Matrix
-                </h3>
-                <p
-                  className="text-sm mb-4"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  Bubble chart showing attendance vs satisfaction to identify
-                  Stars, Hidden Gems, and Underperformers
-                </p>
-                <div
-                  className="text-xs"
-                  style={{ color: "var(--color-text-tertiary)" }}
-                >
-                  Coming Soon: Bubble Chart Implementation
-                </div>
-              </div>
+            {/* Session Analytics - Detailed Views */}
+            <div className="grid grid-cols-1 gap-8">
+              {/* Session Performance Matrix - Bubble Chart */}
+              <SessionPerformanceMatrixChart
+                data={(analysisResults as any)?.session_matrix}
+                title="Session Performance Matrix"
+                height={500}
+                onGenerateAIInsights={handleGenerateSessionInsights}
+              />
 
-              <div className="glass-card-dark p-8 rounded-2xl border border-white/10">
-                <h3 className="text-lg font-semibold mb-4 text-usc-green">
-                  Discovery Channel Impact
-                </h3>
-                <p
-                  className="text-sm mb-4"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  Event discovery channel effectiveness and satisfaction
-                  correlation
-                </p>
-                <div
-                  className="text-xs"
-                  style={{ color: "var(--color-text-tertiary)" }}
-                >
-                  To be implemented based on discovery channel data
-                </div>
-              </div>
+              {/* Discovery Channel Impact */}
+              <DiscoveryChannelImpactChart
+                data={(analysisResults as any)?.discovery_channels}
+                title="Discovery Channel Impact"
+                height={450}
+                onGenerateAIInsights={handleGenerateMarketingInsights}
+              />
             </div>
 
+            {/* Future Analytics - Placeholders */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
                 <h4 className="text-base font-semibold mb-3 text-usc-orange">
@@ -944,7 +946,7 @@ export default function Home() {
                   className="text-lg font-semibold mb-4"
                   style={{ color: "var(--color-text-primary)" }}
                 >
-                  Technology Stack
+                  Tech Stack
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   {/* Tech Item */}

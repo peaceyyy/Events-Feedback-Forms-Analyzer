@@ -3,13 +3,13 @@
 import React from 'react'
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList,
-  ResponsiveContainer, Cell, ReferenceLine, PolarAngleAxis,  RadialBarChart, RadialBar
+  ResponsiveContainer, Cell, ReferenceLine, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts'
 
 interface AspectComparisonChartProps {
   data: any
-  variant?: 'diverging' | 'grouped' | 'bullet' | 'radial'
-  onVariantChange?: (variant: 'diverging' | 'grouped' | 'bullet' | 'radial') => void
+  variant?: 'diverging' | 'grouped' | 'bullet' | 'radar'
+  onVariantChange?: (variant: 'diverging' | 'grouped' | 'bullet' | 'radar') => void
   options?: {
     showBaseline?: boolean
     showTooltip?: boolean
@@ -117,7 +117,7 @@ export default function AspectComparisonChart({
     const fill = data.fill || '#4CAF50';
     const performance = data.performance || 'adequate';
 
-    // If 'radial' prop is true, use the radial style
+  
     if (radial) {
       return (
         <div className="glass-card-dark p-4 rounded-lg border border-white/20 w-64">
@@ -151,7 +151,6 @@ export default function AspectComparisonChart({
       )
     }
 
-    // Default (bar) tooltip style
     const isStrength = difference > 0;
     return (
       <div className="glass-card-dark p-3 rounded-lg border border-white/20 max-w-xs">
@@ -226,7 +225,7 @@ export default function AspectComparisonChart({
             dataKey="aspect"
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
             stroke="rgba(255,255,255,0.3)"
-            width={70}
+          width={70}
           />
           
           {/* Baseline reference line */}
@@ -325,7 +324,6 @@ export default function AspectComparisonChart({
             />
           )}
           
-          {/* Baseline bar is now orange */}
           <Bar dataKey="baseline" fill="#FF9800" name="Baseline" barSize={30} />
           <Bar dataKey="value" fill="var(--color-usc-green)" name="Aspect Rating" barSize={30}>
             {chartData.map((entry: any, index: number) => (
@@ -368,16 +366,15 @@ export default function AspectComparisonChart({
                 </span>
               </div>
               
-              {/* --- THE CORE VISUAL REWORK --- */}
+    
               <div className="relative h-4 bg-slate-700/50 rounded-md">
                 
-                {/* Background Performance Ranges (Optional but very professional) */}
-                {/* These add context, like a "poor" to "excellent" scale */}
+          
                 <div className="absolute top-0 left-0 h-full w-1/2 bg-red-500/10 rounded-l-md"></div>
                 <div className="absolute top-0 left-1/2 h-full w-1/4 bg-yellow-500/10"></div>
                 <div className="absolute top-0 left-3/4 h-full w-1/4 bg-green-500/10 rounded-r-md"></div>
 
-                {/* Actual Performance Bar (Thinner than the background) */}
+            
                 <div 
                   className="absolute top-1/2 left-0 h-2 bg-green-400 rounded-md transition-all duration-500 transform -translate-y-1/2 z-10"
                   style={{ 
@@ -413,126 +410,74 @@ export default function AspectComparisonChart({
 }
 
 
-// A custom legend that acts as a summary panel
-const CustomLegend = ({ payload }: any) => {
-  if (!payload || !payload.length) return null;
-
-  return (
-    <div className="w-32 space-y-2">
-      {payload.map((entry: any, index: number) => {
-        const { payload: data } = entry; // Destructure the nested payload
-        return (
-          <div key={`item-${index}`} className="p-2 bg-white/5 rounded-md text-xs">
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: data.fill }} />
-                <span style={{ color: 'var(--color-text-secondary)' }}>{data.aspect}</span>
-              </div>
-              <span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                {data.value.toFixed(1)}
-              </span>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-  // 4. Radial Comparison - Circular performance view
-  const renderRadialChart = () => {
+  const renderRadarChart = () => {
     if (chartData.length === 0) {
       return (
         <div className="flex items-center justify-center h-[400px]">
-          <p className="text-center" style={{color: 'var(--color-text-secondary)'}}>No data available for radial chart</p>
+          <p className="text-center" style={{color: 'var(--color-text-secondary)'}}>No data available for radar chart</p>
         </div>
       )
     }
 
-    // Enhanced data with more distinguishing colors
-    const radialData = chartData.map((item: any, index: number) => {
-      // Create more varied colors for better distinction
-      const colorPalette = [
-        '#4CAF50', // Green
-        '#FF9800', // Orange  
-        '#2196F3', // Blue
-        '#9C27B0', // Purple
-        '#F44336', // Red
-        '#00BCD4', // Cyan
-        '#FFEB3B', // Yellow
-        '#795548'  // Brown
-      ];
-      
-      return {
-        ...item,
-        // Use palette color or fallback to performance color
-        fill: colorPalette[index % colorPalette.length] || item.fill,
-        // Ensure proper percentage for radial display
-        percentage: (item.value / 5) * 100
-      }
-    });
+    // Transform data for radar chart
+    const radarData = chartData.map((item: any) => ({
+      aspect: item.aspect,
+      value: item.value,
+      baseline: item.baseline, 
+      fullMark: 5
+    }));
 
     return (
-      <div className="flex items-center justify-center h-full w-full">
-        <ResponsiveContainer width="100%" height={400}>
-          <RadialBarChart 
-            cx="50%" 
-            cy="50%" 
-            innerRadius="25%" 
-            outerRadius="85%" 
-            data={radialData}
-            startAngle={90}
-            endAngle={-270} 
-            barSize={25}
-            margin={{ top: 20, right: 80, bottom: 20, left: 20 }}
-          >
-            <PolarAngleAxis
-              type="number"
-              domain={ [0, 5] }
-              angleAxisId={0}
-              tick={false}
-            />
-            
-            <RadialBar 
-              angleAxisId={0} 
-              dataKey="value"
-              cornerRadius={8} 
-              background={{ fill: 'rgba(255,255,255,0.08)' }}
-            >
-              {radialData.map((entry: any, index: number) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
-              ))}
-            </RadialBar>
-            
-            <Tooltip content={(props) => <CustomTooltip {...props} radial={true} />} />
+      <ResponsiveContainer width="100%" height={400}>
+        <RadarChart data={radarData}>
+          <PolarGrid stroke="rgba(255,255,255,0.2)" />
+          <PolarAngleAxis 
+            dataKey="aspect" 
+            tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
+          />
+          <PolarRadiusAxis 
+            angle={90} 
+            domain={[0, 5]}
+            tick={{ fill: 'var(--color-text-secondary)', fontSize: 10 }}
+            stroke="rgba(255,255,255,0.3)"
+          />
+          {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
+          
+        
+          <Radar 
+            name="Overall Satisfaction (Baseline)" 
+            dataKey="baseline" 
+            stroke="#FFC107" 
+            fill="#FFC107" 
+            fillOpacity={0.1}
+            strokeWidth={2.5}
+            strokeDasharray="5 5"
+          />
+          
+          {/* Actual Aspect Ratings - Solid green line */}
+          <Radar 
+            name="Aspect Ratings" 
+            dataKey="value" 
+            stroke="var(--color-usc-green)" 
+            fill="var(--color-usc-green)" 
+            fillOpacity={0.4}
+            strokeWidth={2}
+          />
+          
+          {/* Legend for clarity */}
+          {options?.showLegend && (
             <Legend 
-              iconType="circle"
-              layout="vertical"
-              verticalAlign="middle"
-              align="right"
               wrapperStyle={{ 
-                fontSize: '13px', 
-                color: 'var(--color-text-secondary)',
-                paddingLeft: '10px'
+                fontSize: '12px', 
+                paddingTop: '10px',
+                color: 'var(--color-text-secondary)'
               }}
-                formatter={(value, entry: any) => {
-                  // The data for the legend item is in the payload.
-                  const { payload } = entry;
-                  if (payload && payload.aspect) {
-                    return (
-                      <span style={{ color: 'var(--color-text-primary)' }}>
-                        {payload.aspect}
-                      </span>
-                    );
-                  }
-                  return value; // Fallback to the default value
-                }}
-              />
-          </RadialBarChart>
-        </ResponsiveContainer>
-      </div>
-    );
-}
+            />
+          )}
+        </RadarChart>
+      </ResponsiveContainer>
+    )
+  }
   // Debug logging
   if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
     console.log('AspectComparisonChart processed chartData:', chartData)
@@ -565,7 +510,7 @@ const CustomLegend = ({ payload }: any) => {
           {/* Variant Toggle Buttons */}
           {onVariantChange && (
             <div className="flex gap-1 p-1 bg-white/5 rounded-lg">
-              {(['diverging', 'grouped', 'bullet', 'radial'] as const).map((v) => (
+              {(['diverging', 'grouped', 'bullet', 'radar'] as const).map((v) => (
                 <button
                   key={v}
                   onClick={() => onVariantChange(v)}
@@ -577,12 +522,12 @@ const CustomLegend = ({ payload }: any) => {
                   title={
                     v === 'diverging' ? 'Diverging Bar Chart' :
                     v === 'grouped' ? 'Grouped Bar Chart' :
-                    v === 'bullet' ? 'Bullet Chart' : 'Radial Chart'
+                    v === 'bullet' ? 'Bullet Chart' : 'Radar Chart'
                   }
                 >
                   {v === 'diverging' ? 'Diverging' :
                    v === 'grouped' ? 'Grouped' :
-                   v === 'bullet' ? 'Bullet' : 'Radial'}
+                   v === 'bullet' ? 'Bullet' : 'Radar'}
                 </button>
               ))}
             </div>
@@ -593,7 +538,7 @@ const CustomLegend = ({ payload }: any) => {
           {variant === 'diverging' && 'Performance deviation from overall satisfaction baseline'}
           {variant === 'grouped' && 'Direct comparison of aspect ratings vs baseline'}
           {variant === 'bullet' && 'Performance indicators with baseline reference'}
-          {variant === 'radial' && 'Circular performance visualization'}
+          {variant === 'radar' && 'Multi-dimensional performance visualization'}
         </p>
       </div>
       
@@ -601,7 +546,7 @@ const CustomLegend = ({ payload }: any) => {
         {variant === 'diverging' && renderDivergingBar()}
         {variant === 'grouped' && renderGroupedBar()}
         {variant === 'bullet' && renderBulletChart()}
-        {variant === 'radial' && renderRadialChart()}
+        {variant === 'radar' && renderRadarChart()}
       </div>
     </div>
   )

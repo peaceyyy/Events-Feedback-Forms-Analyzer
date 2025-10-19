@@ -194,3 +194,73 @@ def ai_enhanced_analysis():
             "error": "AI analysis failed",
             "message": str(e)
         }), 500
+
+@app.route('/api/ai/session-insights', methods=['POST'])
+def generate_session_insights():
+    """
+    Generate AI-powered insights for session performance matrix.
+    Uses Gemini to analyze session quadrant data and provide strategic recommendations.
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'session_data' not in data:
+            return jsonify({
+                "success": False,
+                "error": "No session data provided"
+            }), 400
+        
+        session_data = data['session_data']
+        
+        # Initialize Gemini service
+        gemini_service = get_gemini_service()
+        
+        # Generate session-specific AI insights
+        ai_insights = gemini_service.generate_session_insights(session_data)
+        
+        return jsonify({
+            "success": True,
+            "insights": ai_insights
+        })
+    
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": "Failed to generate session insights",
+            "message": str(e)
+        }), 500
+
+@app.route('/api/ai/marketing-insights', methods=['POST'])
+def generate_marketing_insights():
+    """
+    Generate AI-powered insights for discovery channel impact.
+    Uses Gemini to analyze marketing attribution and ROI recommendations.
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'channel_data' not in data:
+            return jsonify({
+                "success": False,
+                "error": "No channel data provided"
+            }), 400
+        
+        channel_data = data['channel_data']
+        
+        # Initialize Gemini service
+        gemini_service = get_gemini_service()
+        
+        # Generate marketing-specific AI insights
+        ai_insights = gemini_service.generate_marketing_insights(channel_data)
+        
+        return jsonify({
+            "success": True,
+            "insights": ai_insights
+        })
+    
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": "Failed to generate marketing insights",
+            "message": str(e)
+        }), 500

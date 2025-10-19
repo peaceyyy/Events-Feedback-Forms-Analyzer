@@ -111,7 +111,7 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
           subtitle: `Individual responses correlation (${analysisData.scatter_data.data.total_points || 0} points)`,
           chartVariant: 'scatter', // Perfect for correlation analysis
           allowVariantToggle: true, // Scatter and line both work for this data
-          availableVariants: ['scatter', 'line'] // Exclude radar - doesn't make sense for correlation data
+          availableVariants: ['scatter', 'line'] 
         }
       ))
     }
@@ -295,42 +295,3 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
     </div>
   )
 }
-
-// Sidebar Theory: Dashboard Design Principles
-/*
-EFFECTIVE DASHBOARD ARCHITECTURE:
-
-LAYOUT STRATEGY:
-• F-Pattern: Most important metrics top-left (where eyes start)
-• Progressive disclosure: Key metrics → Detailed breakdowns → Context
-• Responsive breakpoints: 1 col (mobile) → 2 cols (tablet) → 2-4 cols (desktop)
-
-CHART HIERARCHY:
-1. Scorecards/KPIs: Single metrics users care about most (NPS, Avg Satisfaction)  
-2. Distributions: Show the "shape" of your data (rating breakdowns)
-3. Comparisons: Rank categories for decision-making (session popularity)
-4. Relationships: Explore correlations for insights (aspect ratings)
-
-COGNITIVE LOAD MANAGEMENT:
-• Limit to 4-6 charts maximum per view
-• Group related metrics together
-• Use consistent color schemes across charts
-• Provide chart type options but sensible defaults
-
-🔄 SCALABILITY FEATURES:
-• ChartFactory pattern: Add new chart types without touching dashboard
-• Configuration-driven: Backend sends chart specs, frontend renders automatically
-• Modular components: Each chart type is independent and reusable
-• Responsive design: Works on all devices out of the box
-
-INDUSTRY BENCHMARKS TO INCLUDE:
-• NPS: World-class (70+), Excellent (50-69), Good (30-49), Critical (<0)
-• Satisfaction: Excellent (4.5+), Good (4.0-4.4), Fair (3.0-3.9), Poor (<3.0)  
-• Response rates: High (>60%), Good (40-60%), Low (<40%)
-
-PERFORMANCE CONSIDERATIONS:
-• Lazy load charts below the fold  
-• Use React.memo for chart components
-• Debounce chart type switching
-• Consider virtualization for large datasets (50+ data points)
-*/

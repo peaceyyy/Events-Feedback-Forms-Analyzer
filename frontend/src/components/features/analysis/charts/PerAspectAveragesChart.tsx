@@ -10,6 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   LabelList,
+  Cell,
+  Legend,
 } from "recharts";
 
 interface PerAspectAveragesChartProps {

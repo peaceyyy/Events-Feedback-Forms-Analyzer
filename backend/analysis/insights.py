@@ -343,6 +343,99 @@ def generate_text_insights(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
+def generate_correlation_analysis(data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Analyzes correlation between aspect ratings and overall satisfaction.
+    Identifies which aspects have the strongest impact on overall satisfaction.
+    """
+    df = pd.DataFrame(data)
+    
+    # Required columns
+    if 'satisfaction' not in df.columns:
+        return {"error": "No satisfaction data found for correlation analysis"}
+    
+    # Available aspect rating columns
+    rating_columns = ['venue_rating', 'speaker_rating', 'content_rating']
+    available_columns = [col for col in rating_columns if col in df.columns]
+    
+    if not available_columns:
+        return {"error": "No aspect rating data found for correlation analysis"}
+    
+    # Calculate correlations
+    correlations = []
+    scatter_data = []
+    
+    for col in available_columns:
+        # Clean data
+        clean_df = df[[col, 'satisfaction']].dropna()
+        
+        if len(clean_df) < 10:  # Need minimum sample size
+            continue
+        
+        # Calculate Pearson correlation
+        correlation = clean_df[col].corr(clean_df['satisfaction'])
+        
+        # Categorize impact level
+        if correlation > 0.7:
+            impact_level = 'high'
+        elif correlation > 0.5:
+            impact_level = 'medium'
+        else:
+            impact_level = 'low'
+        
+        # Format aspect name
+        aspect_name = col.replace('_rating', '').replace('_', ' ').title()
+        
+        correlations.append({
+            "aspect": aspect_name,
+            "correlation": float(correlation),
+            "impact_level": impact_level,
+            "sample_size": len(clean_df)
+        })
+        
+        # Prepare scatter data for visualization
+        scatter_points = clean_df.rename(columns={
+            col: 'aspect_rating',
+            'satisfaction': 'satisfaction'
+        }).to_dict('records')
+        
+        scatter_data.append({
+            "aspect": aspect_name,
+            "points": scatter_points
+        })
+    
+    # Sort by correlation strength
+    correlations.sort(key=lambda x: x['correlation'], reverse=True)
+    
+    # Generate insights
+    if correlations:
+        strongest = correlations[0]
+        insights = [
+            f"{strongest['aspect']} has the strongest correlation ({strongest['correlation']:.2%}) with overall satisfaction",
+            f"Improving {strongest['aspect'].lower()} will have the greatest impact on attendee satisfaction"
+        ]
+        
+        weak_aspects = [c['aspect'] for c in correlations if c['correlation'] < 0.5]
+        if weak_aspects:
+            insights.append(f"Focus less on {', '.join(weak_aspects).lower()} as they show weaker impact")
+    else:
+        insights = []
+    
+    return {
+        "chart_type": "correlation_analysis",
+        "data": {
+            "correlations": correlations,
+            "scatter_data": scatter_data,
+            "insights": insights,
+            "stats": {
+                "strongest_driver": correlations[0]['aspect'] if correlations else None,
+                "strongest_correlation": correlations[0]['correlation'] if correlations else 0,
+                "total_aspects_analyzed": len(correlations)
+            }
+        }
+    }
+
+
 def generate_pacing_analysis(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Analyzes pacing satisfaction correlation.
@@ -525,6 +618,29 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
         print(f"DEBUG: Pacing analysis failed: {e}")
         analysis_result["pacing"] = {"error": str(e)}
     
+    try:
+        analysis_result["correlation"] = generate_correlation_analysis(data)
+        print("DEBUG: Correlation analysis completed")
+    except Exception as e:
+        print(f"DEBUG: Correlation analysis failed: {e}")
+        analysis_result["correlation"] = {"error": str(e)}
+    
+    # NEW: Session Performance Matrix
+    try:
+        analysis_result["session_matrix"] = generate_session_performance_matrix(data)
+        print("DEBUG: Session performance matrix completed")
+    except Exception as e:
+        print(f"DEBUG: Session performance matrix failed: {e}")
+        analysis_result["session_matrix"] = {"error": str(e)}
+    
+    # NEW: Discovery Channel Impact
+    try:
+        analysis_result["discovery_channels"] = generate_discovery_channel_impact(data)
+        print("DEBUG: Discovery channel impact analysis completed")
+    except Exception as e:
+        print(f"DEBUG: Discovery channel impact failed: {e}")
+        analysis_result["discovery_channels"] = {"error": str(e)}
+    
     # Add scatter data
     analysis_result["scatter_data"] = {
         "chart_type": "satisfaction_vs_recommendation_scatter",
@@ -576,6 +692,255 @@ def generate_initial_summary(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     
     return summary
 
+
+# ============================================================================
+# SESSION ANALYTICS - Performance Matrix & Discovery Analysis
+# ============================================================================
+
+def generate_session_performance_matrix(data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Creates a performance matrix for sessions based on attendance and satisfaction.
+    Categorizes sessions into quadrants: Stars, Hidden Gems, Crowd Favorites, Underperformers.
+    
+    Returns bubble chart data where:
+    - X-axis: Attendance count
+    - Y-axis: Average satisfaction
+    - Bubble size: Proportional to attendance
+    - Color: Based on quadrant category
+    
+    Modular structure ready for extraction into dedicated session_analytics module.
+    """
+    df = pd.DataFrame(data)
+    
+    # Validate required columns
+    if 'sessions_attended' not in df.columns:
+        return {"error": "No session attendance data found"}
+    
+    if 'satisfaction' not in df.columns:
+        return {"error": "No satisfaction data found"}
+    
+    # Flatten sessions and collect satisfaction ratings
+    session_data = {}
+    for idx, row in df.iterrows():
+        sessions = row.get('sessions_attended', [])
+        satisfaction = row.get('satisfaction')
+        
+        # Handle sessions (could be list or comma-separated string)
+        if isinstance(sessions, str):
+            sessions = [s.strip() for s in sessions.split(',') if s.strip()]
+        elif not isinstance(sessions, list):
+            continue
+            
+        # Map satisfaction to each attended session
+        if sessions and pd.notna(satisfaction):
+            satisfaction_numeric = pd.to_numeric(satisfaction, errors='coerce')
+            if pd.notna(satisfaction_numeric):
+                for session in sessions:
+                    session = session.strip()
+                    if session not in session_data:
+                        session_data[session] = {
+                            'satisfaction_scores': [],
+                            'attendance': 0
+                        }
+                    session_data[session]['satisfaction_scores'].append(satisfaction_numeric)
+                    session_data[session]['attendance'] += 1
+    
+    if not session_data:
+        return {"error": "No valid session performance data found"}
+    
+    # Calculate metrics for each session
+    sessions_list = []
+    for session_name, metrics in session_data.items():
+        if metrics['attendance'] > 0 and metrics['satisfaction_scores']:
+            avg_satisfaction = np.mean(metrics['satisfaction_scores'])
+            sessions_list.append({
+                'session': session_name,
+                'attendance': metrics['attendance'],
+                'avg_satisfaction': round(float(avg_satisfaction), 2),
+                'response_count': len(metrics['satisfaction_scores'])
+            })
+    
+    if not sessions_list:
+        return {"error": "No sessions with sufficient data"}
+    
+    # Calculate median attendance and satisfaction for quadrant classification
+    attendances = [s['attendance'] for s in sessions_list]
+    satisfactions = [s['avg_satisfaction'] for s in sessions_list]
+    
+    median_attendance = np.median(attendances)
+    median_satisfaction = np.median(satisfactions)
+    
+    # Categorize sessions into quadrants
+    for session in sessions_list:
+        high_attendance = session['attendance'] >= median_attendance
+        high_satisfaction = session['avg_satisfaction'] >= median_satisfaction
+        
+        if high_attendance and high_satisfaction:
+            session['category'] = 'Star'
+            session['color'] = '#4CAF50'  # Green
+        elif not high_attendance and high_satisfaction:
+            session['category'] = 'Hidden Gem'
+            session['color'] = '#2196F3'  # Blue
+        elif high_attendance and not high_satisfaction:
+            session['category'] = 'Crowd Favorite'
+            session['color'] = '#FF9800'  # Orange
+        else:
+            session['category'] = 'Needs Improvement'
+            session['color'] = '#F44336'  # Red
+    
+    # Sort by attendance for better visualization
+    sessions_list.sort(key=lambda x: x['attendance'], reverse=True)
+    
+    # Generate insights
+    star_sessions = [s for s in sessions_list if s['category'] == 'Star']
+    hidden_gems = [s for s in sessions_list if s['category'] == 'Hidden Gem']
+    underperformers = [s for s in sessions_list if s['category'] == 'Needs Improvement']
+    
+    insights = []
+    if star_sessions:
+        insights.append(f"⭐ {len(star_sessions)} Star session(s): High attendance + High satisfaction")
+    if hidden_gems:
+        insights.append(f"💎 {len(hidden_gems)} Hidden Gem(s): Low attendance but high satisfaction - consider promotion")
+    if underperformers:
+        insights.append(f"⚠️ {len(underperformers)} session(s) need improvement: Low attendance + Low satisfaction")
+    
+    return {
+        "sessions": sessions_list,
+        "quadrants": {
+            "stars": len(star_sessions),
+            "hidden_gems": len(hidden_gems),
+            "crowd_favorites": len([s for s in sessions_list if s['category'] == 'Crowd Favorite']),
+            "needs_improvement": len(underperformers)
+        },
+        "thresholds": {
+            "median_attendance": round(float(median_attendance), 1),
+            "median_satisfaction": round(float(median_satisfaction), 2)
+        },
+        "insights": insights,
+        "stats": {
+            "total_sessions": len(sessions_list),
+            "avg_attendance": round(float(np.mean(attendances)), 1),
+            "avg_satisfaction": round(float(np.mean(satisfactions)), 2)
+        }
+    }
+
+
+def generate_discovery_channel_impact(data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Analyzes how event discovery channels correlate with satisfaction.
+    Identifies which marketing/promotion channels bring the most satisfied attendees.
+    
+    Returns:
+    - Channel-wise satisfaction averages
+    - Attendance counts per channel
+    - Channel effectiveness ranking
+    
+    Modular structure ready for extraction into dedicated marketing_analytics module.
+    """
+    df = pd.DataFrame(data)
+    
+    # Validate required columns
+    if 'event_discovery' not in df.columns:
+        return {"error": "No event discovery channel data found"}
+    
+    if 'satisfaction' not in df.columns:
+        return {"error": "No satisfaction data found"}
+    
+    # Clean and filter data
+    df_clean = df[['event_discovery', 'satisfaction']].copy()
+    df_clean = df_clean.dropna()
+    
+    # Convert satisfaction to numeric
+    df_clean['satisfaction'] = pd.to_numeric(df_clean['satisfaction'], errors='coerce')
+    df_clean = df_clean.dropna()
+    
+    if len(df_clean) == 0:
+        return {"error": "No valid discovery channel data found"}
+    
+    # Group by discovery channel
+    channel_analysis = df_clean.groupby('event_discovery').agg({
+        'satisfaction': ['mean', 'count', 'std']
+    }).round(2)
+    
+    # Flatten column names
+    channel_analysis.columns = ['avg_satisfaction', 'count', 'std_dev']
+    channel_analysis = channel_analysis.reset_index()
+    
+    # Calculate effectiveness score (weighted by count and satisfaction)
+    # Channels with high satisfaction AND reasonable sample size get higher scores
+    max_count = channel_analysis['count'].max()
+    channel_analysis['effectiveness_score'] = (
+        (channel_analysis['avg_satisfaction'] / 5.0) * 0.7 +  # 70% weight on satisfaction
+        (channel_analysis['count'] / max_count) * 0.3  # 30% weight on reach
+    ) * 100
+    
+    # Sort by effectiveness
+    channel_analysis = channel_analysis.sort_values('effectiveness_score', ascending=False)
+    
+    # Convert to list of dicts
+    channels_list = channel_analysis.to_dict('records')
+    
+    # Generate insights
+    insights = []
+    
+    if len(channels_list) > 0:
+        top_channel = channels_list[0]
+        insights.append(
+            f"🏆 '{top_channel['event_discovery']}' is the most effective channel "
+            f"(Avg satisfaction: {top_channel['avg_satisfaction']}/5, Count: {top_channel['count']})"
+        )
+    
+    if len(channels_list) > 1:
+        bottom_channel = channels_list[-1]
+        insights.append(
+            f"⚠️ '{bottom_channel['event_discovery']}' shows lowest satisfaction "
+            f"({bottom_channel['avg_satisfaction']}/5) - review targeting or messaging"
+        )
+    
+    # Find channels with high satisfaction but low reach (growth opportunities)
+    high_sat_low_reach = [
+        c for c in channels_list 
+        if c['avg_satisfaction'] >= 4.0 and c['count'] < channel_analysis['count'].median()
+    ]
+    
+    if high_sat_low_reach:
+        for channel in high_sat_low_reach:
+            insights.append(
+                f"💡 Growth opportunity: '{channel['event_discovery']}' has high satisfaction "
+                f"({channel['avg_satisfaction']}/5) but low reach ({channel['count']} attendees)"
+            )
+    
+    # Calculate correlation between channel and satisfaction (if enough data)
+    correlation = None
+    if len(df_clean) >= 30:  # Minimum sample size for meaningful correlation
+        # Encode channels numerically by their average satisfaction
+        channel_mapping = dict(zip(
+            channel_analysis['event_discovery'],
+            range(len(channel_analysis))
+        ))
+        df_clean['channel_encoded'] = df_clean['event_discovery'].map(channel_mapping)
+        correlation = df_clean[['channel_encoded', 'satisfaction']].corr().iloc[0, 1]
+    
+    return {
+        "channels": channels_list,
+        "stats": {
+            "total_channels": len(channels_list),
+            "total_responses": int(channel_analysis['count'].sum()),
+            "overall_avg_satisfaction": round(float(df_clean['satisfaction'].mean()), 2),
+            "channel_satisfaction_correlation": round(float(correlation), 3) if correlation is not None and pd.notna(correlation) else None  # type: ignore
+        },
+        "insights": insights,
+        "recommendations": [
+            f"Invest more in '{channels_list[0]['event_discovery']}' - proven high satisfaction",
+            "Consider A/B testing messaging for lower-performing channels",
+            "Track attribution to refine channel mix over time"
+        ] if len(channels_list) > 0 else []
+    }
+
+
+# ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
 
 # Helper functions
 def generate_satisfaction_insights(satisfaction_series) -> List[str]:
