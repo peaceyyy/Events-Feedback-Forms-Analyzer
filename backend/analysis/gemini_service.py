@@ -323,30 +323,37 @@ OVERALL STATS:
 - Average attendance: {stats.get('avg_attendance', 0):.1f}
 - Average satisfaction: {stats.get('avg_satisfaction', 0):.2f}/5
 
-TASK: Provide actionable strategic insights in JSON format:
+TASK: Provide concise, actionable strategic insights in JSON format.
+
+CRITICAL RULES:
+- Key insights must be ONE-LINE observations (max 15 words each)
+- Strategic recommendations should be specific and action-oriented
+- Reference actual session names when relevant
+- No generic advice - be data-driven and tactical
+
+JSON FORMAT:
 {{
   "key_insights": [
-    "3-4 bullet points analyzing the performance patterns",
-    "Focus on what's working well and what needs attention"
+    "One-line observation about performance pattern",
+    "One-line observation about quadrant distribution",
+    "One-line observation about satisfaction trends"
   ],
   "strategic_recommendations": [
-    "3-4 specific, actionable recommendations for next event",
-    "Prioritize by impact and feasibility"
+    "Specific action: Double down on [Session X] format - proven Star performance",
+    "Specific action: Promote [Session Y] via social media - Hidden Gem potential",
+    "Specific action: Redesign [Session Z] content based on low satisfaction scores",
+    "Specific action: Consolidate underperforming sessions to reduce resource waste"
   ],
   "growth_opportunities": [
-    "2-3 opportunities to maximize session success",
-    "Include specific session types or formats to explore"
+    "Scale [specific session type] - high satisfaction with expansion potential",
+    "Experiment with [specific format/topic] based on Hidden Gems performance"
   ],
   "risk_areas": [
-    "1-2 areas of concern that need immediate attention"
+    "Immediate attention: [Session Name] - low attendance AND satisfaction"
   ]
 }}
 
-Guidelines:
-- Be specific and actionable (not generic advice)
-- Reference actual session names when relevant
-- Consider resource allocation and ROI
-- Think like an event strategist making data-driven decisions"""
+RESPOND WITH ONLY VALID JSON, NO ADDITIONAL TEXT."""
 
             response = self.model.generate_content(prompt)
             return self._parse_gemini_response(response.text)
@@ -385,38 +392,115 @@ OVERALL STATS:
 
 EFFECTIVENESS FORMULA: 70% satisfaction quality + 30% reach volume
 
-TASK: Provide marketing strategy insights in JSON format:
+TASK: Provide concise, actionable marketing insights in JSON format.
+
+CRITICAL RULES:
+- Key insights must be ONE-LINE observations (max 15 words each)
+- Marketing recommendations should be specific with budget/tactic details
+- Budget allocation must include actual channel names and percentages
+- No generic advice - be ROI-focused and tactical
+
+JSON FORMAT:
 {{
   "key_insights": [
-    "3-4 bullet points analyzing channel effectiveness patterns",
-    "Highlight which channels deliver quality attendees"
+    "One-line observation about top-performing channel",
+    "One-line observation about quality vs quantity trade-offs",
+    "One-line observation about underutilized channels"
   ],
   "marketing_recommendations": [
-    "3-4 specific recommendations for marketing budget allocation",
-    "Include tactics for scaling high-performers and fixing low-performers"
+    "Specific tactic: Increase [Channel X] ad spend by 40% - highest ROI proven",
+    "Specific tactic: A/B test messaging for [Channel Y] to improve 3.2/5 satisfaction",
+    "Specific tactic: Cut budget from [Channel Z] - poor satisfaction and reach",
+    "Specific tactic: Launch referral program to scale [high-satisfaction channel]"
   ],
   "growth_opportunities": [
-    "2-3 opportunities to expand reach while maintaining quality",
-    "Focus on underutilized high-satisfaction channels"
+    "Partner with [specific channel] - untapped audience with quality potential",
+    "Experiment with [specific tactic] based on [Channel] success patterns"
   ],
   "budget_allocation": [
-    "2-3 suggestions for reallocating marketing spend",
-    "Be specific about which channels to invest in vs cut"
+    "Reallocate 30% budget from [Low Channel] to [High Channel]",
+    "Invest $X in [Channel] expansion - proven 4.5/5 satisfaction"
   ]
 }}
 
-Guidelines:
-- Think like a marketing strategist optimizing ROI
-- Be specific about channel names and tactics
-- Consider both quality (satisfaction) and quantity (reach)
-- Prioritize recommendations by expected impact
-- Reference industry best practices where relevant"""
+RESPOND WITH ONLY VALID JSON, NO ADDITIONAL TEXT."""
 
             response = self.model.generate_content(prompt)
             return self._parse_gemini_response(response.text)
             
         except Exception as e:
             return {"error": f"Failed to generate marketing insights: {str(e)}"}
+
+
+    def generate_aspect_insights(self, aspect_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Generate AI insights for event aspect performance analysis.
+        Analyzes which aspects (food, venue, content, etc.) are strengths/weaknesses.
+        """
+        try:
+            aspects = aspect_data.get('aspects', [])
+            overall_satisfaction = aspect_data.get('overall_satisfaction', 4.0)
+            
+            if not aspects:
+                return {"error": "No aspect data available for analysis"}
+            
+            # Categorize aspects
+            strengths = [a for a in aspects if a.get('difference', 0) > 0.1]
+            weaknesses = [a for a in aspects if a.get('difference', 0) < -0.1]
+            adequate = [a for a in aspects if abs(a.get('difference', 0)) <= 0.1]
+            
+            prompt = f"""You are an event quality analyst specializing in attendee experience optimization.
+
+ASPECT PERFORMANCE DATA:
+Overall Event Satisfaction Baseline: {overall_satisfaction:.2f}/5
+
+STRENGTHS (Above Baseline):
+{chr(10).join([f"- {a['aspect']}: {a['value']:.2f}/5 (+{a['difference']:.2f} above baseline)" for a in strengths]) if strengths else '- None identified'}
+
+WEAKNESSES (Below Baseline):
+{chr(10).join([f"- {a['aspect']}: {a['value']:.2f}/5 ({a['difference']:.2f} below baseline)" for a in weaknesses]) if weaknesses else '- None identified'}
+
+ADEQUATE (Meeting Baseline):
+{chr(10).join([f"- {a['aspect']}: {a['value']:.2f}/5" for a in adequate]) if adequate else '- None identified'}
+
+TASK: Provide concise, actionable event improvement insights in JSON format.
+
+CRITICAL RULES:
+- Key insights must be ONE-LINE observations (max 15 words each)
+- Focus on the BIGGEST deltas (positive and negative)
+- Improvement recommendations should be specific and tactical
+- Quick wins should be realistic actions that require minimal resources
+- Strategic priorities should address weaknesses or leverage strengths
+
+JSON FORMAT:
+{{
+  "key_insights": [
+    "One-line observation about strongest-performing aspect",
+    "One-line observation about weakest-performing aspect",
+    "One-line observation about consistency across aspects"
+  ],
+  "improvement_recommendations": [
+    "Specific action to fix worst-performing aspect with concrete steps",
+    "Specific tactic to bring adequate aspects up to strength level",
+    "Specific method to maintain/amplify current strengths"
+  ],
+  "quick_wins": [
+    "Immediate low-cost fix for [specific weakness aspect]",
+    "Simple enhancement for [adequate aspect] using existing resources"
+  ],
+  "strategic_priorities": [
+    "Long-term focus area based on largest performance gaps",
+    "Investment recommendation for scaling strengths"
+  ]
+}}
+
+RESPOND WITH ONLY VALID JSON, NO ADDITIONAL TEXT."""
+
+            response = self.model.generate_content(prompt)
+            return self._parse_gemini_response(response.text)
+            
+        except Exception as e:
+            return {"error": f"Failed to generate aspect insights: {str(e)}"}
 
 
 # Convenience function for easy import

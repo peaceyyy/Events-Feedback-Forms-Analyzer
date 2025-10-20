@@ -60,7 +60,6 @@ def test_gemini_connection():
         
         # Create service instance
         service = get_gemini_service()
-        print("✅ Gemini service initialized successfully")
         
         # Test with minimal data
         test_data = [

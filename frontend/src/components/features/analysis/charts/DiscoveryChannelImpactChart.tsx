@@ -2,7 +2,13 @@
 'use client'
 import React, { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend, Line, ComposedChart } from 'recharts'
-import { TrendingUp as TrendingUpIcon, AutoAwesome as AutoAwesomeIcon } from '@mui/icons-material'
+import { 
+  TrendingUp as TrendingUpIcon, 
+  AutoAwesome as AutoAwesomeIcon,
+  Campaign as CampaignIcon,
+  Lightbulb as LightbulbIcon,
+  AttachMoney as AttachMoneyIcon
+} from '@mui/icons-material'
 
 interface ChannelData {
   event_discovery: string
@@ -35,7 +41,7 @@ interface DiscoveryChannelImpactChartProps {
   title?: string
   className?: string
   height?: number
-  onGenerateAIInsights?: (channelData: ChannelData[]) => Promise<AIInsights>
+  onGenerateAIInsights?: (channelImpactData: DiscoveryChannelImpactChartProps['data']) => Promise<AIInsights>
 }
 
 type ChartVariant = 'satisfaction' | 'effectiveness' | 'dual'
@@ -56,7 +62,7 @@ export default function DiscoveryChannelImpactChart({
     
     setIsLoadingAI(true)
     try {
-      const insights = await onGenerateAIInsights(data.channels)
+      const insights = await onGenerateAIInsights(data)  // Pass entire data object with channels and stats
       setAiInsights(insights)
     } catch (error) {
       console.error('Failed to generate AI insights:', error)
@@ -281,8 +287,18 @@ export default function DiscoveryChannelImpactChart({
       {/* Insights Panel */}
       <div className="mt-6 p-4 bg-white/5 rounded-lg">
         <div className="flex items-center justify-between mb-3">
-          <h4 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
-            {aiInsights ? '🤖 AI-Powered Insights' : 'Key Insights'}
+          <h4 className="font-semibold text-sm flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+            {aiInsights ? (
+              <>
+                <AutoAwesomeIcon sx={{ fontSize: 16 }} className="text-purple-400" />
+                <span>AI-Powered Insights</span>
+              </>
+            ) : (
+              <>
+                <TrendingUpIcon sx={{ fontSize: 16 }} />
+                <span>Key Insights</span>
+              </>
+            )}
           </h4>
           
           {/* AI Insights Button */}
@@ -329,8 +345,9 @@ export default function DiscoveryChannelImpactChart({
       {/* Recommendations */}
       {(aiInsights?.marketing_recommendations || data.recommendations) && (
         <div className="mt-4 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
-          <h4 className="font-semibold mb-2 text-sm text-blue-400">
-            {aiInsights ? '🎯 Strategic Recommendations' : 'Recommendations'}
+          <h4 className="font-semibold mb-2 text-sm text-blue-400 flex items-center gap-2">
+            <CampaignIcon sx={{ fontSize: 16 }} />
+            <span>{aiInsights ? 'Strategic Recommendations' : 'Recommendations'}</span>
           </h4>
           <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
             {(aiInsights?.marketing_recommendations || data.recommendations).map((rec, index) => (
@@ -346,8 +363,9 @@ export default function DiscoveryChannelImpactChart({
       {/* Growth Opportunities (AI only) */}
       {aiInsights?.growth_opportunities && aiInsights.growth_opportunities.length > 0 && (
         <div className="mt-4 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
-          <h4 className="font-semibold mb-2 text-sm text-green-400">
-            💡 Growth Opportunities
+          <h4 className="font-semibold mb-2 text-sm text-green-400 flex items-center gap-2">
+            <LightbulbIcon sx={{ fontSize: 16 }} />
+            <span>Growth Opportunities</span>
           </h4>
           <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
             {aiInsights.growth_opportunities.map((opp, index) => (
@@ -363,8 +381,9 @@ export default function DiscoveryChannelImpactChart({
       {/* Budget Allocation (AI only) */}
       {aiInsights?.budget_allocation && aiInsights.budget_allocation.length > 0 && (
         <div className="mt-4 p-4 bg-orange-500/10 rounded-lg border border-orange-500/20">
-          <h4 className="font-semibold mb-2 text-sm text-orange-400">
-            💰 Budget Allocation
+          <h4 className="font-semibold mb-2 text-sm text-orange-400 flex items-center gap-2">
+            <AttachMoneyIcon sx={{ fontSize: 16 }} />
+            <span>Budget Allocation</span>
           </h4>
           <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
             {aiInsights.budget_allocation.map((alloc, index) => (

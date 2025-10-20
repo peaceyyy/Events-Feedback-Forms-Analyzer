@@ -158,14 +158,18 @@ export default function Home() {
   };
 
   // AI Insight Handlers
-  const handleGenerateSessionInsights = async (sessionData: any[]) => {
+  const handleGenerateSessionInsights = async (sessionMatrixData: any) => {
     try {
       const response = await fetch('/api/ai/session-insights', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ session_data: sessionData }),
+        body: JSON.stringify({
+          session_data: sessionMatrixData.sessions,
+          quadrants: sessionMatrixData.quadrants,
+          stats: sessionMatrixData.stats
+        }),
       });
 
       const result = await response.json();
@@ -183,14 +187,17 @@ export default function Home() {
     }
   };
 
-  const handleGenerateMarketingInsights = async (channelData: any[]) => {
+  const handleGenerateMarketingInsights = async (channelImpactData: any) => {
     try {
       const response = await fetch('/api/ai/marketing-insights', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ channel_data: channelData }),
+        body: JSON.stringify({
+          channel_data: channelImpactData.channels,
+          stats: channelImpactData.stats
+        }),
       });
 
       const result = await response.json();
@@ -202,6 +209,65 @@ export default function Home() {
       return result.insights;
     } catch (error) {
       console.error('Marketing insights generation error:', error);
+      return {
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  };
+
+  const handleGenerateAspectInsights = async () => {
+    try {
+      // Extract aspect data from analysis results
+      const ratingsData = (analysisResults as any)?.ratings?.data;
+      
+      if (!ratingsData) {
+        throw new Error('No aspect data available');
+      }
+
+      // Transform data for backend (extract aspects array + overall satisfaction)
+      let aspects = [];
+      let overallSatisfaction = 4.0;
+
+      if (ratingsData.baseline_data && Array.isArray(ratingsData.baseline_data)) {
+        aspects = ratingsData.baseline_data.map((item: any) => ({
+          aspect: item.aspect || item.name,
+          value: item.value || item.average || 0,
+          difference: (item.value || item.average || 0) - (ratingsData.overall_satisfaction || 4.0),
+          performance: item.performance || item.performance_category || 'adequate'
+        }));
+        overallSatisfaction = ratingsData.overall_satisfaction || 4.0;
+      } else if (ratingsData.detailed_comparison && Array.isArray(ratingsData.detailed_comparison)) {
+        aspects = ratingsData.detailed_comparison.map((item: any) => ({
+          aspect: item.aspect || item.name,
+          value: item.value || item.average || 0,
+          difference: (item.value || item.average || 0) - (ratingsData.overall_satisfaction || 4.0),
+          performance: item.performance || item.performance_category || 'adequate'
+        }));
+        overallSatisfaction = ratingsData.overall_satisfaction || 4.0;
+      }
+
+      const response = await fetch('/api/ai/aspect-insights', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          aspect_data: {
+            aspects,
+            overall_satisfaction: overallSatisfaction
+          }
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to generate aspect insights');
+      }
+
+      return result.insights;
+    } catch (error) {
+      console.error('Aspect insights generation error:', error);
       return {
         error: error instanceof Error ? error.message : 'Unknown error occurred',
       };
@@ -749,6 +815,7 @@ export default function Home() {
                       data={(analysisResults as any).ratings.data}
                       variant={aspectChartVariant}
                       onVariantChange={setAspectChartVariant}
+                      onGenerateAIInsights={handleGenerateAspectInsights}
                       className="h-full"
                     />
                   )}

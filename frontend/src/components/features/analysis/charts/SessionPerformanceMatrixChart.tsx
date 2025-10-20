@@ -2,7 +2,14 @@
 'use client'
 import React, { useState } from 'react'
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ZAxis, Legend, ReferenceLine } from 'recharts'
-import { Assessment as AssessmentIcon, AutoAwesome as AutoAwesomeIcon } from '@mui/icons-material'
+import { 
+  Assessment as AssessmentIcon, 
+  AutoAwesome as AutoAwesomeIcon,
+  Lightbulb as LightbulbIcon,
+  TrendingUp as TrendingUpIcon,
+  Warning as WarningIcon,
+  TrackChanges as TrackChangesIcon
+} from '@mui/icons-material'
 
 interface SessionData {
   session: string
@@ -44,7 +51,7 @@ interface SessionPerformanceMatrixChartProps {
   title?: string
   className?: string
   height?: number
-  onGenerateAIInsights?: (sessionData: SessionData[]) => Promise<AIInsights>
+  onGenerateAIInsights?: (sessionMatrixData: SessionPerformanceMatrixChartProps['data']) => Promise<AIInsights>
 }
 
 export default function SessionPerformanceMatrixChart({
@@ -62,7 +69,7 @@ export default function SessionPerformanceMatrixChart({
     
     setIsLoadingAI(true)
     try {
-      const insights = await onGenerateAIInsights(data.sessions)
+      const insights = await onGenerateAIInsights(data)  // Pass entire data object with sessions, quadrants, stats
       setAiInsights(insights)
     } catch (error) {
       console.error('Failed to generate AI insights:', error)
@@ -248,8 +255,18 @@ export default function SessionPerformanceMatrixChart({
       {/* Insights Panel */}
       <div className="mt-6 p-4 bg-white/5 rounded-lg">
         <div className="flex items-center justify-between mb-3">
-          <h4 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
-            {aiInsights ? '🤖 AI-Powered Insights' : 'Key Insights'}
+          <h4 className="font-semibold text-sm flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+            {aiInsights ? (
+              <>
+                <AutoAwesomeIcon sx={{ fontSize: 16 }} className="text-purple-400" />
+                <span>AI-Powered Insights</span>
+              </>
+            ) : (
+              <>
+                <AssessmentIcon sx={{ fontSize: 16 }} />
+                <span>Key Insights</span>
+              </>
+            )}
           </h4>
           
           {/* AI Insights Button */}
@@ -294,8 +311,9 @@ export default function SessionPerformanceMatrixChart({
       {/* Strategic Recommendations (AI only) */}
       {aiInsights?.strategic_recommendations && aiInsights.strategic_recommendations.length > 0 && (
         <div className="mt-4 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
-          <h4 className="font-semibold mb-2 text-sm text-blue-400">
-            🎯 Strategic Recommendations
+          <h4 className="font-semibold mb-2 text-sm text-blue-400 flex items-center gap-2">
+            <TrackChangesIcon sx={{ fontSize: 16 }} />
+            <span>Strategic Recommendations</span>
           </h4>
           <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
             {aiInsights.strategic_recommendations.map((rec, index) => (
@@ -311,8 +329,9 @@ export default function SessionPerformanceMatrixChart({
       {/* Growth Opportunities (AI only) */}
       {aiInsights?.growth_opportunities && aiInsights.growth_opportunities.length > 0 && (
         <div className="mt-4 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
-          <h4 className="font-semibold mb-2 text-sm text-green-400">
-            💡 Growth Opportunities
+          <h4 className="font-semibold mb-2 text-sm text-green-400 flex items-center gap-2">
+            <TrendingUpIcon sx={{ fontSize: 16 }} />
+            <span>Growth Opportunities</span>
           </h4>
           <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
             {aiInsights.growth_opportunities.map((opp, index) => (
@@ -328,8 +347,9 @@ export default function SessionPerformanceMatrixChart({
       {/* Risk Areas (AI only) */}
       {aiInsights?.risk_areas && aiInsights.risk_areas.length > 0 && (
         <div className="mt-4 p-4 bg-red-500/10 rounded-lg border border-red-500/20">
-          <h4 className="font-semibold mb-2 text-sm text-red-400">
-            ⚠️ Risk Areas
+          <h4 className="font-semibold mb-2 text-sm text-red-400 flex items-center gap-2">
+            <WarningIcon sx={{ fontSize: 16 }} />
+            <span>Risk Areas</span>
           </h4>
           <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
             {aiInsights.risk_areas.map((risk, index) => (

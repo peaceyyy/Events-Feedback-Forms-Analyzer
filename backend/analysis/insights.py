@@ -791,18 +791,15 @@ def generate_session_performance_matrix(data: List[Dict[str, Any]]) -> Dict[str,
     # Sort by attendance for better visualization
     sessions_list.sort(key=lambda x: x['attendance'], reverse=True)
     
-    # Generate insights
+    # Calculate quadrant counts
     star_sessions = [s for s in sessions_list if s['category'] == 'Star']
     hidden_gems = [s for s in sessions_list if s['category'] == 'Hidden Gem']
     underperformers = [s for s in sessions_list if s['category'] == 'Needs Improvement']
     
-    insights = []
-    if star_sessions:
-        insights.append(f"⭐ {len(star_sessions)} Star session(s): High attendance + High satisfaction")
-    if hidden_gems:
-        insights.append(f"💎 {len(hidden_gems)} Hidden Gem(s): Low attendance but high satisfaction - consider promotion")
-    if underperformers:
-        insights.append(f"⚠️ {len(underperformers)} session(s) need improvement: Low attendance + Low satisfaction")
+    # No hardcoded insights - instruct user to generate AI insights
+    insights = [
+        "Click 'Generate AI Insights' for strategic session performance recommendations"
+    ]
     
     return {
         "sessions": sessions_list,
@@ -880,36 +877,6 @@ def generate_discovery_channel_impact(data: List[Dict[str, Any]]) -> Dict[str, A
     # Convert to list of dicts
     channels_list = channel_analysis.to_dict('records')
     
-    # Generate insights
-    insights = []
-    
-    if len(channels_list) > 0:
-        top_channel = channels_list[0]
-        insights.append(
-            f"🏆 '{top_channel['event_discovery']}' is the most effective channel "
-            f"(Avg satisfaction: {top_channel['avg_satisfaction']}/5, Count: {top_channel['count']})"
-        )
-    
-    if len(channels_list) > 1:
-        bottom_channel = channels_list[-1]
-        insights.append(
-            f"⚠️ '{bottom_channel['event_discovery']}' shows lowest satisfaction "
-            f"({bottom_channel['avg_satisfaction']}/5) - review targeting or messaging"
-        )
-    
-    # Find channels with high satisfaction but low reach (growth opportunities)
-    high_sat_low_reach = [
-        c for c in channels_list 
-        if c['avg_satisfaction'] >= 4.0 and c['count'] < channel_analysis['count'].median()
-    ]
-    
-    if high_sat_low_reach:
-        for channel in high_sat_low_reach:
-            insights.append(
-                f"💡 Growth opportunity: '{channel['event_discovery']}' has high satisfaction "
-                f"({channel['avg_satisfaction']}/5) but low reach ({channel['count']} attendees)"
-            )
-    
     # Calculate correlation between channel and satisfaction (if enough data)
     correlation = None
     if len(df_clean) >= 30:  # Minimum sample size for meaningful correlation
@@ -921,6 +888,11 @@ def generate_discovery_channel_impact(data: List[Dict[str, Any]]) -> Dict[str, A
         df_clean['channel_encoded'] = df_clean['event_discovery'].map(channel_mapping)
         correlation = df_clean[['channel_encoded', 'satisfaction']].corr().iloc[0, 1]
     
+    # No hardcoded insights - instruct user to generate AI insights
+    insights = [
+        "Click 'Generate AI Insights' for marketing channel recommendations and ROI analysis"
+    ]
+    
     return {
         "channels": channels_list,
         "stats": {
@@ -930,11 +902,7 @@ def generate_discovery_channel_impact(data: List[Dict[str, Any]]) -> Dict[str, A
             "channel_satisfaction_correlation": round(float(correlation), 3) if correlation is not None and pd.notna(correlation) else None  # type: ignore
         },
         "insights": insights,
-        "recommendations": [
-            f"Invest more in '{channels_list[0]['event_discovery']}' - proven high satisfaction",
-            "Consider A/B testing messaging for lower-performing channels",
-            "Track attribution to refine channel mix over time"
-        ] if len(channels_list) > 0 else []
+        "recommendations": []  # Remove hardcoded recommendations
     }
 
 

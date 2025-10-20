@@ -320,8 +320,8 @@ const CustomTooltip = ({ active, payload }: any) => {
                 color: aspectData.performance === 'strength' ? '#4CAF50' : 
                       aspectData.performance === 'weakness' ? '#F44336' : '#FFC107'
               }}>
-                {aspectData.performance === 'strength' ? '🟢 Strength' : 
-                 aspectData.performance === 'weakness' ? '🔴 Needs Improvement' : '🟡 Adequate'}
+                {aspectData.performance === 'strength' ? 'Strength' : 
+                 aspectData.performance === 'weakness' ? 'Needs Improvement' : 'Adequate'}
               </p>
             </div>
           </div>

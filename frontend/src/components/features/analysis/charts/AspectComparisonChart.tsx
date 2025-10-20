@@ -1,15 +1,31 @@
 // components/AspectComparisonChart.tsx - Specialized chart for comparing event aspects against baseline
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList,
   ResponsiveContainer, Cell, ReferenceLine, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts'
+import { 
+  AutoAwesome as AutoAwesomeIcon,
+  Lightbulb as LightbulbIcon,
+  TrendingUp as TrendingUpIcon,
+  Flag as FlagIcon,
+  Star as StarIcon
+} from '@mui/icons-material'
+
+interface AIInsights {
+  key_insights?: string[]
+  improvement_recommendations?: string[]
+  quick_wins?: string[]
+  strategic_priorities?: string[]
+  error?: string
+}
 
 interface AspectComparisonChartProps {
   data: any
   variant?: 'diverging' | 'grouped' | 'bullet' | 'radar'
   onVariantChange?: (variant: 'diverging' | 'grouped' | 'bullet' | 'radar') => void
+  onGenerateAIInsights?: () => Promise<AIInsights>
   options?: {
     showBaseline?: boolean
     showTooltip?: boolean
@@ -23,9 +39,28 @@ export default function AspectComparisonChart({
   data, 
   variant = 'diverging',
   onVariantChange,
+  onGenerateAIInsights,
   options = { showBaseline: true, showTooltip: true, showLegend: true },
   className = "" 
 }: AspectComparisonChartProps) {
+
+  const [aiInsights, setAiInsights] = useState<AIInsights | null>(null)
+  const [isLoadingAI, setIsLoadingAI] = useState(false)
+
+  const handleGenerateAIInsights = async () => {
+    if (!onGenerateAIInsights) return
+
+    setIsLoadingAI(true)
+    try {
+      const insights = await onGenerateAIInsights()
+      setAiInsights(insights)
+    } catch (error) {
+      console.error('Failed to generate AI insights:', error)
+      setAiInsights({ error: 'Failed to generate insights' })
+    } finally {
+      setIsLoadingAI(false)
+    }
+  }
 
   // Transform data for comparative visualization
   const chartData = React.useMemo(() => {
@@ -548,6 +583,122 @@ export default function AspectComparisonChart({
         {variant === 'bullet' && renderBulletChart()}
         {variant === 'radar' && renderRadarChart()}
       </div>
+
+      {/* AI Insights Panel */}
+      {onGenerateAIInsights && (
+        <div className="mt-6 space-y-3">
+          {/* Generate Button */}
+          <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+            <h4 className="font-semibold text-sm flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+              {aiInsights ? (
+                <>
+                  <AutoAwesomeIcon sx={{ fontSize: 16 }} className="text-purple-400" />
+                  <span>AI-Powered Aspect Insights</span>
+                </>
+              ) : (
+                'Aspect Performance Insights'
+              )}
+            </h4>
+            
+            <button
+              onClick={handleGenerateAIInsights}
+              disabled={isLoadingAI}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                isLoadingAI
+                  ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-300 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-500/30'
+              }`}
+            >
+              <AutoAwesomeIcon sx={{ fontSize: 14 }} />
+              {isLoadingAI ? 'Generating...' : aiInsights ? 'Refresh AI Insights' : 'Generate AI Insights'}
+            </button>
+          </div>
+
+          {/* AI Insights Display */}
+          {aiInsights && !aiInsights.error && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Key Insights */}
+              {aiInsights.key_insights && aiInsights.key_insights.length > 0 && (
+                <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                  <h5 className="font-semibold mb-2 text-sm text-purple-400 flex items-center gap-2">
+                    <StarIcon sx={{ fontSize: 16 }} />
+                    Key Insights
+                  </h5>
+                  <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                    {aiInsights.key_insights.map((insight, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="text-purple-400">•</span>
+                        <span>{insight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Improvement Recommendations */}
+              {aiInsights.improvement_recommendations && aiInsights.improvement_recommendations.length > 0 && (
+                <div className="p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                  <h5 className="font-semibold mb-2 text-sm text-blue-400 flex items-center gap-2">
+                    <TrendingUpIcon sx={{ fontSize: 16 }} />
+                    Improvement Recommendations
+                  </h5>
+                  <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                    {aiInsights.improvement_recommendations.map((rec, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="text-blue-400">→</span>
+                        <span>{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Quick Wins */}
+              {aiInsights.quick_wins && aiInsights.quick_wins.length > 0 && (
+                <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+                  <h5 className="font-semibold mb-2 text-sm text-green-400 flex items-center gap-2">
+                    <LightbulbIcon sx={{ fontSize: 16 }} />
+                    Quick Wins
+                  </h5>
+                  <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                    {aiInsights.quick_wins.map((win, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="text-green-400">✓</span>
+                        <span>{win}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Strategic Priorities */}
+              {aiInsights.strategic_priorities && aiInsights.strategic_priorities.length > 0 && (
+                <div className="p-4 bg-orange-500/10 rounded-lg border border-orange-500/20">
+                  <h5 className="font-semibold mb-2 text-sm text-orange-400 flex items-center gap-2">
+                    <FlagIcon sx={{ fontSize: 16 }} />
+                    Strategic Priorities
+                  </h5>
+                  <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                    {aiInsights.strategic_priorities.map((priority, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="text-orange-400">⚡</span>
+                        <span>{priority}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Error Display */}
+          {aiInsights?.error && (
+            <div className="p-3 bg-red-500/10 rounded-lg border border-red-500/20 text-xs text-red-400">
+              {aiInsights.error}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

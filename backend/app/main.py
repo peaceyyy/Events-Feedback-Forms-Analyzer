@@ -210,13 +210,18 @@ def generate_session_insights():
                 "error": "No session data provided"
             }), 400
         
-        session_data = data['session_data']
+        # Wrap session array in expected format for Gemini service
+        session_payload = {
+            'sessions': data['session_data'],
+            'quadrants': data.get('quadrants', {}),
+            'stats': data.get('stats', {})
+        }
         
         # Initialize Gemini service
         gemini_service = get_gemini_service()
         
         # Generate session-specific AI insights
-        ai_insights = gemini_service.generate_session_insights(session_data)
+        ai_insights = gemini_service.generate_session_insights(session_payload)
         
         return jsonify({
             "success": True,
@@ -245,13 +250,17 @@ def generate_marketing_insights():
                 "error": "No channel data provided"
             }), 400
         
-        channel_data = data['channel_data']
+        # Wrap channel array in expected format for Gemini service
+        channel_payload = {
+            'channels': data['channel_data'],
+            'stats': data.get('stats', {})
+        }
         
         # Initialize Gemini service
         gemini_service = get_gemini_service()
         
         # Generate marketing-specific AI insights
-        ai_insights = gemini_service.generate_marketing_insights(channel_data)
+        ai_insights = gemini_service.generate_marketing_insights(channel_payload)
         
         return jsonify({
             "success": True,
@@ -264,3 +273,41 @@ def generate_marketing_insights():
             "error": "Failed to generate marketing insights",
             "message": str(e)
         }), 500
+
+
+@app.route('/api/ai/aspect-insights', methods=['POST'])
+def generate_aspect_insights():
+    """
+    Generate AI-powered insights for event aspect performance.
+    Uses Gemini to analyze which aspects (food, venue, content) are strengths/weaknesses.
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'aspect_data' not in data:
+            return jsonify({
+                "success": False,
+                "error": "No aspect data provided"
+            }), 400
+        
+        # Aspect data should include: aspects array + overall_satisfaction
+        aspect_payload = data['aspect_data']
+        
+        # Initialize Gemini service
+        gemini_service = get_gemini_service()
+        
+        # Generate aspect-specific AI insights
+        ai_insights = gemini_service.generate_aspect_insights(aspect_payload)
+        
+        return jsonify({
+            "success": True,
+            "insights": ai_insights
+        })
+    
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": "Failed to generate aspect insights",
+            "message": str(e)
+        }), 500
+
