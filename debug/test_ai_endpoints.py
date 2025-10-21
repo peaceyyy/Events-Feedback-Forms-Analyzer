@@ -85,37 +85,37 @@ def test_session_insights():
         result = response.json()
         
         if result.get("success"):
-            print("\n✅ SUCCESS!\n")
+            print("\nSUCCESS!\n")
             print("AI INSIGHTS:")
             insights = result.get("insights", {})
             
             if "key_insights" in insights:
-                print("\n🔑 Key Insights:")
+                print("\nKey Insights:")
                 for i, insight in enumerate(insights["key_insights"], 1):
                     print(f"  {i}. {insight}")
             
             if "strategic_recommendations" in insights:
-                print("\n🎯 Strategic Recommendations:")
+                print("\nStrategic Recommendations:")
                 for i, rec in enumerate(insights["strategic_recommendations"], 1):
                     print(f"  {i}. {rec}")
             
             if "growth_opportunities" in insights:
-                print("\n💡 Growth Opportunities:")
+                print("\nGrowth Opportunities:")
                 for i, opp in enumerate(insights["growth_opportunities"], 1):
                     print(f"  {i}. {opp}")
             
             if "risk_areas" in insights:
-                print("\n⚠️ Risk Areas:")
+                print("\nRisk Areas:")
                 for i, risk in enumerate(insights["risk_areas"], 1):
                     print(f"  {i}. {risk}")
         else:
-            print(f"\n❌ ERROR: {result.get('error')}")
+            print(f"\nERROR: {result.get('error')}")
             
     except requests.exceptions.ConnectionError:
-        print("❌ ERROR: Could not connect to backend server")
+        print("ERROR: Could not connect to backend server")
         print("Make sure the Flask server is running: python run_server.py")
     except Exception as e:
-        print(f"❌ ERROR: {str(e)}")
+        print(f"ERROR: {str(e)}")
 
 def test_marketing_insights():
     """Test marketing insights endpoint"""
@@ -140,37 +140,37 @@ def test_marketing_insights():
         result = response.json()
         
         if result.get("success"):
-            print("\n✅ SUCCESS!\n")
+            print("\nSUCCESS!\n")
             print("AI MARKETING INSIGHTS:")
             insights = result.get("insights", {})
             
             if "key_insights" in insights:
-                print("\n🔑 Key Insights:")
+                print("\nKey Insights:")
                 for i, insight in enumerate(insights["key_insights"], 1):
                     print(f"  {i}. {insight}")
             
             if "marketing_recommendations" in insights:
-                print("\n📢 Marketing Recommendations:")
+                print("\nMarketing Recommendations:")
                 for i, rec in enumerate(insights["marketing_recommendations"], 1):
                     print(f"  {i}. {rec}")
             
             if "growth_opportunities" in insights:
-                print("\n💡 Growth Opportunities:")
+                print("\nGrowth Opportunities:")
                 for i, opp in enumerate(insights["growth_opportunities"], 1):
                     print(f"  {i}. {opp}")
             
             if "budget_allocation" in insights:
-                print("\n💰 Budget Allocation:")
+                print("\nBudget Allocation:")
                 for i, budget in enumerate(insights["budget_allocation"], 1):
                     print(f"  {i}. {budget}")
         else:
-            print(f"\n❌ ERROR: {result.get('error')}")
+            print(f"\nERROR: {result.get('error')}")
             
     except requests.exceptions.ConnectionError:
-        print("❌ ERROR: Could not connect to backend server")
+        print("ERROR: Could not connect to backend server")
         print("Make sure the Flask server is running: python run_server.py")
     except Exception as e:
-        print(f"❌ ERROR: {str(e)}")
+        print(f"ERROR: {str(e)}")
 
 def test_health_check():
     """Test backend health"""
@@ -181,22 +181,22 @@ def test_health_check():
     try:
         response = requests.get(f"{BASE_URL}/")
         if response.status_code == 200:
-            print("✅ Backend server is running!")
+            print("Backend server is running!")
             result = response.json()
             print(f"Status: {result.get('status')}")
             print(f"Message: {result.get('message')}")
             print(f"Version: {result.get('version')}")
             return True
         else:
-            print(f"⚠️ Backend responded with status {response.status_code}")
+            print(f"Backend responded with status {response.status_code}")
             return False
     except requests.exceptions.ConnectionError:
-        print("❌ Backend server is not running")
+        print("Backend server is not running")
         print("Start it with: python run_server.py")
         return False
 
 if __name__ == "__main__":
-    print("\n🧪 AI INSIGHTS API TEST SUITE")
+    print("\nAI INSIGHTS API TEST SUITE")
     
     # Health check first
     if test_health_check():
@@ -208,4 +208,4 @@ if __name__ == "__main__":
         print("TEST SUITE COMPLETE")
         print("="*60 + "\n")
     else:
-        print("\n⚠️ Skipping tests - backend not available\n")
+        print("\nSkipping tests - backend not available\n")

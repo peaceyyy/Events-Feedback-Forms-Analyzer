@@ -22,9 +22,9 @@ print(json.dumps(result, indent=2))
 
 # Check if there are any errors
 if "error" in result:
-    print(f"\n❌ ERROR: {result['error']}")
+    print(f"\nERROR: {result['error']}")
 else:
-    print(f"\n✅ Success! Found {len(result['data']['chart_data'])} pacing categories")
+    print(f"\nSuccess! Found {len(result['data']['chart_data'])} pacing categories")
     print(f"Best pacing: {result['data']['stats']['best_pacing']}")
     print(f"Worst pacing: {result['data']['stats']['worst_pacing']}")
     print(f"\nInsights:")

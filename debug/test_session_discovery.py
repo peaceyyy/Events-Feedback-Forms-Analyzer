@@ -32,5 +32,5 @@ discovery_impact = generate_discovery_channel_impact(data)
 print(json.dumps(discovery_impact, indent=2))
 
 print("\n" + "=" * 80)
-print("✅ TESTS COMPLETE")
+print("TESTS COMPLETE")
 print("=" * 80)

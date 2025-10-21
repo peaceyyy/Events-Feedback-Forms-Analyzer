@@ -29,45 +29,45 @@ def test_one_word_descriptions():
     print(f"\n1. Extracting data from: {csv_path}")
     try:
         data = extract_feedback_data(csv_path)
-        print(f"   ✓ Extracted {len(data)} records")
+        print(f"   Extracted {len(data)} records")
         
         # Check if one_word_desc is in the data
         if len(data) > 0:
             first_record = data[0]
-            print(f"   ✓ Sample record keys: {list(first_record.keys())}")
+            print(f"   Sample record keys: {list(first_record.keys())}")
             
             if 'one_word_desc' in first_record:
-                print(f"   ✓ 'one_word_desc' field found!")
-                print(f"   ✓ Sample values: {[record.get('one_word_desc', 'N/A') for record in data[:5]]}")
+                print(f"   'one_word_desc' field found!")
+                print(f"   Sample values: {[record.get('one_word_desc', 'N/A') for record in data[:5]]}")
             else:
-                print(f"   ✗ 'one_word_desc' field NOT found in record")
+                print(f"   'one_word_desc' field NOT found in record")
                 
     except Exception as e:
-        print(f"   ✗ Error extracting data: {e}")
+        print(f"   Error extracting data: {e}")
         return
     
     # Step 2: Generate one-word descriptions analysis
     print(f"\n2. Generating one-word descriptions analysis...")
     try:
         result = generate_one_word_descriptions(data)
-        print(f"   ✓ Analysis result keys: {list(result.keys())}")
+        print(f"   Analysis result keys: {list(result.keys())}")
         
         if 'error' in result:
-            print(f"   ✗ Error in analysis: {result['error']}")
+            print(f"   Error in analysis: {result['error']}")
         else:
-            print(f"   ✓ Analysis successful!")
+            print(f"   Analysis successful!")
             if 'data' in result and 'word_cloud' in result['data']:
                 word_cloud_data = result['data']['word_cloud']
-                print(f"   ✓ Generated {len(word_cloud_data)} word cloud items")
-                print(f"   ✓ Top 5 words: {word_cloud_data[:5]}")
+                print(f"   Generated {len(word_cloud_data)} word cloud items")
+                print(f"   Top 5 words: {word_cloud_data[:5]}")
                 
                 # Show stats
                 if 'stats' in result['data']:
                     stats = result['data']['stats']
-                    print(f"   ✓ Stats: {stats}")
+                    print(f"   Stats: {stats}")
             
     except Exception as e:
-        print(f"   ✗ Error generating analysis: {e}")
+        print(f"   Error generating analysis: {e}")
         import traceback
         traceback.print_exc()
 

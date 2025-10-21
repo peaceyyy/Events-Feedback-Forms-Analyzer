@@ -12,48 +12,48 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 def test_imports():
     """Test if all required packages can be imported"""
-    print("🔍 Testing package imports...")
+    print("Testing package imports...")
     
     try:
         import google.generativeai as genai
-        print("✅ google-generativeai imported successfully")
+        print("google-generativeai imported successfully")
     except ImportError as e:
-        print(f"❌ google-generativeai import failed: {e}")
+        print(f"google-generativeai import failed: {e}")
         return False
     
     try:
         from dotenv import load_dotenv
-        print("✅ python-dotenv imported successfully")
+        print("python-dotenv imported successfully")
     except ImportError as e:
-        print(f"❌ python-dotenv import failed: {e}")
+        print(f"python-dotenv import failed: {e}")
         return False
     
     return True
 
 def test_environment():
     """Test if environment variables are configured"""
-    print("\n🔍 Testing environment configuration...")
+    print("\nTesting environment configuration...")
     
     from dotenv import load_dotenv
     load_dotenv()
     
     api_key = os.getenv('GEMINI_API_KEY')
     if not api_key:
-        print("❌ GEMINI_API_KEY not found in environment")
-        print("🔧 Solution: Add your API key to .env file")
+        print("GEMINI_API_KEY not found in environment")
+        print("Solution: Add your API key to .env file")
         return False
     
     if api_key.startswith('your_'):
-        print("❌ GEMINI_API_KEY still contains placeholder value")
-        print("🔧 Solution: Replace with your actual API key from Google AI Studio")
+        print("GEMINI_API_KEY still contains placeholder value")
+        print("Solution: Replace with your actual API key from Google AI Studio")
         return False
     
-    print(f"✅ GEMINI_API_KEY found (ends with: ...{api_key[-6:]})")
+    print(f"GEMINI_API_KEY found (ends with: ...{api_key[-6:]})")
     return True
 
 def test_gemini_connection():
     """Test if Gemini API connection works"""
-    print("\n🔍 Testing Gemini API connection...")
+    print("\nTesting Gemini API connection...")
     
     try:
         from backend.analysis.gemini_service import get_gemini_service
@@ -67,25 +67,25 @@ def test_gemini_connection():
             {"positive_feedback": "Amazing speakers", "improvement_feedback": "Food was cold"}
         ]
         
-        print("🔍 Testing sentiment analysis...")
+        print("Testing sentiment analysis...")
         result = service.generate_sentiment_analysis(test_data)
         
         if 'error' in result:
-            print(f"❌ Sentiment analysis failed: {result['error']}")
+            print(f"Sentiment analysis failed: {result['error']}")
             return False
         
-        print("✅ Sentiment analysis successful!")
+        print("Sentiment analysis successful!")
         print(f"   Analyzed {result.get('total_analyzed', 0)} text fields")
         
         return True
         
     except Exception as e:
-        print(f"❌ Gemini connection failed: {e}")
+        print(f"Gemini connection failed: {e}")
         return False
 
 def main():
     """Run all tests"""
-    print("🧪 Gemini Integration Test Suite")
+    print("Gemini Integration Test Suite")
     print("=" * 40)
     
     # Run tests
@@ -93,17 +93,17 @@ def main():
     env_ok = test_environment()
     
     if not imports_ok or not env_ok:
-        print("\n❌ Setup incomplete. Please fix the issues above.")
+        print("\nSetup incomplete. Please fix the issues above.")
         return
     
     connection_ok = test_gemini_connection()
     
     print("\n" + "=" * 40)
     if connection_ok:
-        print("🎉 All tests passed! Gemini integration is ready.")
-        print("🚀 You can now run the full application.")
+        print("All tests passed! Gemini integration is ready.")
+        print("You can now run the full application.")
     else:
-        print("❌ Some tests failed. Please check your configuration.")
+        print("Some tests failed. Please check your configuration.")
 
 if __name__ == '__main__':
     main()
