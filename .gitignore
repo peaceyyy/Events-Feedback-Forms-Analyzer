@@ -4,6 +4,7 @@
 /.venv
 __pycache__/
 .roo/
+roo/
 .gitignore
 node_modules
 Notes
