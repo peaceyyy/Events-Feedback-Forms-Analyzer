@@ -12,7 +12,7 @@ import tempfile
 import io
 from backend.processing.feedback_service import extract_feedback_data
 # Import the summary and analysis functions from the analysis package
-from backend.analysis.insights import generate_initial_summary, generate_comprehensive_report
+from backend.analysis import generate_initial_summary, generate_comprehensive_report
 
 
 def validate_csv_content(file_content: bytes) -> Dict[str, Any]:
@@ -50,7 +50,6 @@ def process_feedback_csv(file_content: bytes) -> Dict[str, Any]:
         print(f"DEBUG: NPS analysis: {comprehensive_analysis.get('nps', {}).get('data', {})}")
         print(f"DEBUG: Sessions analysis: {comprehensive_analysis.get('sessions', {}).get('data', {})}")
         
-        # FIXED: Merge comprehensive analysis at root level instead of nesting
         result = {
             "success": True,
             "message": "CSV processed successfully",
@@ -60,7 +59,6 @@ def process_feedback_csv(file_content: bytes) -> Dict[str, Any]:
             **comprehensive_analysis  # Spread comprehensive analysis at root level
         }
         
-        print(f"DEBUG: Final result keys: {result.keys()}")
         return result
     except ValueError as e:
         return {
@@ -75,7 +73,7 @@ def process_feedback_csv(file_content: bytes) -> Dict[str, Any]:
             "error": "Processing error",
             "message": f"Failed to process CSV: {str(e)}",
             "timestamp": datetime.now().isoformat()
-        }
+        }   
 
 
 def save_processed_data(data: List[Dict[str, Any]], filename_prefix: str = "processed") -> str:
@@ -86,7 +84,7 @@ def save_processed_data(data: List[Dict[str, Any]], filename_prefix: str = "proc
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{filename_prefix}_{timestamp}.json"
     
-    # Save to temp directory (Vercel will handle cleanup)
+
     temp_dir = tempfile.gettempdir()
     file_path = os.path.join(temp_dir, filename)
     

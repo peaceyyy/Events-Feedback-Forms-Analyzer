@@ -1,5 +1,5 @@
 # Flask application
 from .main import app
-from . import handlers
+from . import csv_handling
 
-__all__ = ["app", "handlers"]
+__all__ = ["app", "csv_handling"]

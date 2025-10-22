@@ -23,9 +23,8 @@ class GeminiAnalysisService:
             raise ValueError("GEMINI_API_KEY not found in environment variables")
         
         genai.configure(api_key=api_key)
-        # Use the latest stable Gemini model
-        self.model = genai.GenerativeModel('gemini-2.5-flash')
-        self.dev_mode = dev_mode  # 🚀 Enable development mode for faster testing
+        self.model = genai.GenerativeModel('gemini-2.0-flash')
+        self.dev_mode = dev_mode  # Development mode for faster testing
         
         if self.dev_mode:
             print("🚀 Gemini service running in DEVELOPMENT mode (smaller samples, faster responses)")
@@ -49,7 +48,6 @@ class GeminiAnalysisService:
             if not text_fields:
                 return {"error": "No text feedback available for analysis"}
             
-            # 🚀 DEVELOPMENT MODE: Use sample size for faster testing
             if self.dev_mode:
                 sample_size = min(10, len(text_fields))  # Limit to 10 for dev testing
                 sample_fields = text_fields[:sample_size]
@@ -261,7 +259,7 @@ class GeminiAnalysisService:
     def _parse_gemini_response(self, response_text: str) -> Dict[str, Any]:
         """Parse Gemini's JSON response with error handling"""
         try:
-            # Clean the response text (remove markdown code blocks if present)
+      
             cleaned_text = response_text.strip()
             if cleaned_text.startswith('```json'):
                 cleaned_text = cleaned_text[7:-3]
@@ -502,8 +500,6 @@ RESPOND WITH ONLY VALID JSON, NO ADDITIONAL TEXT."""
         except Exception as e:
             return {"error": f"Failed to generate aspect insights: {str(e)}"}
 
-
-# Convenience function for easy import
 def get_gemini_service() -> GeminiAnalysisService:
     """Get configured Gemini service instance"""
     return GeminiAnalysisService()

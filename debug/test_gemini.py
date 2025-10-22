@@ -56,7 +56,7 @@ def test_gemini_connection():
     print("\nTesting Gemini API connection...")
     
     try:
-        from backend.analysis.gemini_service import get_gemini_service
+        from backend.gemini.gemini_service import get_gemini_service
         
         # Create service instance
         service = get_gemini_service()
