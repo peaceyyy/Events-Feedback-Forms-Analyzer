@@ -1,4 +1,4 @@
-// components/FileUpload.tsx - Modular file upload component
+// components/FileUpload.tsx 
 'use client'
 import { useState } from 'react'
 import { 
@@ -8,9 +8,10 @@ import {
   Description as DescriptionIcon,
   Science as ScienceIcon
 } from '@mui/icons-material'
+import type { UploadResponse, UploadError } from '@/types/upload'
 
 interface FileUploadProps {
-  onUploadSuccess?: (results: any, filename?: string) => void
+  onUploadSuccess?: (results: UploadResponse, filename?: string) => void
   onUploadError?: (error: string) => void
   onReset?: () => void
   isMinimized?: boolean
@@ -18,7 +19,6 @@ interface FileUploadProps {
 
 /**
  * FileUpload Component - Handles file selection and upload to backend
- * Follows single responsibility principle - only manages file upload logic
  */
 export default function FileUpload({ onUploadSuccess, onUploadError, onReset, isMinimized = false }: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -47,24 +47,32 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
       const formData = new FormData()
       formData.append('file', selectedFile)
 
-      // Send to Flask backend
-      // Send to our Next.js API route proxy instead of directly to the Flask backend
+      // Send to Next.js API route proxy (server-side validation + security)
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       })
 
-      const result = await response.json()
+      // Type-safe response parsing
+      const result: UploadResponse | { success: false; error: UploadError } = await response.json()
 
-      if (result.success) {
-        // Conditional log for debugging the full API response.
+      if (result.success && 'summary' in result) {
+        // Conditional log for debugging the full API response
         if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
           console.log('FileUpload API Response:', result)
         }
         if (onUploadSuccess) onUploadSuccess(result, selectedFile?.name)
-      } else {
-        const errorMsg = result.error || 'Upload failed'
+      } else if (!result.success && 'error' in result) {
+        // Structured error with suggestion (type-safe access)
+        const error = result.error
+        const errorMsg = typeof error === 'object' && error.suggestion
+          ? `${error.message}. ${error.suggestion}`
+          : typeof error === 'object' 
+            ? error.message 
+            : error || 'Upload failed'
         if (onUploadError) onUploadError(errorMsg)
+      } else {
+        if (onUploadError) onUploadError('Upload failed')
       }
     } catch (err) {
       const errorMsg = 'Connection failed. Is the Flask server running?'
@@ -86,18 +94,25 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
         method: 'GET',
       })
 
-      const result = await response.json()
+      // Type-safe response parsing
+      const result: UploadResponse | { success: false; error: UploadError } = await response.json()
 
-      if (result.success) {
+      if (result.success && 'summary' in result) {
         // Conditional log for debugging
         if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
           console.log('Quick Test API Response:', result)
         }
-        // Pass test data to parent with test filename
-        if (onUploadSuccess) onUploadSuccess(result, '🧪 Test Data (feedback_forms-1.csv)')
-      } else {
-        const errorMsg = result.error || 'Quick test failed'
+        if (onUploadSuccess) onUploadSuccess(result, 'Test Data (feedback_forms-1.csv)')
+      } else if (!result.success && 'error' in result) {
+        const error = result.error
+        const errorMsg = typeof error === 'object' && error.message
+          ? error.message
+          : typeof error === 'string' 
+            ? error 
+            : 'Quick test failed'
         if (onUploadError) onUploadError(errorMsg)
+      } else {
+        if (onUploadError) onUploadError('Quick test failed')
       }
     } catch (err) {
       const errorMsg = 'Connection failed. Is the Flask server running?'
@@ -109,14 +124,13 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
   }
 
   return (
-    // THE FIX: Re-introduce a max-width and center the component to make it more compact.
-    // UPDATE: Removing max-width and mx-auto to allow the component to fill its grid container naturally.
+  
     <div className="w-full">
       {/* Main Upload Card with Minimize Animation */}
       <div className={`glass-card-dark rounded-3xl elevation-3 mb-8 transition-all duration-500 ease-out overflow-hidden ${
         isMinimized 
           ? 'p-4 h-20' 
-          : 'p-9.5 h-auto mt-1' // Full state with auto height - reduced padding for compact layout
+          : 'p-9.5 h-auto mt-1' 
       }`}>
         
         {/* Header Section - Conditionally rendered based on state */}
@@ -154,7 +168,7 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
             ) : (
               <div className="flex items-center gap-2">
                 <ScienceIcon sx={{ fontSize: 16 }} />
-                <span>🚀 Quick Test with Sample Data</span>
+                <span>Quick Test with Sample Data</span>
               </div>
             )}
           </button>
@@ -174,8 +188,8 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
           </div>
           <button
             onClick={() => {
-              setSelectedFile(null) // Clear file selection
-              onReset && onReset() // Call parent reset function
+              setSelectedFile(null) 
+              onReset && onReset() 
             }}
             className="btn-google text-sm py-2 px-4 flex items-center gap-2"
           >
