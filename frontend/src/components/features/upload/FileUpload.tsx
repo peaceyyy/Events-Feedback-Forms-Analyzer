@@ -5,7 +5,8 @@ import {
   CloudUpload as CloudUploadIcon,
   CheckCircle as CheckCircleIcon,
   Analytics as AnalyticsIcon,
-  Description as DescriptionIcon
+  Description as DescriptionIcon,
+  Science as ScienceIcon
 } from '@mui/icons-material'
 
 interface FileUploadProps {
@@ -22,6 +23,7 @@ interface FileUploadProps {
 export default function FileUpload({ onUploadSuccess, onUploadError, onReset, isMinimized = false }: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState<boolean>(false)
+  const [isLoadingTest, setIsLoadingTest] = useState<boolean>(false)
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null
@@ -73,6 +75,39 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
     }
   }
 
+  const handleQuickTest = async () => {
+    setIsLoadingTest(true)
+    // Clear any previous errors
+    if (onUploadError) onUploadError('')
+
+    try {
+      // Call test endpoint via Next.js API proxy
+      const response = await fetch('/api/test', {
+        method: 'GET',
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        // Conditional log for debugging
+        if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
+          console.log('Quick Test API Response:', result)
+        }
+        // Pass test data to parent with test filename
+        if (onUploadSuccess) onUploadSuccess(result, '🧪 Test Data (feedback_forms-1.csv)')
+      } else {
+        const errorMsg = result.error || 'Quick test failed'
+        if (onUploadError) onUploadError(errorMsg)
+      }
+    } catch (err) {
+      const errorMsg = 'Connection failed. Is the Flask server running?'
+      console.error('Quick test error:', err)
+      if (onUploadError) onUploadError(errorMsg)
+    } finally {
+      setIsLoadingTest(false)
+    }
+  }
+
   return (
     // THE FIX: Re-introduce a max-width and center the component to make it more compact.
     // UPDATE: Removing max-width and mx-auto to allow the component to fill its grid container naturally.
@@ -97,9 +132,32 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
           <h2 className="text-xl font-bold mb-2" style={{color: 'var(--color-text-primary)'}}>
             Upload Feedback Data
           </h2>
-          <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
+          <p className="text-sm mb-3" style={{color: 'var(--color-text-secondary)'}}>
             Upload your event feedback CSV to generate insights
           </p>
+          
+          {/* Quick Test Button - Prominent position */}
+          <button
+            onClick={handleQuickTest}
+            disabled={isLoadingTest || isUploading}
+            className="btn-secondary text-sm py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
+            style={{
+              background: 'linear-gradient(135deg, rgba(103, 58, 183, 0.1), rgba(63, 81, 181, 0.1))',
+              border: '1.5px solid rgba(103, 58, 183, 0.3)',
+            }}
+          >
+            {isLoadingTest ? (
+              <div className="flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-400"></div>
+                <span>Loading Test Data...</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <ScienceIcon sx={{ fontSize: 16 }} />
+                <span>🚀 Quick Test with Sample Data</span>
+              </div>
+            )}
+          </button>
         </div>
 
         {/* Minimized State Content */}

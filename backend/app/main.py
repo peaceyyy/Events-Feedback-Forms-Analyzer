@@ -112,13 +112,14 @@ def analyze_data():
 @app.route('/api/test', methods=['GET'])
 def test_with_sample():
     """
-    Test endpoint using sample data - useful for development.
+    Quick test endpoint using sample data - auto-loads test CSV without upload.
+    Returns same structure as /api/upload for frontend compatibility.
     """
     try:
         csv_path = get_default_csv_path()
         if not os.path.exists(csv_path):
-            # Try alternative paths
-            for alt_path in ['ai_studio_code.csv', 'feedback_forms-1.csv']:
+            # Try alternative paths in test_data folder
+            for alt_path in ['test_data/feedback_forms-1.csv', 'test_data/feedback_forms-3.csv', 'feedback_forms-1.csv']:
                 if os.path.exists(alt_path):
                     csv_path = alt_path
                     break
@@ -126,19 +127,22 @@ def test_with_sample():
         if not os.path.exists(csv_path):
             return jsonify({
                 "success": False,
-                "error": "No sample CSV file found"
+                "error": "No sample CSV file found in test_data folder"
             }), 404
         
-        # Process sample data
-        data = extract_feedback_data(csv_path)
-        analysis = generate_comprehensive_report(data)
+        # Read CSV file content
+        with open(csv_path, 'rb') as f:
+            file_content = f.read()
         
-        return jsonify({
-            "success": True,
-            "message": f"Test successful with {len(data)} records",
-            "sample_data": data[:3],  # First 3 records
-            "analysis": analysis
-        })
+        # Process using same pipeline as upload endpoint
+        result = process_feedback_csv(file_content)
+        
+        # Add test indicator
+        if result.get('success'):
+            result['test_mode'] = True
+            result['message'] = f"✨ Quick Test loaded with {result['summary']['total_responses']} sample responses"
+        
+        return jsonify(result)
     
     except Exception as e:
         return jsonify({
