@@ -1,4 +1,4 @@
-// components/FileUpload.tsx 
+// components/FileUpload.tsx - Modular file upload component with progress tracking
 'use client'
 import { useState } from 'react'
 import { 
@@ -8,6 +8,7 @@ import {
   Description as DescriptionIcon,
   Science as ScienceIcon
 } from '@mui/icons-material'
+import { useFileUpload } from '@/hooks/useFileUpload'
 import type { UploadResponse, UploadError } from '@/types/upload'
 
 interface FileUploadProps {
@@ -22,14 +23,28 @@ interface FileUploadProps {
  */
 export default function FileUpload({ onUploadSuccess, onUploadError, onReset, isMinimized = false }: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [isUploading, setIsUploading] = useState<boolean>(false)
-  const [isLoadingTest, setIsLoadingTest] = useState<boolean>(false)
+  const [dragActive, setDragActive] = useState(false)
+
+  // Use custom hook for all upload logic (separation of concerns)
+  const { upload, isUploading, progress, error, reset } = useFileUpload({
+    onSuccess: (result, filename) => {
+      onUploadSuccess?.(result, filename)
+      setSelectedFile(null)
+    },
+    onError: (err: UploadError) => {
+      const errorMsg = err.suggestion
+        ? `${err.message}. ${err.suggestion}`
+        : err.message
+      onUploadError?.(errorMsg)
+    },
+  })
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null
     setSelectedFile(file)
-    // Clear any previous results when new file is selected
+    // Clear any previous errors
     if (onUploadError) onUploadError('')
+    reset()
   }
 
   const handleUpload = async () => {
@@ -37,72 +52,23 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
       if (onUploadError) onUploadError('Please select a CSV file first')
       return
     }
-
-    setIsUploading(true)
-    // Clear any previous errors
-    if (onUploadError) onUploadError('')
-
-    try {
-      // Create form data for file upload
-      const formData = new FormData()
-      formData.append('file', selectedFile)
-
-      // Send to Next.js API route proxy (server-side validation + security)
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      // Type-safe response parsing
-      const result: UploadResponse | { success: false; error: UploadError } = await response.json()
-
-      if (result.success && 'summary' in result) {
-        // Conditional log for debugging the full API response
-        if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
-          console.log('FileUpload API Response:', result)
-        }
-        if (onUploadSuccess) onUploadSuccess(result, selectedFile?.name)
-      } else if (!result.success && 'error' in result) {
-        // Structured error with suggestion (type-safe access)
-        const error = result.error
-        const errorMsg = typeof error === 'object' && error.suggestion
-          ? `${error.message}. ${error.suggestion}`
-          : typeof error === 'object' 
-            ? error.message 
-            : error || 'Upload failed'
-        if (onUploadError) onUploadError(errorMsg)
-      } else {
-        if (onUploadError) onUploadError('Upload failed')
-      }
-    } catch (err) {
-      const errorMsg = 'Connection failed. Is the Flask server running?'
-      console.error('Upload error:', err)
-      if (onUploadError) onUploadError(errorMsg)
-    } finally {
-      setIsUploading(false)
-    }
+    // Hook handles all validation and error management
+    await upload(selectedFile)
   }
 
   const handleQuickTest = async () => {
-    setIsLoadingTest(true)
-    // Clear any previous errors
-    if (onUploadError) onUploadError('')
-
     try {
-      // Call test endpoint via Next.js API proxy
       const response = await fetch('/api/test', {
         method: 'GET',
       })
 
-      // Type-safe response parsing
       const result: UploadResponse | { success: false; error: UploadError } = await response.json()
 
       if (result.success && 'summary' in result) {
-        // Conditional log for debugging
         if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
           console.log('Quick Test API Response:', result)
         }
-        if (onUploadSuccess) onUploadSuccess(result, 'Test Data (feedback_forms-1.csv)')
+        if (onUploadSuccess) onUploadSuccess(result, '🧪 Test Data (feedback_forms-1.csv)')
       } else if (!result.success && 'error' in result) {
         const error = result.error
         const errorMsg = typeof error === 'object' && error.message
@@ -118,8 +84,30 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
       const errorMsg = 'Connection failed. Is the Flask server running?'
       console.error('Quick test error:', err)
       if (onUploadError) onUploadError(errorMsg)
-    } finally {
-      setIsLoadingTest(false)
+    }
+  }
+
+  // Drag and drop handlers
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true)
+    } else if (e.type === 'dragleave') {
+      setDragActive(false)
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(false)
+
+    const file = e.dataTransfer.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+      reset()
     }
   }
 
@@ -153,22 +141,22 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
           {/* Quick Test Button - Prominent position */}
           <button
             onClick={handleQuickTest}
-            disabled={isLoadingTest || isUploading}
+            disabled={isUploading}
             className="btn-secondary text-sm py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
             style={{
               background: 'linear-gradient(135deg, rgba(103, 58, 183, 0.1), rgba(63, 81, 181, 0.1))',
               border: '1.5px solid rgba(103, 58, 183, 0.3)',
             }}
           >
-            {isLoadingTest ? (
+            {isUploading ? (
               <div className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-400"></div>
-                <span>Loading Test Data...</span>
+                <span>Processing...</span>
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <ScienceIcon sx={{ fontSize: 16 }} />
-                <span>Quick Test with Sample Data</span>
+                <span style={{ color: "white" }}>Quick Test with Sample Data</span>
               </div>
             )}
           </button>
@@ -209,15 +197,24 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
               type="file"
               accept=".csv"
               onChange={handleFileSelect}
+              disabled={isUploading}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               id="file-upload"
             />
             <label htmlFor="file-upload" className="block">
-              <div className="border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 hover:scale-[1.02] cursor-pointer group"
-                   style={{
-                     borderColor: selectedFile ? 'var(--color-usc-green)' : 'var(--color-border-light)',
-                     backgroundColor: selectedFile ? 'rgba(76, 175, 80, 0.05)' : 'transparent'
-                   }}>
+              <div
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+                className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 hover:scale-[1.02] cursor-pointer group ${
+                  dragActive ? 'border-usc-green bg-usc-green/10' : ''
+                }`}
+                style={{
+                  borderColor: dragActive ? 'var(--color-usc-green)' : selectedFile ? 'var(--color-usc-green)' : 'var(--color-border-light)',
+                  backgroundColor: dragActive ? 'rgba(76, 175, 80, 0.1)' : selectedFile ? 'rgba(76, 175, 80, 0.05)' : 'transparent'
+                }}
+              >
                 <div className="mb-4">
                   {selectedFile ? (
                     <CheckCircleIcon sx={{ fontSize: 48, color: 'var(--color-usc-green)' }} />
@@ -257,6 +254,44 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
                   {(selectedFile.size / 1024).toFixed(1)} KB • CSV Format • Ready to process
                 </p>
               </div>
+            </div>
+          )}
+
+          {/* Progress Bar - Shows during upload/processing */}
+          {progress && isUploading && (
+            <div className="mt-6 glass-card-dark p-6 rounded-xl elevation-1">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-sm font-semibold" style={{color: 'var(--color-text-primary)'}}>
+                  {progress.stage === 'uploading' ? '📤 Uploading...' : 
+                   progress.stage === 'processing' ? '⚙️ Processing...' : 
+                   progress.stage === 'complete' ? '✅ Complete!' : 
+                   'Initializing...'}
+                </span>
+                <span className="text-sm font-bold" style={{color: 'var(--color-usc-green)'}}>
+                  {progress.percentage}%
+                </span>
+              </div>
+              <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-usc-green to-google-blue h-full transition-all duration-300"
+                  style={{ width: `${progress.percentage}%` }}
+                />
+              </div>
+              <p className="text-xs mt-2" style={{color: 'var(--color-text-secondary)'}}>
+                {progress.loaded > 0 && progress.total > 0 && (
+                  `${(progress.loaded / 1024 / 1024).toFixed(1)}MB / ${(progress.total / 1024 / 1024).toFixed(1)}MB`
+                )}
+              </p>
+            </div>
+          )}
+
+          {/* Error Display */}
+          {error && (
+            <div className="mt-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-red-400 font-semibold mb-1">{error.message}</p>
+              {error.suggestion && (
+                <p className="text-red-300 text-sm">{error.suggestion}</p>
+              )}
             </div>
           )}
         </div>

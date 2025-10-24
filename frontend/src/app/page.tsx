@@ -586,7 +586,7 @@ export default function Home() {
                   onUploadSuccess={(results, filename) =>
                     handleUploadSuccess(results, filename)
                   }
-                  onUploadError={handleUploadError}
+                  
                   onReset={handleResetToUpload}
                   isMinimized={false}
                 />
