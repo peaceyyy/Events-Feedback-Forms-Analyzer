@@ -52,6 +52,26 @@ import RecurringTopics from "../components/features/analysis/text/RecurringTopic
  * @returns {JSX.Element}
  */
 import { useState, useEffect } from "react";
+import type { UploadResponse, FeedbackRecord } from '@/types/upload'
+import type { SessionAIInsights, MarketingAIInsights, AspectAIInsights, SessionMatrixData } from '@/types/api'
+
+// Local helper types for shapes the page expects from ratings data (backend variations)
+type RawRatingItem = {
+  aspect?: string;
+  name?: string;
+  value?: number;
+  average?: number;
+  performance?: string;
+  performance_category?: string;
+};
+
+type RatingsRaw = {
+  baseline_data?: RawRatingItem[];
+  detailed_comparison?: RawRatingItem[];
+  aspects?: string[];
+  averages?: number[];
+  overall_satisfaction?: number;
+};
 
 // Define a type for our aspect highlights for better type safety.
 type AspectHighlight = {
@@ -64,12 +84,13 @@ export default function Home() {
     console.log("Home page component loaded.");
   }
   const [darkMode, setDarkMode] = useState(true); // Start with dark mode (GDG style)
-  const [analysisResults, setAnalysisResults] = useState(null);
-  const [analysisError, setAnalysisError] = useState("");
+  const [analysisResults, setAnalysisResults] = useState<UploadResponse | null>(null);
+  const [analysisError, setAnalysisError] = useState<string>("");
   const [isAnalyzed, setIsAnalyzed] = useState(false); // Track if analysis is complete
   const [activeTab, setActiveTab] = useState("analysis"); // Track current tab
   const [uploadedFilename, setUploadedFilename] = useState<string>(""); // Store uploaded filename
-  const [feedbackData, setFeedbackData] = useState<any[]>([]); // Store raw feedback data for AI analysis
+  const [feedbackData, setFeedbackData] = useState<FeedbackRecord[]>([]); // Store raw feedback data for AI analysis
+  // AI insights are heterogeneous; keep flexible while we normalize upstream
   const [aiInsights, setAiInsights] = useState<any>(null); // Cache AI insights across tab switches
   const [aspectChartVariant, setAspectChartVariant] = useState<
     "diverging" | "grouped" | "bullet" | "radar"
@@ -90,8 +111,8 @@ export default function Home() {
 
   // Effect to calculate top and lowest aspects when analysis results are available
   useEffect(() => {
-    if (analysisResults && (analysisResults as any).ratings?.data) {
-      const ratingsData = (analysisResults as any).ratings.data;
+    if (analysisResults?.ratings?.data) {
+      const ratingsData = analysisResults.ratings.data as unknown as RatingsRaw;
       let baselineData = null;
 
       // This logic mirrors the data handling in AspectComparisonChart
@@ -99,25 +120,28 @@ export default function Home() {
         baselineData = ratingsData.baseline_data;
       } else if (ratingsData.detailed_comparison && Array.isArray(ratingsData.detailed_comparison)) {
         baselineData = ratingsData.detailed_comparison;
-      } else if (ratingsData.aspects && ratingsData.averages && Array.isArray(ratingsData.aspects)) {
+      } else if (ratingsData.aspects && Array.isArray(ratingsData.aspects)) {
         baselineData = ratingsData.aspects.map((aspect: string, index: number) => ({
           aspect: aspect,
-          value: ratingsData.averages[index] || 0,
+          value: ratingsData.averages?.[index] || 0,
         }));
       }
 
       if (baselineData && baselineData.length > 0) {
         // Sort by value descending to find the top and lowest aspects
-        const sortedAspects = [...baselineData].sort((a: any, b: any) => (b.value || 0) - (a.value || 0));
+  const sortedAspects = [...baselineData].sort((a: { value?: number }, b: { value?: number }) => (b.value || 0) - (a.value || 0));
         
-        setTopAspect(sortedAspects[0]);
-        setLowestAspect(sortedAspects[sortedAspects.length - 1]);
+        // Ensure both aspect and value are defined before setting highlight state
+        const first = sortedAspects[0] as RawRatingItem;
+        const last = sortedAspects[sortedAspects.length - 1] as RawRatingItem;
+        setTopAspect({ aspect: first.aspect ?? first.name ?? 'unknown', value: first.value ?? first.average ?? 0 });
+        setLowestAspect({ aspect: last.aspect ?? last.name ?? 'unknown', value: last.value ?? last.average ?? 0 });
       }
     }
   }, [analysisResults]);
 
   // Handle successful upload results
-  const handleUploadSuccess = (results: any, filename?: string) => {
+  const handleUploadSuccess = (results: UploadResponse, filename?: string) => {
     if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
       console.log('UPLOAD SUCCESS RESULTS:', results);
     }
@@ -128,7 +152,7 @@ export default function Home() {
     
     // Extract raw feedback data for AI analysis
     if (results && results.data) {
-      setFeedbackData(results.data);
+      setFeedbackData(results.data as FeedbackRecord[]);
     }
 
     // Stay on current tab after analysis - no auto-switching needed
