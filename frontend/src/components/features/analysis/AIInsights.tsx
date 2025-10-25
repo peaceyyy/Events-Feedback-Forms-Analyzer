@@ -14,6 +14,7 @@ import {
 import SentimentAnalysis from './text/SentimentAnalysis'
 import ThemeAnalysis from './text/ThemeAnalysis'
 import StrategicInsights from './text/StrategicInsights'
+import logger from '@/lib/logger'
 
 interface AIInsightsContainerProps {
   feedbackData: any[]
@@ -78,7 +79,7 @@ export default function AIInsightsContainer({
       const errorMessage = err.message || 'Failed to generate AI insights'
       setError(errorMessage)
       onError?.(errorMessage)
-      console.error('AI Analysis Error:', err)
+      logger.error('AI Analysis Error:', err)
     } finally {
       setLoading(false)
     }

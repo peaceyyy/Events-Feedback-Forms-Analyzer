@@ -10,6 +10,7 @@ import {
 } from '@mui/icons-material'
 import { useFileUpload } from '@/hooks/useFileUpload'
 import type { UploadResponse, UploadError } from '@/types/upload'
+import logger from '@/lib/logger'
 
 interface FileUploadProps {
   onUploadSuccess?: (results: UploadResponse, filename?: string) => void
@@ -65,9 +66,7 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
       const result: UploadResponse | { success: false; error: UploadError } = await response.json()
 
       if (result.success && 'summary' in result) {
-        if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
-          console.log('Quick Test API Response:', result)
-        }
+        logger.debug('Quick Test API Response:', result)
         if (onUploadSuccess) onUploadSuccess(result, '🧪 Test Data (feedback_forms-1.csv)')
       } else if (!result.success && 'error' in result) {
         const error = result.error
@@ -82,7 +81,7 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
       }
     } catch (err) {
       const errorMsg = 'Connection failed. Is the Flask server running?'
-      console.error('Quick test error:', err)
+      logger.error('Quick test error:', err)
       if (onUploadError) onUploadError(errorMsg)
     }
   }
@@ -262,9 +261,9 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
             <div className="mt-6 glass-card-dark p-6 rounded-xl elevation-1">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-sm font-semibold" style={{color: 'var(--color-text-primary)'}}>
-                  {progress.stage === 'uploading' ? '📤 Uploading...' : 
-                   progress.stage === 'processing' ? '⚙️ Processing...' : 
-                   progress.stage === 'complete' ? '✅ Complete!' : 
+                  {progress.stage === 'uploading' ? 'Uploading...' : 
+                   progress.stage === 'processing' ? 'Processing...' : 
+                   progress.stage === 'complete' ? 'Complete!' : 
                    'Initializing...'}
                 </span>
                 <span className="text-sm font-bold" style={{color: 'var(--color-usc-green)'}}>

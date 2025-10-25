@@ -54,6 +54,7 @@ import RecurringTopics from "../components/features/analysis/text/RecurringTopic
 import { useState, useEffect } from "react";
 import type { UploadResponse, FeedbackRecord } from '@/types/upload'
 import type { SessionAIInsights, MarketingAIInsights, AspectAIInsights, SessionMatrixData } from '@/types/api'
+import logger from '@/lib/logger'
 
 // Local helper types for shapes the page expects from ratings data (backend variations)
 type RawRatingItem = {
@@ -80,9 +81,7 @@ type AspectHighlight = {
 } | null;
 
 export default function Home() {
-  if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
-    console.log("Home page component loaded.");
-  }
+  logger.debug("Home page component loaded.");
   const [darkMode, setDarkMode] = useState(true); // Start with dark mode (GDG style)
   const [analysisResults, setAnalysisResults] = useState<UploadResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string>("");
@@ -142,9 +141,7 @@ export default function Home() {
 
   // Handle successful upload results
   const handleUploadSuccess = (results: UploadResponse, filename?: string) => {
-    if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
-      console.log('UPLOAD SUCCESS RESULTS:', results);
-    }
+    logger.debug('UPLOAD SUCCESS RESULTS:', results);
     setAnalysisResults(results);
     setAnalysisError("");
     setIsAnalyzed(true); // Trigger transition to analysis view
@@ -204,7 +201,7 @@ export default function Home() {
 
       return result.insights;
     } catch (error) {
-      console.error('Session insights generation error:', error);
+      logger.error('Session insights generation error:', error);
       return {
         error: error instanceof Error ? error.message : 'Unknown error occurred',
       };
@@ -232,7 +229,7 @@ export default function Home() {
 
       return result.insights;
     } catch (error) {
-      console.error('Marketing insights generation error:', error);
+      logger.error('Marketing insights generation error:', error);
       return {
         error: error instanceof Error ? error.message : 'Unknown error occurred',
       };
@@ -291,7 +288,7 @@ export default function Home() {
 
       return result.insights;
     } catch (error) {
-      console.error('Aspect insights generation error:', error);
+      logger.error('Aspect insights generation error:', error);
       return {
         error: error instanceof Error ? error.message : 'Unknown error occurred',
       };
