@@ -11,6 +11,7 @@ import {
 import { useFileUpload } from '@/hooks/useFileUpload'
 import type { UploadResponse, UploadError } from '@/types/upload'
 import logger from '@/lib/logger'
+import Button from '@/components/ui/Button'
 
 interface FileUploadProps {
   onUploadSuccess?: (results: UploadResponse, filename?: string) => void
@@ -137,7 +138,7 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
             Upload your event feedback CSV to generate insights
           </p>
           
-          {/* Quick Test Button - Prominent position */}
+          {/* Quick Test Button*/}
           <button
             onClick={handleQuickTest}
             disabled={isUploading}
@@ -173,16 +174,17 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
               Analysis Complete
             </span>
           </div>
-          <button
+          <Button
+            variant="google"
+            size="sm"
             onClick={() => {
               setSelectedFile(null) 
               onReset && onReset() 
             }}
-            className="btn-google text-sm py-2 px-4 flex items-center gap-2"
+            startIcon={<CloudUploadIcon sx={{ fontSize: 18 }} />}
           >
-            <CloudUploadIcon sx={{ fontSize: 18 }} />
             Upload Another CSV
-          </button>
+          </Button>
         </div>
 
         {/* File Upload Area - Hidden when minimized */}
@@ -301,23 +303,17 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
             ? 'opacity-0 scale-95 transform -translate-y-4 pointer-events-none absolute inset-0' 
             : 'opacity-100 scale-100 transform translate-y-0 relative'
         }`}>
-          <button
+          <Button
+            variant="google"
+            size="lg"
+            fullWidth
             onClick={handleUpload}
             disabled={!selectedFile || isUploading}
-            className="btn-google w-full text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            loading={isUploading}
+            startIcon={!isUploading && <AnalyticsIcon sx={{ fontSize: 24 }} />}
           >
-            {isUploading ? (
-              <div className="flex items-center justify-center gap-3">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                <span>Analyzing Data...</span>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center gap-3">
-                <AnalyticsIcon sx={{ fontSize: 24 }} />
-                <span>Generate Insights</span>
-              </div>
-            )}
-          </button>
+            {isUploading ? 'Analyzing Data...' : 'Generate Insights'}
+          </Button>
         </div>
       </div>
     </div>
