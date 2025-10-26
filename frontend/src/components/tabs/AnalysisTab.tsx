@@ -32,6 +32,7 @@ interface AnalysisTabProps {
   analysisResults: UploadResponse | null
   uploadedFilename: string
   topAspect: AspectHighlight | null
+  lowestAspect: AspectHighlight | null
   analysisError: string
   onUploadSuccess: (results: UploadResponse, filename?: string) => void
   onResetToUpload: () => void
@@ -41,6 +42,7 @@ export default function AnalysisTab({
   analysisResults,
   uploadedFilename,
   topAspect,
+  lowestAspect,
   analysisError,
   onUploadSuccess,
   onResetToUpload
@@ -176,6 +178,49 @@ export default function AnalysisTab({
                           style={{ color: "var(--color-text-tertiary)" }}
                         >
                           Top Aspect
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Lowest Aspect KPI Card */}
+                <div className={`flex items-center gap-4 p-4 bg-white/5 rounded-lg ${!lowestAspect ? 'opacity-50' : ''}`}>
+                  <CategoryIcon
+                    sx={{
+                      fontSize: 32,
+                      color: lowestAspect ? "var(--color-usc-orange)" : "var(--color-text-tertiary)",
+                    }}
+                  />
+                  <div>
+                    {lowestAspect ? (
+                      <>
+                        <div
+                          className="text-xl font-bold"
+                          style={{ color: "var(--color-text-primary)" }}
+                        >
+                          {lowestAspect.aspect}
+                        </div>
+                        <div
+                          className="text-sm font-medium"
+                          style={{ color: "var(--color-text-secondary)" }}
+                        >
+                          Lowest Aspect ({lowestAspect.value.toFixed(1)}/5)
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className="text-lg font-bold"
+                          style={{ color: "var(--color-text-tertiary)" }}
+                        >
+                          N/A
+                        </div>
+                        <div
+                          className="text-sm font-medium"
+                          style={{ color: "var(--color-text-tertiary)" }}
+                        >
+                          Lowest Aspect
                         </div>
                       </>
                     )}

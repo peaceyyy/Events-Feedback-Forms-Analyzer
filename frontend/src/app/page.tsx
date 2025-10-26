@@ -38,7 +38,6 @@ export default function Home() {
   const [darkMode, setDarkMode] = useState(true); // Start with dark mode (GDG style)
   const [analysisResults, setAnalysisResults] = useState<UploadResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string>("");
-  const [isAnalyzed, setIsAnalyzed] = useState(false); // Track if analysis is complete
   const [activeTab, setActiveTab] = useState("analysis"); // Track current tab
   const [uploadedFilename, setUploadedFilename] = useState<string>(""); // Store uploaded filename
   const [feedbackData, setFeedbackData] = useState<FeedbackRecord[]>([]); // Store raw feedback data for AI analysis
@@ -63,10 +62,10 @@ export default function Home() {
 
   // Handle successful upload results
   const handleUploadSuccess = (results: UploadResponse, filename?: string) => {
-    logger.debug('UPLOAD SUCCESS RESULTS:', results);
+    logger.debug('UPLOAD RESULTS:', results);
     setAnalysisResults(results);
     setAnalysisError("");
-    setIsAnalyzed(true); // Trigger transition to analysis view
+    // analysisResults being set is used as the source of truth for "analysis complete"
     if (filename) setUploadedFilename(filename);
     
     // Extract raw feedback data for AI analysis
@@ -81,7 +80,6 @@ export default function Home() {
   const handleResetToUpload = () => {
     setAnalysisResults(null);
     setAnalysisError("");
-    setIsAnalyzed(false);
     setUploadedFilename("");
     setFeedbackData([]); // Clear feedback data
     setAiInsights(null); // Clear AI insights cache
@@ -128,6 +126,7 @@ export default function Home() {
           analysisResults={analysisResults}
           uploadedFilename={uploadedFilename}
           topAspect={topAspect}
+          lowestAspect={lowestAspect}
           analysisError={analysisError}
           onUploadSuccess={handleUploadSuccess}
           onResetToUpload={handleResetToUpload}
