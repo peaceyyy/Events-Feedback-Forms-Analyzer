@@ -1,30 +1,10 @@
 "use client";
-import Image from "next/image";
 import ScrollToTopButton from "../components/ui/ScrollToTopButton";
-import Tabs, { Tab } from "../components/ui/TabNavigationBar";
-
-// Tab Components
-import AnalysisTab from "../components/tabs/AnalysisTab";
-import TextInsightsTab from "../components/tabs/TextInsightsTab";
-import AspectTab from "../components/tabs/AspectTab";
-import SessionsTab from "../components/tabs/SessionsTab";
-import AboutTab from "../components/tabs/AboutTab";
+import Tabs from "../components/ui/TabNavigationBar";
+import useTabs from '@/lib/useTabs'
 import SpaceBackground from "@/components/ui/SpaceBackground";
 import Header from '@/components/ui/Header'
 import PageControls from '@/components/ui/PageControls'
-
-// Icons
-import {
-  Dashboard as DashboardIcon,
-  TextFields as TextFieldsIcon,
-  Category as CategoryIcon,
-  Event as EventIcon,
-  Info as InfoIcon,
-  Brightness4 as Brightness4Icon,
-  Brightness7 as Brightness7Icon,
-} from "@mui/icons-material";
-
-
 import { useState, useEffect } from "react";
 import type { UploadResponse, FeedbackRecord } from '@/types/upload'
 import logger from '@/lib/logger'
@@ -50,7 +30,7 @@ export default function Home() {
   const [topAspect, setTopAspect] = useState<AspectHighlight | null>(null);
   const [lowestAspect, setLowestAspect] = useState<AspectHighlight | null>(null);
   // Toggle for the decorative animated space background. Default respects user's reduced-motion preference.
-  const [enableSpaceBackground, setEnableSpaceBackground] = useState<boolean>(true);
+  const [enableSpaceBackground, setEnableSpaceBackground] = useState<boolean>(false); // off by default
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -124,85 +104,23 @@ export default function Home() {
     }
   }, [analysisResults]);
 
-  const createTabs = (): Tab[] => {
-    const tabs: Tab[] = [];
-
-    // Analysis Tab - Main dashboard (always shown)
-    tabs.push({
-      id: "analysis",
-      label: "Analysis",
-      icon: <DashboardIcon sx={{ fontSize: 20 }} />,
-      content: (
-        <AnalysisTab
-          analysisResults={analysisResults}
-          uploadedFilename={uploadedFilename}
-          topAspect={topAspect}
-          lowestAspect={lowestAspect}
-          analysisError={analysisError}
-          onUploadSuccess={handleUploadSuccess}
-          onResetToUpload={handleResetToUpload}
-        />
-      ),
-    });
-
-    // Additional tabs only show after analysis is complete
-    if (analysisResults) {
-      // Text Insights Tab
-      tabs.push({
-        id: "text-insights",
-        label: "Text Insights [AI]",
-        icon: <TextFieldsIcon sx={{ fontSize: 20 }} />,
-        content: (
-          <TextInsightsTab
-            feedbackData={feedbackData}
-            analysisResults={analysisResults}
-            aiInsights={aiInsights}
-            onInsightsGenerated={setAiInsights}
-          />
-        ),
-      });
-
-      // Event Aspects Tab - Venue, speaker, content analysis
-      tabs.push({
-        id: "aspects",
-        label: "Event Aspects",
-        icon: <CategoryIcon sx={{ fontSize: 20 }} />,
-        content: (
-          <AspectTab
-            analysisResults={analysisResults}
-            aiInsights={aiInsights}
-            aspectChartVariant={aspectChartVariant}
-            onVariantChange={setAspectChartVariant}
-            onGenerateAspectInsights={handleGenerateAspectInsights}
-          />
-        ),
-      });
-
-      // Session Analytics Tab - Session performance
-      tabs.push({
-        id: "sessions",
-        label: "Session Analytics",
-        icon: <EventIcon sx={{ fontSize: 20 }} />,
-        content: (
-          <SessionsTab
-            analysisResults={analysisResults}
-            onGenerateSessionInsights={handleGenerateSessionInsights}
-            onGenerateMarketingInsights={handleGenerateMarketingInsights}
-          />
-        ),
-      });
-    }
-
-    // About Tab 
-    tabs.push({
-      id: "about",
-      label: "About",
-      icon: <InfoIcon sx={{ fontSize: 20 }} />,
-      content: <AboutTab />,
-    });
-
-    return tabs;
-  };
+  const tabs = useTabs({
+    analysisResults,
+    uploadedFilename,
+    topAspect,
+    lowestAspect,
+    analysisError,
+    feedbackData,
+    aiInsights,
+    aspectChartVariant,
+    onUploadSuccess: handleUploadSuccess,
+    onResetToUpload: handleResetToUpload,
+    onInsightsGenerated: setAiInsights,
+    onVariantChange: setAspectChartVariant,
+    onGenerateAspectInsights: handleGenerateAspectInsights,
+    onGenerateSessionInsights: handleGenerateSessionInsights,
+    onGenerateMarketingInsights: handleGenerateMarketingInsights,
+  })
 
   return (
     <div
@@ -229,7 +147,7 @@ export default function Home() {
 
         <main className="max-w-6xl mx-auto">
           <Tabs
-            tabs={createTabs()}
+            tabs={tabs}
             defaultTab={activeTab}
             onTabChange={handleTabChange}
             className="mt-8"
