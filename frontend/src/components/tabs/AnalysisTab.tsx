@@ -5,7 +5,7 @@
  * 1. Upload State - File upload interface with "How It Works" guide
  * 2. Results State - Executive summary, KPI cards, and core analytics charts
  * 
- * This is the landing tab and primary entry point for users.
+ * 
  */
 
 'use client'
@@ -73,8 +73,8 @@ export default function AnalysisTab({
                 </h3>
               </div>
 
-              {/* Enhanced KPI Cards */}
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Enhanced KPI Cards: responsive — 1 / 2 / 3 / 5 columns for sm/md/lg/xl */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
                   <CheckCircleIcon
                     sx={{ fontSize: 32, color: "var(--color-usc-green)" }}

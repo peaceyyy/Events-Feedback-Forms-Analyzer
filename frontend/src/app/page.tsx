@@ -20,6 +20,7 @@ import {
   Info as InfoIcon,
   Brightness4 as Brightness4Icon,
   Brightness7 as Brightness7Icon,
+  AutoAwesome as AutoAwesomeIcon,
 } from "@mui/icons-material";
 
 
@@ -47,6 +48,18 @@ export default function Home() {
   >("diverging"); // Aspect chart variant
   const [topAspect, setTopAspect] = useState<AspectHighlight | null>(null);
   const [lowestAspect, setLowestAspect] = useState<AspectHighlight | null>(null);
+  // Toggle for the decorative animated space background. Default respects user's reduced-motion preference.
+  const [enableSpaceBackground, setEnableSpaceBackground] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const prefersReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) setEnableSpaceBackground(false);
+    } catch (e) {
+      // ignore - default to enabled
+    }
+  }, []);
 
   // Apply dark mode 
   useEffect(() => {
@@ -73,7 +86,6 @@ export default function Home() {
       setFeedbackData(results.data as FeedbackRecord[]);
     }
 
-    // Stay on current tab after analysis - no auto-switching needed
   };
 
   // Reset to upload state (for "Upload another CSV" functionality)
@@ -100,7 +112,6 @@ export default function Home() {
 
   const handleGenerateAspectInsights = () => 
     generateAspectInsights((analysisResults as any)?.ratings?.data);
-
 
   
   // Effect to calculate top and lowest aspects when analysis results are available
@@ -182,7 +193,7 @@ export default function Home() {
       });
     }
 
-    // About Tab - Always available
+    // About Tab
     tabs.push({
       id: "about",
       label: "About",
@@ -201,14 +212,18 @@ export default function Home() {
           : "bg-gradient-to-br from-blue-50 to-indigo-100"
       }`}
     >
-      {/* <SpaceBackground isDark={darkMode} /> DO NOT REMOVE — COMMENTED OUT FOR PERFORMANCE*/} 
-
-
       <ScrollToTopButton />
 
-      <div className="fixed top-6 right-6 z-50">
+  {/* Decorative background: render only when enabled and in dark mode */}
+  {enableSpaceBackground && darkMode && <SpaceBackground isDark={darkMode} />}
+
+  <ScrollToTopButton />
+
+      <div className="fixed top-6 right-6 z-50 flex flex-col items-end gap-3">
         <button
           onClick={toggleDarkMode}
+          aria-pressed={darkMode}
+          title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           className="glass-card-dark p-3 rounded-full border border-white/20 hover:bg-white/10 transition-all duration-300 backdrop-blur-md"
         >
           {darkMode ? (
@@ -216,6 +231,16 @@ export default function Home() {
           ) : (
             <Brightness4Icon sx={{ fontSize: 24, color: "#4A5568" }} />
           )}
+        </button>
+
+        {/* Space background toggle — accessible, keyboard focusable, respects reduced-motion preference by default */}
+        <button
+          onClick={() => setEnableSpaceBackground(v => !v)}
+          aria-pressed={enableSpaceBackground}
+          title={enableSpaceBackground ? 'Disable animated background' : 'Enable animated background'}
+          className="glass-card-dark p-3 rounded-full border border-white/20 hover:bg-white/10 transition-all duration-300 backdrop-blur-md"
+        >
+          <AutoAwesomeIcon sx={{ fontSize: 20, color: enableSpaceBackground ? '#FFB74D' : '#9CA3AF' }} />
         </button>
       </div>
 
