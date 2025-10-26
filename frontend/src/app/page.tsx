@@ -10,6 +10,8 @@ import AspectTab from "../components/tabs/AspectTab";
 import SessionsTab from "../components/tabs/SessionsTab";
 import AboutTab from "../components/tabs/AboutTab";
 import SpaceBackground from "@/components/ui/SpaceBackground";
+import Header from '@/components/ui/Header'
+import PageControls from '@/components/ui/PageControls'
 
 // Icons
 import {
@@ -20,7 +22,6 @@ import {
   Info as InfoIcon,
   Brightness4 as Brightness4Icon,
   Brightness7 as Brightness7Icon,
-  AutoAwesome as AutoAwesomeIcon,
 } from "@mui/icons-material";
 
 
@@ -123,7 +124,6 @@ export default function Home() {
     }
   }, [analysisResults]);
 
-  // Create tab configuration using extracted tab components
   const createTabs = (): Tab[] => {
     const tabs: Tab[] = [];
 
@@ -147,7 +147,7 @@ export default function Home() {
 
     // Additional tabs only show after analysis is complete
     if (analysisResults) {
-      // Text Insights Tab - AI-powered text analysis
+      // Text Insights Tab
       tabs.push({
         id: "text-insights",
         label: "Text Insights [AI]",
@@ -193,7 +193,7 @@ export default function Home() {
       });
     }
 
-    // About Tab
+    // About Tab 
     tabs.push({
       id: "about",
       label: "About",
@@ -212,100 +212,20 @@ export default function Home() {
           : "bg-gradient-to-br from-blue-50 to-indigo-100"
       }`}
     >
+      {/* Decorative background: render only when enabled and in dark mode */}
+      {enableSpaceBackground && darkMode && <SpaceBackground isDark={darkMode} />}
+
+      <PageControls
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+        enableSpaceBackground={enableSpaceBackground}
+        toggleSpaceBackground={() => setEnableSpaceBackground(v => !v)}
+      />
+
       <ScrollToTopButton />
 
-  {/* Decorative background: render only when enabled and in dark mode */}
-  {enableSpaceBackground && darkMode && <SpaceBackground isDark={darkMode} />}
-
-  <ScrollToTopButton />
-
-      <div className="fixed top-6 right-6 z-50 flex flex-col items-end gap-3">
-        <button
-          onClick={toggleDarkMode}
-          aria-pressed={darkMode}
-          title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="glass-card-dark p-3 rounded-full border border-white/20 hover:bg-white/10 transition-all duration-300 backdrop-blur-md"
-        >
-          {darkMode ? (
-            <Brightness7Icon sx={{ fontSize: 24, color: "#FFB74D" }} />
-          ) : (
-            <Brightness4Icon sx={{ fontSize: 24, color: "#4A5568" }} />
-          )}
-        </button>
-
-        {/* Space background toggle — accessible, keyboard focusable, respects reduced-motion preference by default */}
-        <button
-          onClick={() => setEnableSpaceBackground(v => !v)}
-          aria-pressed={enableSpaceBackground}
-          title={enableSpaceBackground ? 'Disable animated background' : 'Enable animated background'}
-          className="glass-card-dark p-3 rounded-full border border-white/20 hover:bg-white/10 transition-all duration-300 backdrop-blur-md"
-        >
-          <AutoAwesomeIcon sx={{ fontSize: 20, color: enableSpaceBackground ? '#FFB74D' : '#9CA3AF' }} />
-        </button>
-      </div>
-
       <div className="relative z-20 container mx-auto px-6 py-12 max-w-6xl">
-        <header className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">
-            <span
-              className={`${
-                darkMode ? "text-white" : "text-gray-900"
-              } transition-colors duration-500`}
-            >
-              Event Insights
-            </span>
-            <br />
-            <span
-              className="bg-clip-text text-transparent font-extrabold"
-              style={{
-                background: "linear-gradient(135deg, #4CAF50 0%, #FF9800 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Generator
-            </span>
-          </h1>
-
-          <div
-            className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-6 backdrop-blur-md border transition-all duration-300 ${
-              darkMode
-                ? "bg-white/10 border-white/20"
-                : "bg-white/60 border-white/40"
-            }`}
-          >
-            <Image
-              src="/assets/GDG-logo.png"
-              alt="Google Developer Groups Logo"
-              width={24}
-              height={24}
-            />
-            <span
-              className={`font-medium ${
-                darkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
-              Powered by Google Developer Groups - USC
-            </span>
-          </div>
-
-          <p
-            className={`text-xl max-w-3xl mx-auto mb-8 leading-relaxed transition-colors duration-500 ${
-              darkMode ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
-            Transform your event feedback into actionable insights with
-            AI-powered analysis
-            <br />
-            <span
-              className={`text-base opacity-80 ${
-                darkMode ? "text-gray-400" : "text-gray-500"
-              }`}
-            >
-              Statistical analysis • NPS scoring • Clean visualizations!
-            </span>
-          </p>
-        </header>
+        <Header darkMode={darkMode} />
 
         <main className="max-w-6xl mx-auto">
           <Tabs
