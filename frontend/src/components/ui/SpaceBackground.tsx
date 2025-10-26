@@ -75,7 +75,7 @@ function createSessionRng() {
   };
 }
 
-export default function CombinedBackground({
+export default function SpaceBackground({
   isDark = true,
   starCount = 150,
   enableShooting = true,
