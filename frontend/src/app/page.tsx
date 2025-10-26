@@ -1,6 +1,6 @@
 "use client";
 import FileUpload from "../components/features/upload/FileUpload";
-import Tabs, { Tab } from "../components/ui/Tabs";
+import Tabs, { Tab } from "../components/ui/TabNavigationBar";
 import UploadPill from "../components/features/upload/UploadPill";
 import Image from "next/image";
 import ScrollToTopButton from "../components/ui/ScrollToTopButton";
@@ -55,30 +55,12 @@ import { useState, useEffect } from "react";
 import type { UploadResponse, FeedbackRecord } from '@/types/upload'
 import type { SessionAIInsights, MarketingAIInsights, AspectAIInsights, SessionMatrixData } from '@/types/api'
 import logger from '@/lib/logger'
-
-// Local helper types for shapes the page expects from ratings data (backend variations)
-type RawRatingItem = {
-  aspect?: string;
-  name?: string;
-  value?: number;
-  average?: number;
-  performance?: string;
-  performance_category?: string;
-};
-
-type RatingsRaw = {
-  baseline_data?: RawRatingItem[];
-  detailed_comparison?: RawRatingItem[];
-  aspects?: string[];
-  averages?: number[];
-  overall_satisfaction?: number;
-};
-
-// Define a type for our aspect highlights for better type safety.
-type AspectHighlight = {
-  aspect: string;
-  value: number;
-} | null;
+import { calculateAspectHighlights, type AspectHighlight } from '@/lib/dataHelpers'
+import { 
+  generateSessionInsights, 
+  generateMarketingInsights, 
+  generateAspectInsights 
+} from '@/lib/aiService'
 
 export default function Home() {
   logger.debug("Home page component loaded.");
@@ -94,8 +76,8 @@ export default function Home() {
   const [aspectChartVariant, setAspectChartVariant] = useState<
     "diverging" | "grouped" | "bullet" | "radar"
   >("diverging"); // Aspect chart variant
-  const [topAspect, setTopAspect] = useState<AspectHighlight>(null);
-  const [lowestAspect, setLowestAspect] = useState<AspectHighlight>(null);
+  const [topAspect, setTopAspect] = useState<AspectHighlight | null>(null);
+  const [lowestAspect, setLowestAspect] = useState<AspectHighlight | null>(null);
 
   // Apply dark mode class to document
   useEffect(() => {
@@ -111,31 +93,9 @@ export default function Home() {
   // Effect to calculate top and lowest aspects when analysis results are available
   useEffect(() => {
     if (analysisResults?.ratings?.data) {
-      const ratingsData = analysisResults.ratings.data as unknown as RatingsRaw;
-      let baselineData = null;
-
-      // This logic mirrors the data handling in AspectComparisonChart
-      if (ratingsData.baseline_data && Array.isArray(ratingsData.baseline_data)) {
-        baselineData = ratingsData.baseline_data;
-      } else if (ratingsData.detailed_comparison && Array.isArray(ratingsData.detailed_comparison)) {
-        baselineData = ratingsData.detailed_comparison;
-      } else if (ratingsData.aspects && Array.isArray(ratingsData.aspects)) {
-        baselineData = ratingsData.aspects.map((aspect: string, index: number) => ({
-          aspect: aspect,
-          value: ratingsData.averages?.[index] || 0,
-        }));
-      }
-
-      if (baselineData && baselineData.length > 0) {
-        // Sort by value descending to find the top and lowest aspects
-  const sortedAspects = [...baselineData].sort((a: { value?: number }, b: { value?: number }) => (b.value || 0) - (a.value || 0));
-        
-        // Ensure both aspect and value are defined before setting highlight state
-        const first = sortedAspects[0] as RawRatingItem;
-        const last = sortedAspects[sortedAspects.length - 1] as RawRatingItem;
-        setTopAspect({ aspect: first.aspect ?? first.name ?? 'unknown', value: first.value ?? first.average ?? 0 });
-        setLowestAspect({ aspect: last.aspect ?? last.name ?? 'unknown', value: last.value ?? last.average ?? 0 });
-      }
+      const highlights = calculateAspectHighlights(analysisResults.ratings.data)
+      setTopAspect(highlights.top)
+      setLowestAspect(highlights.lowest)
     }
   }, [analysisResults]);
 
@@ -178,122 +138,15 @@ export default function Home() {
     setActiveTab(tabId);
   };
 
-  // AI Insight Handlers
-  const handleGenerateSessionInsights = async (sessionMatrixData: any) => {
-    try {
-      const response = await fetch('/api/ai/session-insights', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          session_data: sessionMatrixData.sessions,
-          quadrants: sessionMatrixData.quadrants,
-          stats: sessionMatrixData.stats
-        }),
-      });
+  // AI Insight Handlers - Delegated to centralized service
+  const handleGenerateSessionInsights = (sessionMatrixData: any) => 
+    generateSessionInsights(sessionMatrixData);
 
-      const result = await response.json();
+  const handleGenerateMarketingInsights = (channelImpactData: any) => 
+    generateMarketingInsights(channelImpactData);
 
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to generate session insights');
-      }
-
-      return result.insights;
-    } catch (error) {
-      logger.error('Session insights generation error:', error);
-      return {
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
-      };
-    }
-  };
-
-  const handleGenerateMarketingInsights = async (channelImpactData: any) => {
-    try {
-      const response = await fetch('/api/ai/marketing-insights', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          channel_data: channelImpactData.channels,
-          stats: channelImpactData.stats
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to generate marketing insights');
-      }
-
-      return result.insights;
-    } catch (error) {
-      logger.error('Marketing insights generation error:', error);
-      return {
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
-      };
-    }
-  };
-
-  const handleGenerateAspectInsights = async () => {
-    try {
-      // Extract aspect data from analysis results
-      const ratingsData = (analysisResults as any)?.ratings?.data;
-      
-      if (!ratingsData) {
-        throw new Error('No aspect data available');
-      }
-
-      // Transform data for backend (extract aspects array + overall satisfaction)
-      let aspects = [];
-      let overallSatisfaction = 4.0;
-
-      if (ratingsData.baseline_data && Array.isArray(ratingsData.baseline_data)) {
-        aspects = ratingsData.baseline_data.map((item: any) => ({
-          aspect: item.aspect || item.name,
-          value: item.value || item.average || 0,
-          difference: (item.value || item.average || 0) - (ratingsData.overall_satisfaction || 4.0),
-          performance: item.performance || item.performance_category || 'adequate'
-        }));
-        overallSatisfaction = ratingsData.overall_satisfaction || 4.0;
-      } else if (ratingsData.detailed_comparison && Array.isArray(ratingsData.detailed_comparison)) {
-        aspects = ratingsData.detailed_comparison.map((item: any) => ({
-          aspect: item.aspect || item.name,
-          value: item.value || item.average || 0,
-          difference: (item.value || item.average || 0) - (ratingsData.overall_satisfaction || 4.0),
-          performance: item.performance || item.performance_category || 'adequate'
-        }));
-        overallSatisfaction = ratingsData.overall_satisfaction || 4.0;
-      }
-
-      const response = await fetch('/api/ai/aspect-insights', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          aspect_data: {
-            aspects,
-            overall_satisfaction: overallSatisfaction
-          }
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to generate aspect insights');
-      }
-
-      return result.insights;
-    } catch (error) {
-      logger.error('Aspect insights generation error:', error);
-      return {
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
-      };
-    }
-  };
+  const handleGenerateAspectInsights = () => 
+    generateAspectInsights((analysisResults as any)?.ratings?.data);
 
   // Create placeholder content for future tabs
   const createPlaceholderContent = (

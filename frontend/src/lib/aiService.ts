@@ -1,0 +1,152 @@
+/**
+ * AI Service Layer for Gemini-powered insights
+ */
+
+import type { 
+  SessionAIInsights, 
+  MarketingAIInsights, 
+  AspectAIInsights,
+  SessionMatrixData,
+  DiscoveryChannelsData 
+} from '@/types/api'
+import logger from '@/lib/logger'
+
+/**
+ * Generate AI insights for session performance data
+ * 
+ * Analyzes session attendance, satisfaction, and performance quadrants
+ * to provide strategic recommendations for future events.
+ * 
+ * @param sessionMatrixData - Session performance matrix data
+ * @returns AI-generated insights or error object
+ */
+export async function generateSessionInsights(
+  sessionMatrixData: SessionMatrixData['data']
+): Promise<SessionAIInsights> {
+  try {
+    const response = await fetch('/api/ai/session-insights', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_data: sessionMatrixData.sessions,
+        quadrants: (sessionMatrixData as any).quadrants,
+        stats: (sessionMatrixData as any).stats,
+      }),
+    })
+
+    const result = await response.json()
+
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to generate session insights')
+    }
+
+    return result.insights
+  } catch (error) {
+    logger.error('Session insights generation error:', error)
+    return {
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    }
+  }
+}
+
+/**
+ * Generate AI insights for marketing channel performance
+ * 
+ * Analyzes discovery channel effectiveness, conversion rates,
+ * and provides marketing budget allocation recommendations.
+ * 
+ * @param channelImpactData - Discovery channel performance data
+ * @returns AI-generated marketing insights or error object
+ */
+export async function generateMarketingInsights(
+  channelImpactData: DiscoveryChannelsData['data']
+): Promise<MarketingAIInsights> {
+  try {
+    const response = await fetch('/api/ai/marketing-insights', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        channel_data: channelImpactData.channels,
+        stats: (channelImpactData as any).stats,
+      }),
+    })
+
+    const result = await response.json()
+
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to generate marketing insights')
+    }
+
+    return result.insights
+  } catch (error) {
+    logger.error('Marketing insights generation error:', error)
+    return {
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    }
+  }
+}
+
+/**
+ * Generate AI insights for event aspect performance
+ * 
+ * Analyzes venue, speaker, and content ratings to identify
+ * quick wins and strategic improvement priorities.
+ * 
+ * @param ratingsData - Aspect ratings data (handles multiple backend formats)
+ * @returns AI-generated aspect insights or error object
+ */
+export async function generateAspectInsights(
+  ratingsData: any
+): Promise<AspectAIInsights> {
+  try {
+    if (!ratingsData) {
+      throw new Error('No aspect data available')
+    }
+
+    // Transform data for backend (normalize different data shapes)
+    let aspects = []
+    let overallSatisfaction = 4.0
+
+    if (ratingsData.baseline_data && Array.isArray(ratingsData.baseline_data)) {
+      aspects = ratingsData.baseline_data.map((item: any) => ({
+        aspect: item.aspect || item.name,
+        value: item.value || item.average || 0,
+        difference: (item.value || item.average || 0) - (ratingsData.overall_satisfaction || 4.0),
+        performance: item.performance || item.performance_category || 'adequate',
+      }))
+      overallSatisfaction = ratingsData.overall_satisfaction || 4.0
+    } else if (ratingsData.detailed_comparison && Array.isArray(ratingsData.detailed_comparison)) {
+      aspects = ratingsData.detailed_comparison.map((item: any) => ({
+        aspect: item.aspect || item.name,
+        value: item.value || item.average || 0,
+        difference: (item.value || item.average || 0) - (ratingsData.overall_satisfaction || 4.0),
+        performance: item.performance || item.performance_category || 'adequate',
+      }))
+      overallSatisfaction = ratingsData.overall_satisfaction || 4.0
+    }
+
+    const response = await fetch('/api/ai/aspect-insights', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        aspect_data: {
+          aspects,
+          overall_satisfaction: overallSatisfaction,
+        },
+      }),
+    })
+
+    const result = await response.json()
+
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to generate aspect insights')
+    }
+
+    return result.insights
+  } catch (error) {
+    logger.error('Aspect insights generation error:', error)
+    return {
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    }
+  }
+}

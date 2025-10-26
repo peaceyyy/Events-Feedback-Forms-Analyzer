@@ -1,6 +1,5 @@
 // Theme Hook for Light/Dark Mode Management
-// Ready for implementation when needed
-
+\
 import { useState, useEffect, createContext, useContext } from 'react'
 
 // Theme context
@@ -14,7 +13,6 @@ const ThemeContext = createContext({
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState('light')
 
-  // Initialize theme from localStorage or system preference
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'

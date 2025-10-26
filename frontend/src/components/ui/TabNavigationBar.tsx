@@ -102,7 +102,7 @@ export default function Tabs({ tabs, defaultTab, onTabChange, className = '' }: 
       {/* Tab Content */}
       <div className="tab-content">
         <div 
-          key={activeTab} // Force re-mount for smooth transitions
+          key={activeTab} 
           className="animate-fadeIn"
         >
           {activeTabContent}
