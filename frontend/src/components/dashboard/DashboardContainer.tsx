@@ -2,27 +2,14 @@
 
 /**
  * DashboardContainer - Client Component with all interactive logic
- * 
- * This component encapsulates all stateful behavior:
- * - File upload handling
- * - Analysis results management
- * - Tab navigation
- * - AI insights caching
- * - Theme toggles (dark mode, background animation)
- * 
- * Why Client Component:
- * - Requires useState, useEffect hooks
- * - Event handlers (onClick, onChange)
- * - Browser APIs (window.matchMedia for reduced-motion)
- * - Real-time UI updates based on user interactions
  */
 
 import { useState, useEffect } from "react";
-import ScrollToTopButton from "./ui/ScrollToTopButton";
-import Tabs from "./ui/TabNavigationBar";
+import ScrollToTopButton from "../ui/ScrollToTopButton";
+import Tabs from "../ui/TabNavigationBar";
 import useTabs from '@/lib/useTabs'
-import SpaceBackground from "./ui/SpaceBackground";
-import PageControls from './ui/PageControls'
+import SpaceBackground from "../ui/SpaceBackground";
+import PageControls from '../ui/PageControls'
 import type { UploadResponse, FeedbackRecord } from '@/types/upload'
 import logger from '@/lib/logger'
 import { calculateAspectHighlights, type AspectHighlight } from '@/lib/dataHelpers'

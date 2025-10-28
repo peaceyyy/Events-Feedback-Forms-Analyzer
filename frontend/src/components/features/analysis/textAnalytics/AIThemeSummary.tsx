@@ -1,4 +1,4 @@
-// components/features/analysis/text/AIThemeSummary.tsx
+// components/features/analysis/textAnalytics/AIThemeSummary.tsx
 'use client'
 import { useState } from 'react'
 import { 
@@ -140,7 +140,7 @@ export default function AIThemeSummary({
                   {/* Slide Content */}
                   {slide.items.length > 0 ? (
                     <div className="space-y-3">
-                      {slide.items.map((item, itemIndex) => (
+                      {slide.items.map((item: string, itemIndex: number) => (
                         <div 
                           key={itemIndex}
                           className="p-3 bg-white/5 rounded-lg border-l-3 backdrop-blur-sm"

@@ -1,4 +1,4 @@
-// components/features/analysis/text/AIInsightsContainer.tsx
+// components/features/analysis/textAnalytics/AIInsightsContainer.tsx
 'use client'
 import { useState, useEffect } from 'react'
 import { 
@@ -9,7 +9,7 @@ import {
 import SentimentAnalysis from './SentimentAnalysis'
 import ThemeAnalysis from './ThemeAnalysis'
 import StrategicInsights from './StrategicInsights'
-import logger from '@/lib/logger'
+import logger from '../../../../lib/logger'
 
 interface AIInsightsContainerProps {
   feedbackData: any[]

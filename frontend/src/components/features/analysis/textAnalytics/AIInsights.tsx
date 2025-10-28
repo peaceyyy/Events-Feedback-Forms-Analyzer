@@ -1,4 +1,4 @@
-// components/features/analysis/text/AIInsights.tsx
+// components/features/analysis/textAnalytics/AIInsights.tsx
 'use client'
 import { useState, useEffect } from 'react'
 import { 
@@ -11,9 +11,9 @@ import {
   FlashOn as FlashOnIcon,
   Flag as FlagIcon,
 } from '@mui/icons-material'
-import SentimentAnalysis from './text/SentimentAnalysis'
-import ThemeAnalysis from './text/ThemeAnalysis'
-import StrategicInsights from './text/StrategicInsights'
+import SentimentAnalysis from './SentimentAnalysis'
+import ThemeAnalysis from './ThemeAnalysis'
+import StrategicInsights from './StrategicInsights'
 import logger from '@/lib/logger'
 
 interface AIInsightsContainerProps {

@@ -1,4 +1,4 @@
-// components/features/analysis/text/StrategicInsights.tsx
+// components/features/analysis/textAnalytics/StrategicInsights.tsx
 'use client'
 import { 
   AccountTree as StrategyIcon,

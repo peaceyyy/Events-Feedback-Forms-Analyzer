@@ -2,13 +2,13 @@
 
 import AppHeader from '@/components/layout/AppHeader'
 import AppFooter from '@/components/layout/AppFooter'
-import DashboardContainer from '@/components/DashboardContainer'
+import DashboardContainer from '@/components/dashboard/DashboardContainer'
 
 
 export default function Home() {
   return (
     <div className="min-h-screen relative overflow-hidden transition-colors duration-500 bg-gray-900">
-      {/* Static header - rendered on server */}
+      {/* Static header -  rendered on server */}
       <div className="relative z-20 container mx-auto px-6 py-12 max-w-6xl">
         <AppHeader />
       </div>

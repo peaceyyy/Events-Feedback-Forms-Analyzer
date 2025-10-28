@@ -1,4 +1,4 @@
-// components/features/analysis/text/ThemeAnalysis.tsx
+// components/features/analysis/textAnalytics/ThemeAnalysis.tsx
 'use client'
 import { 
   Category as CategoryIcon,

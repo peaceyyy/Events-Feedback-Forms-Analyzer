@@ -1,28 +1,21 @@
 // components/Dashboard.tsx - Main dashboard with configurable charts
 'use client'
 import React from 'react'
-import ChartFactory, { createChartConfig, ChartConfig } from './charts/ChartFactory'
-import InsightsSummary from './EventAspects'
-import { UnifiedWordCloud } from './charts/WordCloud'
+import ChartFactory, { createChartConfig, ChartConfig } from '../features/analysis/charts/ChartFactory'
+import InsightsSummary from '../features/analysis/EventAspectsInsights'
+import { UnifiedWordCloud } from '../features/analysis/charts/WordCloud'
 import { Refresh as RefreshIcon, Dashboard as DashboardIcon } from '@mui/icons-material'
 
 interface DashboardProps {
-  analysisData?: any // Data from your Flask backend
+  analysisData?: any // Data from Flask backend
   className?: string
 }
 
 /**
  * Dashboard - Orchestrates the display of analytics charts
- * 
- * Architecture Benefits:
- * • Automatic chart configuration from backend data
- * • Responsive grid layout that adapts to screen size  
- * • Easy to add new chart types without code changes
- * • Consistent spacing and styling across all charts
  */
 export default function Dashboard({ analysisData, className = '' }: DashboardProps) {
-  
-  // Conditional log for debugging the main analysis data object.
+
   if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
     console.log('Dashboard received analysisData:', analysisData)
   }

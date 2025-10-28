@@ -1,4 +1,4 @@
-// components/features/analysis/text/SentimentAnalysis.tsx
+// components/features/analysis/textAnalytics/SentimentAnalysis.tsx
 'use client'
 import { 
   Mood as MoodIcon,
