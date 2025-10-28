@@ -11,7 +11,7 @@ from typing import Dict, Any, List
 from collections import Counter
 
 # Import from modularized analysis modules
-from .core_metrics import generate_satisfaction_analysis, generate_recommendation_analysis
+from .metrics_analysis import generate_satisfaction_analysis, generate_recommendation_analysis
 from .session_analytics import generate_session_popularity, generate_session_performance_matrix
 from .comparative_analysis import generate_rating_comparison, generate_correlation_analysis, generate_pacing_analysis
 from .textual_analytics import generate_one_word_descriptions, generate_text_insights

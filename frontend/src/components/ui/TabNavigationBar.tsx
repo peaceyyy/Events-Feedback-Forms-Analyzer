@@ -1,4 +1,4 @@
-// components/Tabs.tsx - Clean tabbed navigation component
+// components/TabNavigationBar.tsx - Clean tabbed navigation component
 'use client'
 import React, { useState } from 'react'
 
@@ -17,15 +17,7 @@ interface TabsProps {
   className?: string
 }
 
-/**
- * Tabs Component - Clean, brand-consistent tabbed navigation
- * 
- * Design Principles:
- * • Clean minimal design that matches GDG aesthetic
- * • Smooth transitions with proper accessibility
- * • Support for icons and disabled states
- * • Responsive layout for mobile/desktop
- */
+
 export default function Tabs({ tabs, defaultTab, onTabChange, className = '' }: TabsProps) {
   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id || '')
 

@@ -1,7 +1,7 @@
 # Import analysis functions from modularized structure
 
 # Core metrics (satisfaction + NPS)
-from .core_metrics import (
+from .metrics_analysis import (
     generate_satisfaction_analysis,
     generate_recommendation_analysis,
     generate_satisfaction_insights,
