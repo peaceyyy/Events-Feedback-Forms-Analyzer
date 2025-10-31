@@ -99,6 +99,9 @@ export async function generateAspectInsights(
   ratingsData: any
 ): Promise<AspectAIInsights> {
   try {
+    console.log('=== generateAspectInsights called ===');
+    console.log('Full ratingsData:', JSON.stringify(ratingsData, null, 2));
+    
     if (!ratingsData) {
       throw new Error('No aspect data available')
     }
@@ -108,6 +111,7 @@ export async function generateAspectInsights(
     let overallSatisfaction = 4.0
 
     if (ratingsData.baseline_data && Array.isArray(ratingsData.baseline_data)) {
+      console.log('Using baseline_data path');
       aspects = ratingsData.baseline_data.map((item: any) => ({
         aspect: item.aspect || item.name,
         value: item.value || item.average || 0,
@@ -116,6 +120,7 @@ export async function generateAspectInsights(
       }))
       overallSatisfaction = ratingsData.overall_satisfaction || 4.0
     } else if (ratingsData.detailed_comparison && Array.isArray(ratingsData.detailed_comparison)) {
+      console.log('Using detailed_comparison path');
       aspects = ratingsData.detailed_comparison.map((item: any) => ({
         aspect: item.aspect || item.name,
         value: item.value || item.average || 0,
@@ -123,7 +128,16 @@ export async function generateAspectInsights(
         performance: item.performance || item.performance_category || 'adequate',
       }))
       overallSatisfaction = ratingsData.overall_satisfaction || 4.0
+    } else {
+      console.error('Data structure not recognized!');;
+      throw new Error('Unrecognized aspect data structure. Expected baseline_data or detailed_comparison array.');
     }
+    
+    if (aspects.length === 0) {
+      throw new Error('No aspects found in data');
+    }
+    
+    console.log('Making API request to /api/ai/aspect-insights');
 
     const response = await fetch('/api/ai/aspect-insights', {
       method: 'POST',
@@ -136,7 +150,9 @@ export async function generateAspectInsights(
       }),
     })
 
+    console.log('API response status:', response.status);
     const result = await response.json()
+    console.log('API response data:', result);
 
     if (!result.success) {
       throw new Error(result.error || 'Failed to generate aspect insights')

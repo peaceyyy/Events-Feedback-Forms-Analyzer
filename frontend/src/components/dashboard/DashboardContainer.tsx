@@ -107,8 +107,24 @@ export default function DashboardContainer() {
   const handleGenerateMarketingInsights = (channelImpactData: any) => 
     generateMarketingInsights(channelImpactData);
 
-  const handleGenerateAspectInsights = () => 
-    generateAspectInsights((analysisResults as any)?.ratings?.data);
+  const handleGenerateAspectInsights = async () => {
+    console.log('handleGenerateAspectInsights called');
+    console.log('analysisResults?.ratings?.data:', (analysisResults as any)?.ratings?.data);
+    
+    const insights = await generateAspectInsights((analysisResults as any)?.ratings?.data);
+    console.log('Generated insights:', insights);
+    
+    setAiInsights((prev: any) => {
+      const updated = {
+        ...prev,
+        aspects: { data: insights }
+      };
+      console.log('Updated aiInsights state:', updated);
+      return updated;
+    });
+    
+    return insights;
+  };
 
   // Generate tab configuration using custom hook
   const tabs = useTabs({

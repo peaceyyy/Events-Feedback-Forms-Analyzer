@@ -52,6 +52,15 @@ export default function EventAspectsInsights({
   title = "Event Performance Insights",
   className = "",
 }: EventAspectsInsightsProps) {
+  // Debug logging
+  React.useEffect(() => {
+    console.log('=== EventAspectsInsights Props ===');
+    console.log('data:', data);
+    console.log('themeData:', themeData);
+    console.log('initialAIInsights:', initialAIInsights);
+    console.log('onGenerateAIInsights:', onGenerateAIInsights ? 'provided' : 'NOT provided');
+  }, [data, themeData, initialAIInsights, onGenerateAIInsights]);
+
   // Simple state for swipeable card navigation
   const [currentView, setCurrentView] = React.useState<
     "summary" | "details" | "recommendations"
@@ -60,12 +69,25 @@ export default function EventAspectsInsights({
   const [aiInsights, setAiInsights] = React.useState<AIInsights | null>(initialAIInsights || null);
   const [isLoadingAI, setIsLoadingAI] = React.useState(false);
 
-  const handleGenerateAIInsights = async () => {
-    if (!onGenerateAIInsights) return;
+  // Sync with parent prop updates
+  React.useEffect(() => {
+    console.log('EventAspectsInsights: initialAIInsights prop changed:', initialAIInsights);
+    if (initialAIInsights) {
+      setAiInsights(initialAIInsights);
+    }
+  }, [initialAIInsights]);
 
+  const handleGenerateAIInsights = async () => {
+    if (!onGenerateAIInsights) {
+      console.warn('No onGenerateAIInsights function provided');
+      return;
+    }
+
+    console.log('Starting AI insights generation...');
     setIsLoadingAI(true);
     try {
       const insights = await onGenerateAIInsights();
+      console.log('AI insights received:', insights);
       setAiInsights(insights);
     } catch (error) {
       console.error('Failed to generate AI insights:', error);
@@ -138,7 +160,8 @@ export default function EventAspectsInsights({
           )}
 
           <div className="space-y-3 text-sm">
-            {themeData ? (
+            {/* Legacy themeData section - only if available */}
+            {themeData && (
               <>
                 {/* Top Strength */}
                 {themeData.positive_themes?.length > 0 && (
@@ -190,26 +213,29 @@ export default function EventAspectsInsights({
                     </p>
                   </div>
                 )}
-
-                {/* Key Insights Section - AI Generated */}
-                {aiInsights?.key_insights && aiInsights.key_insights.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-white/10">
-                    <h4 className="text-xs font-semibold mb-2 text-purple-400 flex items-center gap-1">
-                      <StarIcon sx={{ fontSize: 14 }} />
-                      Key Insights
-                    </h4>
-                    <ul className="space-y-1.5 text-xs">
-                      {aiInsights.key_insights.map((insight, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <span className="text-purple-400">•</span>
-                          <span>{insight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </>
-            ) : (
+            )}
+
+            {/* Key Insights Section - AI Generated (ALWAYS SHOW IF AVAILABLE) */}
+            {aiInsights?.key_insights && aiInsights.key_insights.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-white/10">
+                <h4 className="text-xs font-semibold mb-2 text-purple-400 flex items-center gap-1">
+                  <StarIcon sx={{ fontSize: 14 }} />
+                  Key Insights
+                </h4>
+                <ul className="space-y-1.5 text-xs">
+                  {aiInsights.key_insights.map((insight, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="text-purple-400">•</span>
+                      <span>{insight}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Empty state - only if no themeData AND no AI insights */}
+            {!themeData && (!aiInsights || !aiInsights.key_insights || aiInsights.key_insights.length === 0) && (
               <div className="text-center py-4">
                 <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
                   {onGenerateAIInsights ? 'Click "Generate AI Insights" to see analysis' : 'Generate AI analysis to see theme insights'}
@@ -224,7 +250,8 @@ export default function EventAspectsInsights({
       title: "Theme Breakdown",
       content: (
         <div className="space-y-3 text-sm">
-          {themeData ? (
+          {/* Legacy themeData section - only if available */}
+          {themeData && (
             <>
               {/* Top 3 Positive Themes */}
               {themeData.positive_themes?.slice(0, 3).map((theme, index) => (
@@ -255,25 +282,28 @@ export default function EventAspectsInsights({
                   </div>
                 </div>
               ))}
-
-              {/* Improvement Recommendations Section - AI Generated */}
-              {aiInsights?.improvement_recommendations && aiInsights.improvement_recommendations.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-white/10">
-                  <h4 className="text-xs font-semibold mb-2 text-blue-400 flex items-center gap-1">
-                    <TrendingUpIcon sx={{ fontSize: 14 }} />
-                    Improvement Recommendations
-                  </h4>
-                  <ul className="space-y-2 text-xs">
-                    {aiInsights.improvement_recommendations.map((rec, index) => (
-                      <li key={index} className="p-2 bg-blue-500/10 rounded border-l-2 border-blue-400">
-                        <span className="text-blue-300">→</span> {rec}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </>
-          ) : (
+          )}
+
+          {/* Improvement Recommendations Section - AI Generated (ALWAYS SHOW IF AVAILABLE) */}
+          {aiInsights?.improvement_recommendations && aiInsights.improvement_recommendations.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <h4 className="text-xs font-semibold mb-2 text-blue-400 flex items-center gap-1">
+                <TrendingUpIcon sx={{ fontSize: 14 }} />
+                Improvement Recommendations
+              </h4>
+              <ul className="space-y-2 text-xs">
+                {aiInsights.improvement_recommendations.map((rec, index) => (
+                  <li key={index} className="p-2 bg-blue-500/10 rounded border-l-2 border-blue-400">
+                    <span className="text-blue-300">→</span> {rec}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Empty state - only if no themeData AND no AI insights */}
+          {!themeData && (!aiInsights || !aiInsights.improvement_recommendations || aiInsights.improvement_recommendations.length === 0) && (
             <div className="text-center py-8">
               <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
                 {onGenerateAIInsights ? 'Generate AI insights to see detailed recommendations' : 'No theme data available. Generate AI analysis first.'}

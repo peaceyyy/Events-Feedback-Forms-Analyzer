@@ -1,21 +1,4 @@
-/**
- * Button Component - Unified button with full variant support
- * 
- * Supports all existing button patterns in the application:
- * - Google-style gradient buttons (btn-google)
- * - Secondary/ghost buttons (btn-secondary)
- * - Primary solid buttons (btn-primary)
- * - Custom inline styles via style prop
- * 
- * Features:
- * - Full TypeScript support
- * - Flexible size system (sm, md, lg)
- * - Loading states with spinner
- * - Icon support (start/end positions)
- * - Disabled state handling
- * - Full accessibility (ARIA)
- * - className merging for custom styles
- */
+
 
 import React, { ButtonHTMLAttributes, ReactNode } from 'react'
 
@@ -121,7 +104,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       variant !== 'custom' && sizeClasses[size],
       stateClasses,
       widthClasses,
-      className, // User's custom classes override/extend
+      className, 
     ]
       .filter(Boolean)
       .join(' ')
