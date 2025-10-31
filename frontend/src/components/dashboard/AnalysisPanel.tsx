@@ -2,7 +2,7 @@
 'use client'
 import React from 'react'
 import ChartFactory, { createChartConfig, ChartConfig } from '../analysis/charts/ChartFactory'
-import InsightsSummary from '../analysis/EventAspectsInsights'
+import EventAspectsInsights from '../analysis/EventAspectsInsights'
 import { UnifiedWordCloud } from '../analysis/charts/WordCloud'
 import { Refresh as RefreshIcon, Dashboard as DashboardIcon } from '@mui/icons-material'
 
@@ -175,7 +175,7 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
         {/* Row 2.5: Comparative Insights Summary (Full Width) */}
         {analysisData.ratings?.data && (
           <div className="grid grid-cols-1 gap-8">
-            <InsightsSummary 
+            <EventAspectsInsights 
               data={analysisData.ratings.data} 
               title="Event Strengths & Weaknesses Analysis"
               className="w-full"

@@ -12,7 +12,7 @@
 
 import type { UploadResponse } from '@/types/upload'
 import AspectComparisonChart from '@/components/analysis/charts/AspectComparisonChart'
-import EventAspects from '@/components/analysis/EventAspectsInsights'
+import EventAspectsInsights from '@/components/analysis/EventAspectsInsights'
 import CorrelationAnalysisChart from '@/components/analysis/charts/CorrelationAnalysisChart'
 import PerAspectAveragesChart from '@/components/analysis/charts/PerAspectAveragesChart'
 
@@ -57,7 +57,6 @@ export default function AspectTab({
                 data={(analysisResults as any).ratings.data}
                 variant={aspectChartVariant}
                 onVariantChange={onVariantChange}
-                onGenerateAIInsights={onGenerateAspectInsights}
                 className="h-full"
               />
             )}
@@ -66,9 +65,11 @@ export default function AspectTab({
           {/* Right Side - AI Insights (optimal fixed width, not squished) */}
           <div className="w-full lg:w-[450px] flex-shrink-0">
             {(analysisResults as any)?.ratings?.data && (
-              <EventAspects 
+              <EventAspectsInsights 
                 data={(analysisResults as any).ratings.data} 
                 themeData={aiInsights?.themes?.data}
+                aiInsights={aiInsights?.aspects?.data}
+                onGenerateAIInsights={onGenerateAspectInsights}
                 className="h-full"
               />
             )}

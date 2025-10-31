@@ -1,4 +1,5 @@
-// components/InsightsSummary.tsx - Simplified placeholder for future Gemini API integration
+// components/EventAspectsInsights.tsx - AI-powered event insights with swipeable card interface
+// Updated: Swipeable tabs with Key Insights, Improvement Recommendations, Quick Wins & Strategic Priorities
 "use client";
 import React from "react";
 import {
@@ -7,6 +8,10 @@ import {
   StarBorder as StarIcon,
   Build as BuildIcon,
   CheckCircleOutline as CheckCircleOutlineIcon,
+  AutoAwesome as AutoAwesomeIcon,
+  Lightbulb as LightbulbIcon,
+  TrendingUp as TrendingUpIcon,
+  Flag as FlagIcon,
 } from "@mui/icons-material";
 
 interface Theme {
@@ -22,23 +27,53 @@ interface ThemeData {
   theme_categories: Record<string, Theme[]>;
 }
 
-interface InsightsSummaryProps {
+interface AIInsights {
+  key_insights?: string[]
+  improvement_recommendations?: string[]
+  quick_wins?: string[]
+  strategic_priorities?: string[]
+  error?: string
+}
+
+interface EventAspectsInsightsProps {
   data: any;
   themeData?: ThemeData;
+  aiInsights?: AIInsights;
+  onGenerateAIInsights?: () => Promise<AIInsights>;
   title?: string;
   className?: string; 
 }
 
-export default function InsightsSummary({
+export default function EventAspectsInsights({
   data,
   themeData,
+  aiInsights: initialAIInsights,
+  onGenerateAIInsights,
   title = "Event Performance Insights",
   className = "",
-}: InsightsSummaryProps) {
+}: EventAspectsInsightsProps) {
   // Simple state for swipeable card navigation
   const [currentView, setCurrentView] = React.useState<
     "summary" | "details" | "recommendations"
   >("summary");
+  
+  const [aiInsights, setAiInsights] = React.useState<AIInsights | null>(initialAIInsights || null);
+  const [isLoadingAI, setIsLoadingAI] = React.useState(false);
+
+  const handleGenerateAIInsights = async () => {
+    if (!onGenerateAIInsights) return;
+
+    setIsLoadingAI(true);
+    try {
+      const insights = await onGenerateAIInsights();
+      setAiInsights(insights);
+    } catch (error) {
+      console.error('Failed to generate AI insights:', error);
+      setAiInsights({ error: 'Failed to generate insights' });
+    } finally {
+      setIsLoadingAI(false);
+    }
+  };
 
   if (!data) {
     return (
@@ -156,29 +191,28 @@ export default function InsightsSummary({
                   </div>
                 )}
 
-                {/* Key Insights Section */}
-                <div className="mt-4 pt-4 border-t border-white/10">
-                  <h4 className="text-xs font-semibold mb-2 text-green-400">✓ Key Insights</h4>
-                  <ul className="space-y-1.5 text-xs">
-                    <li className="flex items-start gap-2">
-                      <span className="text-green-400">•</span>
-                      <span>Venue significantly exceeds expectations, contributing positively to overall satisfaction.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-green-400">•</span>
-                      <span>No significant weaknesses identified, indicating a generally well-received event.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-green-400">•</span>
-                      <span>Content meets baseline, suggesting room for improvement to enhance attendee engagement.</span>
-                    </li>
-                  </ul>
-                </div>
+                {/* Key Insights Section - AI Generated */}
+                {aiInsights?.key_insights && aiInsights.key_insights.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-white/10">
+                    <h4 className="text-xs font-semibold mb-2 text-purple-400 flex items-center gap-1">
+                      <StarIcon sx={{ fontSize: 14 }} />
+                      Key Insights
+                    </h4>
+                    <ul className="space-y-1.5 text-xs">
+                      {aiInsights.key_insights.map((insight, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="text-purple-400">•</span>
+                          <span>{insight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </>
             ) : (
               <div className="text-center py-4">
                 <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-                  Generate AI analysis to see theme insights
+                  {onGenerateAIInsights ? 'Click "Generate AI Insights" to see analysis' : 'Generate AI analysis to see theme insights'}
                 </p>
               </div>
             )}
@@ -222,26 +256,27 @@ export default function InsightsSummary({
                 </div>
               ))}
 
-              {/* Improvement Recommendations Section */}
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <h4 className="text-xs font-semibold mb-2 text-blue-400">→ Improvement Recommendations</h4>
-                <ul className="space-y-2 text-xs">
-                  <li className="p-2 bg-blue-500/10 rounded border-l-2 border-blue-400">
-                    <span className="font-medium text-blue-300">Enhance content</span> by incorporating interactive elements and real-world case studies.
-                  </li>
-                  <li className="p-2 bg-blue-500/10 rounded border-l-2 border-blue-400">
-                    <span className="font-medium text-blue-300">Leverage venue strengths</span> by promoting unique space features and networking opportunities.
-                  </li>
-                  <li className="p-2 bg-blue-500/10 rounded border-l-2 border-blue-400">
-                    <span className="font-medium text-blue-300">Maintain speaker quality</span> through rigorous selection and pre-event briefing protocols.
-                  </li>
-                </ul>
-              </div>
+              {/* Improvement Recommendations Section - AI Generated */}
+              {aiInsights?.improvement_recommendations && aiInsights.improvement_recommendations.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <h4 className="text-xs font-semibold mb-2 text-blue-400 flex items-center gap-1">
+                    <TrendingUpIcon sx={{ fontSize: 14 }} />
+                    Improvement Recommendations
+                  </h4>
+                  <ul className="space-y-2 text-xs">
+                    {aiInsights.improvement_recommendations.map((rec, index) => (
+                      <li key={index} className="p-2 bg-blue-500/10 rounded border-l-2 border-blue-400">
+                        <span className="text-blue-300">→</span> {rec}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </>
           ) : (
             <div className="text-center py-8">
               <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-                No theme data available. Generate AI analysis first.
+                {onGenerateAIInsights ? 'Generate AI insights to see detailed recommendations' : 'No theme data available. Generate AI analysis first.'}
               </p>
             </div>
           )}
@@ -252,7 +287,44 @@ export default function InsightsSummary({
       title: "Priority Actions",
       content: (
         <div className="space-y-3 text-sm">
-          {themeData?.priority_actions && themeData.priority_actions.length > 0 ? (
+          {/* Quick Wins Section - AI Generated */}
+          {aiInsights?.quick_wins && aiInsights.quick_wins.length > 0 && (
+            <div>
+              <h4 className="text-xs font-semibold mb-2 text-yellow-400 flex items-center gap-1">
+                <LightbulbIcon sx={{ fontSize: 14 }} />
+                Quick Wins
+              </h4>
+              <ul className="space-y-1.5 text-xs">
+                {aiInsights.quick_wins.map((win, index) => (
+                  <li key={index} className="flex items-start gap-2 p-2 bg-yellow-500/10 rounded">
+                    <span className="text-yellow-400">✓</span>
+                    <span>{win}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Strategic Priorities Section - AI Generated */}
+          {aiInsights?.strategic_priorities && aiInsights.strategic_priorities.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <h4 className="text-xs font-semibold mb-2 text-orange-400 flex items-center gap-1">
+                <FlagIcon sx={{ fontSize: 14 }} />
+                Strategic Priorities
+              </h4>
+              <ul className="space-y-1.5 text-xs">
+                {aiInsights.strategic_priorities.map((priority, index) => (
+                  <li key={index} className="flex items-start gap-2 p-2 bg-orange-500/10 rounded">
+                    <span className="text-orange-400">⚡</span>
+                    <span>{priority}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Fallback for legacy themeData priority_actions */}
+          {themeData?.priority_actions && themeData.priority_actions.length > 0 && !aiInsights?.quick_wins && (
             <>
               {/* Priority Actions */}
               {themeData.priority_actions.map((action, index) => (
@@ -272,45 +344,14 @@ export default function InsightsSummary({
                   </div>
                 </div>
               ))}
-
-              {/* Quick Wins Section */}
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <h4 className="text-xs font-semibold mb-2 text-yellow-400 flex items-center gap-1">
-                  ⚡ Quick Wins
-                </h4>
-                <ul className="space-y-1.5 text-xs">
-                  <li className="flex items-start gap-2 p-2 bg-yellow-500/10 rounded">
-                    <span className="text-yellow-400">✓</span>
-                    <span>Gather immediate post-session feedback on content relevance to identify areas for adjustment.</span>
-                  </li>
-                  <li className="flex items-start gap-2 p-2 bg-yellow-500/10 rounded">
-                    <span className="text-yellow-400">✓</span>
-                    <span>Create a dedicated online forum for content-related Q&A to encourage participant engagement.</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Strategic Priorities Section */}
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <h4 className="text-xs font-semibold mb-2 text-orange-400 flex items-center gap-1">
-                  🎯 Strategic Priorities
-                </h4>
-                <ul className="space-y-1.5 text-xs">
-                  <li className="flex items-start gap-2 p-2 bg-orange-500/10 rounded">
-                    <span className="text-orange-400">▸</span>
-                    <span>Invest in content development workshops to improve presentation quality and relevance.</span>
-                  </li>
-                  <li className="flex items-start gap-2 p-2 bg-orange-500/10 rounded">
-                    <span className="text-orange-400">▸</span>
-                    <span>Explore venue expansion or replication strategies for future events to capitalize on popularity.</span>
-                  </li>
-                </ul>
-              </div>
             </>
-          ) : (
+          )}
+
+          {/* Empty state */}
+          {!aiInsights?.quick_wins && !aiInsights?.strategic_priorities && !themeData?.priority_actions && (
             <div className="text-center py-8">
               <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-                No priority actions available. Generate AI analysis to see recommended actions.
+                {onGenerateAIInsights ? 'Click "Generate AI Insights" to see priority actions' : 'No priority actions available. Generate AI analysis to see recommended actions.'}
               </p>
             </div>
           )}
@@ -380,8 +421,32 @@ export default function InsightsSummary({
       {/* Card Content - Optimized for compact display */}
       <div className="flex-1 overflow-y-auto max-h-[350px]">{views[currentView].content}</div>
 
-      {/* AI Analysis Status Note - More compact */}
-      {currentView === "summary" && (
+      {/* Generate AI Insights Button */}
+      {onGenerateAIInsights && (
+        <div className="mt-3 flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+          <div className="flex items-center gap-2">
+            <AutoAwesomeIcon sx={{ fontSize: 16 }} className="text-purple-400" />
+            <span className="text-xs font-medium" style={{ color: 'var(--color-text-primary)' }}>
+              {aiInsights ? 'AI Insights Active' : 'AI Aspect Analysis'}
+            </span>
+          </div>
+          <button
+            onClick={handleGenerateAIInsights}
+            disabled={isLoadingAI}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              isLoadingAI
+                ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-300 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-500/30'
+            }`}
+          >
+            <AutoAwesomeIcon sx={{ fontSize: 12 }} />
+            {isLoadingAI ? 'Generating...' : aiInsights ? 'Refresh' : 'Generate'}
+          </button>
+        </div>
+      )}
+
+      {/* AI Analysis Status Note - Legacy themeData */}
+      {!onGenerateAIInsights && currentView === "summary" && (
         <div className="mt-3 p-2 bg-purple-500/10 rounded-lg border border-purple-400/30">
           <div className="text-xs text-purple-300 font-medium">
             {themeData ? "AI Analysis Active" : "AI Analysis Available"}
