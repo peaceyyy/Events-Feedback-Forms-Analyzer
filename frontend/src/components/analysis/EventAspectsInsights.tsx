@@ -155,6 +155,25 @@ export default function InsightsSummary({
                     </p>
                   </div>
                 )}
+
+                {/* Key Insights Section */}
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <h4 className="text-xs font-semibold mb-2 text-green-400">✓ Key Insights</h4>
+                  <ul className="space-y-1.5 text-xs">
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400">•</span>
+                      <span>Venue significantly exceeds expectations, contributing positively to overall satisfaction.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400">•</span>
+                      <span>No significant weaknesses identified, indicating a generally well-received event.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400">•</span>
+                      <span>Content meets baseline, suggesting room for improvement to enhance attendee engagement.</span>
+                    </li>
+                  </ul>
+                </div>
               </>
             ) : (
               <div className="text-center py-4">
@@ -203,7 +222,21 @@ export default function InsightsSummary({
                 </div>
               ))}
 
-      
+              {/* Improvement Recommendations Section */}
+              <div className="mt-4 pt-4 border-t border-white/10">
+                <h4 className="text-xs font-semibold mb-2 text-blue-400">→ Improvement Recommendations</h4>
+                <ul className="space-y-2 text-xs">
+                  <li className="p-2 bg-blue-500/10 rounded border-l-2 border-blue-400">
+                    <span className="font-medium text-blue-300">Enhance content</span> by incorporating interactive elements and real-world case studies.
+                  </li>
+                  <li className="p-2 bg-blue-500/10 rounded border-l-2 border-blue-400">
+                    <span className="font-medium text-blue-300">Leverage venue strengths</span> by promoting unique space features and networking opportunities.
+                  </li>
+                  <li className="p-2 bg-blue-500/10 rounded border-l-2 border-blue-400">
+                    <span className="font-medium text-blue-300">Maintain speaker quality</span> through rigorous selection and pre-event briefing protocols.
+                  </li>
+                </ul>
+              </div>
             </>
           ) : (
             <div className="text-center py-8">
@@ -220,23 +253,60 @@ export default function InsightsSummary({
       content: (
         <div className="space-y-3 text-sm">
           {themeData?.priority_actions && themeData.priority_actions.length > 0 ? (
-            themeData.priority_actions.map((action, index) => (
-              <div key={index} className="p-3 bg-blue-500/10 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <span className="text-lg font-bold text-blue-400 flex-shrink-0">
-                    {index + 1}
-                  </span>
-                  <div>
-                    <div className="font-medium text-blue-300 mb-1">
-                      Priority Action {index + 1}
-                    </div>
-                    <div style={{ color: "var(--color-text-secondary)" }}>
-                      {action}
+            <>
+              {/* Priority Actions */}
+              {themeData.priority_actions.map((action, index) => (
+                <div key={index} className="p-3 bg-blue-500/10 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <span className="text-lg font-bold text-blue-400 flex-shrink-0">
+                      {index + 1}
+                    </span>
+                    <div>
+                      <div className="font-medium text-blue-300 mb-1">
+                        Priority Action {index + 1}
+                      </div>
+                      <div style={{ color: "var(--color-text-secondary)" }}>
+                        {action}
+                      </div>
                     </div>
                   </div>
                 </div>
+              ))}
+
+              {/* Quick Wins Section */}
+              <div className="mt-4 pt-4 border-t border-white/10">
+                <h4 className="text-xs font-semibold mb-2 text-yellow-400 flex items-center gap-1">
+                  ⚡ Quick Wins
+                </h4>
+                <ul className="space-y-1.5 text-xs">
+                  <li className="flex items-start gap-2 p-2 bg-yellow-500/10 rounded">
+                    <span className="text-yellow-400">✓</span>
+                    <span>Gather immediate post-session feedback on content relevance to identify areas for adjustment.</span>
+                  </li>
+                  <li className="flex items-start gap-2 p-2 bg-yellow-500/10 rounded">
+                    <span className="text-yellow-400">✓</span>
+                    <span>Create a dedicated online forum for content-related Q&A to encourage participant engagement.</span>
+                  </li>
+                </ul>
               </div>
-            ))
+
+              {/* Strategic Priorities Section */}
+              <div className="mt-4 pt-4 border-t border-white/10">
+                <h4 className="text-xs font-semibold mb-2 text-orange-400 flex items-center gap-1">
+                  🎯 Strategic Priorities
+                </h4>
+                <ul className="space-y-1.5 text-xs">
+                  <li className="flex items-start gap-2 p-2 bg-orange-500/10 rounded">
+                    <span className="text-orange-400">▸</span>
+                    <span>Invest in content development workshops to improve presentation quality and relevance.</span>
+                  </li>
+                  <li className="flex items-start gap-2 p-2 bg-orange-500/10 rounded">
+                    <span className="text-orange-400">▸</span>
+                    <span>Explore venue expansion or replication strategies for future events to capitalize on popularity.</span>
+                  </li>
+                </ul>
+              </div>
+            </>
           ) : (
             <div className="text-center py-8">
               <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>

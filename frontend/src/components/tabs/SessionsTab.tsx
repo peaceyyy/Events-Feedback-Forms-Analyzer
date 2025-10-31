@@ -11,9 +11,9 @@
 'use client'
 
 import type { UploadResponse } from '@/types/upload'
-import ChartFactory, { createChartConfig } from '@/components/features/analysis/charts/ChartFactory'
-import SessionPerformanceMatrixChart from '@/components/features/analysis/charts/SessionPerformanceMatrixChart'
-import DiscoveryChannelImpactChart from '@/components/features/analysis/charts/DiscoveryChannelImpactChart'
+import ChartFactory, { createChartConfig } from '@/components/analysis/charts/ChartFactory'
+import SessionPerformanceMatrixChart from '@/components/analysis/charts/SessionPerformanceMatrixChart'
+import DiscoveryChannelImpactChart from '@/components/analysis/charts/DiscoveryChannelImpactChart'
 
 interface SessionsTabProps {
   analysisResults: UploadResponse

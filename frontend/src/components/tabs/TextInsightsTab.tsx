@@ -10,8 +10,8 @@
 'use client'
 
 import type { UploadResponse, FeedbackRecord } from '@/types/upload'
-import AIInsightsContainer from '@/components/features/analysis/textAnalytics/AIInsights'
-import RecurringTopics from '@/components/features/analysis/textAnalytics/RecurringTopics'
+import AIInsightsContainer from '@/components/analysis/textAnalytics/AIInsights'
+import RecurringTopics from '@/components/analysis/textAnalytics/RecurringTopics'
 
 interface TextInsightsTabProps {
   feedbackData: FeedbackRecord[]

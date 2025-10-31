@@ -12,11 +12,11 @@
 
 import type { UploadResponse } from '@/types/upload'
 import type { AspectHighlight } from '@/lib/dataHelpers'
-import FileUpload from '@/components/features/upload/FileUpload'
-import UploadPill from '@/components/features/upload/UploadPill'
-import ChartFactory, { createChartConfig } from '@/components/features/analysis/charts/ChartFactory'
-import PacingAnalysisChart from '@/components/features/analysis/charts/PacingAnalysisChart'
-import UnifiedWordCloud from '@/components/features/analysis/charts/WordCloud/WordCloud'
+import FileUpload from '@/components/upload/FileUpload'
+import UploadPill from '@/components/upload/UploadPill'
+import ChartFactory, { createChartConfig } from '@/components/analysis/charts/ChartFactory'
+import PacingAnalysisChart from '@/components/analysis/charts/PacingAnalysisChart'
+import UnifiedWordCloud from '@/components/analysis/charts/WordCloud/WordCloud'
 import {
   UploadFile as UploadFileIcon,
   Dashboard as DashboardIcon,

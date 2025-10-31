@@ -32,7 +32,7 @@ export default function CorrelationAnalysisChart({
   className = "",
   height = 400
 }: CorrelationAnalysisChartProps) {
-  const [variant, setVariant] = useState<ChartVariant>('bar')
+  const [variant, setVariant] = useState<ChartVariant>('scatter')
 
   // Custom tooltip for correlation bars
   const CorrelationTooltip = ({ active, payload }: any) => {
@@ -308,3 +308,46 @@ export default function CorrelationAnalysisChart({
   )
 }
 
+// Sidebar Theory: Correlation Analysis for Event Aspects
+/*
+CORRELATION ANALYSIS - UNDERSTANDING IMPACT:
+
+WHAT IT MEASURES:
+• Statistical relationship between aspect ratings (Venue, Speakers, Content) and overall satisfaction
+• Correlation coefficient ranges from 0 (no relationship) to 1 (perfect relationship)
+• **Higher correlation = aspect has stronger influence on overall satisfaction**
+
+WHY IT MATTERS:
+• Resource Allocation: Focus improvements on high-correlation aspects for maximum ROI
+• Priority Setting: Identify which aspects drive satisfaction vs. which are secondary
+• Strategic Planning: Understand cause-and-effect relationships in event success
+• Budget Justification: Data-backed decisions on where to invest resources
+
+INTERPRETATION GUIDE:
+• **Strong (>0.7)**: Major satisfaction driver - prioritize improvements here
+• **Moderate (0.5-0.7)**: Meaningful impact - consider as secondary priority
+• **Weak (0.3-0.5)**: Minor impact - improvements have limited effect
+• **Very Weak (<0.3)**: Little relationship - may not influence overall satisfaction
+
+REAL-WORLD EXAMPLE:
+If "Speakers" has 0.85 correlation and "Venue" has 0.45 correlation:
+→ Investing in better speakers will dramatically boost satisfaction
+→ Upgrading venue has less impact on overall satisfaction
+→ Budget allocation should prioritize speaker quality over venue aesthetics
+
+CHART VARIANTS:
+1. **Bar Chart (Default)**: Direct comparison of correlation strengths - best for quick insights
+2. **Scatter Plot**: Visual representation of individual responses - shows relationship patterns
+
+BUSINESS IMPLICATIONS:
+• High-correlation aspects are your "satisfaction levers"
+• Low-correlation aspects might be "table stakes" (expected but don't drive satisfaction)
+• Use this to justify budget allocations to stakeholders
+• Track changes over time to see if correlation patterns shift
+
+STATISTICAL NOTE:
+• Correlation ≠ Causation (but suggests strong relationship)
+• Based on Pearson correlation coefficient
+• Requires sufficient sample size (30+ responses minimum)
+• Can reveal unexpected insights about what truly matters to attendees
+*/

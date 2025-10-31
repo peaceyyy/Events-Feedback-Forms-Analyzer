@@ -1,4 +1,4 @@
-// components/features/analysis/textAnalytics/RecurringTopics.tsx
+// components/analysis/textAnalytics/RecurringTopics.tsx
 'use client'
 import { 
   Lightbulb as LightbulbIcon,

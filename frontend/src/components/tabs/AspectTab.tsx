@@ -11,10 +11,10 @@
 'use client'
 
 import type { UploadResponse } from '@/types/upload'
-import AspectComparisonChart from '@/components/features/analysis/charts/AspectComparisonChart'
-import EventAspects from '@/components/features/analysis/EventAspectsInsights'
-import CorrelationAnalysisChart from '@/components/features/analysis/charts/CorrelationAnalysisChart'
-import PerAspectAveragesChart from '@/components/features/analysis/charts/PerAspectAveragesChart'
+import AspectComparisonChart from '@/components/analysis/charts/AspectComparisonChart'
+import EventAspects from '@/components/analysis/EventAspectsInsights'
+import CorrelationAnalysisChart from '@/components/analysis/charts/CorrelationAnalysisChart'
+import PerAspectAveragesChart from '@/components/analysis/charts/PerAspectAveragesChart'
 
 interface AspectTabProps {
   analysisResults: UploadResponse

@@ -1,4 +1,4 @@
-// components/features/analysis/textAnalytics/AIThemeSummary.tsx
+// components/analysis/textAnalytics/AIThemeSummary.tsx
 'use client'
 import { useState } from 'react'
 import { 
