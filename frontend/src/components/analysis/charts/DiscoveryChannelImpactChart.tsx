@@ -1,7 +1,7 @@
 // DiscoveryChannelImpactChart.tsx - Analyzing which marketing channels bring satisfied attendees
 'use client'
 import React, { useState } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend, Line, ComposedChart } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend, Line, ComposedChart, ReferenceLine } from 'recharts'
 import { 
   TrendingUp as TrendingUpIcon, 
   AutoAwesome as AutoAwesomeIcon,
@@ -76,22 +76,31 @@ export default function DiscoveryChannelImpactChart({
     if (active && payload && payload.length) {
       const channel = payload[0].payload
       return (
-        <div className="glass-card-dark p-4 rounded-lg border border-white/20 shadow-lg">
-          <p className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>
+        <div className="glass-card-dark p-4 rounded-lg border border-white/20 shadow-lg backdrop-blur-sm bg-opacity-95">
+          <p className="font-semibold mb-3 text-base" style={{ color: 'var(--color-text-primary)' }}>
             {channel.event_discovery}
           </p>
-          <div className="space-y-1 text-sm">
-            <p style={{ color: 'var(--color-text-secondary)' }}>
-              Avg Satisfaction: <span className="font-bold text-green-400">{channel.avg_satisfaction}/5</span>
-            </p>
-            <p style={{ color: 'var(--color-text-secondary)' }}>
-              Attendees: <span className="font-bold text-blue-400">{channel.count}</span>
-            </p>
-            <p style={{ color: 'var(--color-text-secondary)' }}>
-              Effectiveness: <span className="font-bold text-orange-400">{channel.effectiveness_score.toFixed(1)}%</span>
-            </p>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: getSatisfactionColor(channel.avg_satisfaction) }}></span>
+              <span style={{ color: 'var(--color-text-secondary)' }}>
+                Satisfaction: <span className="font-bold text-white">{channel.avg_satisfaction}/5</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-orange-400"></span>
+              <span style={{ color: 'var(--color-text-secondary)' }}>
+                Attendees: <span className="font-bold text-white">{channel.count}</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
+              <span style={{ color: 'var(--color-text-secondary)' }}>
+                Effectiveness: <span className="font-bold text-white">{channel.effectiveness_score.toFixed(1)}%</span>
+              </span>
+            </div>
             {channel.std_dev > 0 && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 mt-1 pt-1 border-t border-white/10">
                 Std Dev: ±{channel.std_dev}
               </p>
             )}
@@ -105,9 +114,18 @@ export default function DiscoveryChannelImpactChart({
   // Get color based on satisfaction level
   const getSatisfactionColor = (satisfaction: number) => {
     if (satisfaction >= 4.5) return '#4CAF50'  // Excellent - Green
-    if (satisfaction >= 4.0) return '#78a9ff'  // Good - Blue
+    if (satisfaction >= 4.0) return '#33b5e5'  // Good - Light Blue (changed from dark blue)
     if (satisfaction >= 3.5) return '#ffab00'  // Moderate - Yellow
     return '#ff8389'  // Poor - Red
+  }
+
+  // Get color based on effectiveness score with visual hierarchy
+  const getEffectivenessColor = (score: number) => {
+    if (score >= 90) return '#ff6f00'  // Excellent - Deep Orange
+    if (score >= 80) return '#ff8f00'  // Very Good - Bright Orange
+    if (score >= 70) return '#ffa726'  // Good - Medium Orange
+    if (score >= 60) return '#ffb74d'  // Moderate - Light Orange
+    return '#ffcc80'  // Lower - Pale Orange
   }
 
   if (!data || !data.channels || data.channels.length === 0) {
@@ -182,16 +200,16 @@ export default function DiscoveryChannelImpactChart({
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart 
               data={data.channels} 
-              margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
               <XAxis 
                 dataKey="event_discovery"
                 tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
                 axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
-                angle={-30}
+                angle={-20}
                 textAnchor="end"
-                height={70}
+                height={75}
                 interval={0}
               />
               <YAxis 
@@ -219,9 +237,24 @@ export default function DiscoveryChannelImpactChart({
                 }}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ paddingTop: '15px', fontSize: '12px' }} />
               
-              <Bar yAxisId="left" dataKey="avg_satisfaction" name="Avg Satisfaction" radius={[4, 4, 0, 0]}>
+              {/* Reference line for overall average satisfaction */}
+              <ReferenceLine 
+                yAxisId="left" 
+                y={data.stats.overall_avg_satisfaction} 
+                stroke="rgba(139, 92, 246, 0.4)" 
+                strokeDasharray="5 5"
+                strokeWidth={1.5}
+                label={{ 
+                  value: `Overall Avg (${data.stats.overall_avg_satisfaction.toFixed(1)})`, 
+                  position: 'insideTopRight',
+                  fill: 'rgba(139, 92, 246, 0.8)',
+                  fontSize: 11,
+                  fontWeight: 500
+                }}
+              />
+              
+              <Bar yAxisId="left" dataKey="avg_satisfaction" name="Satisfaction" radius={[4, 4, 0, 0]} fill="#33b5e5">
                 {data.channels.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={getSatisfactionColor(entry.avg_satisfaction)} />
                 ))}
@@ -231,9 +264,10 @@ export default function DiscoveryChannelImpactChart({
                 type="monotone" 
                 dataKey="count" 
                 name="Attendees"
-                stroke="#78a9ff" 
-                strokeWidth={2}
-                dot={{ fill: '#78a9ff', r: 4 }}
+                stroke="#ff9100" 
+                strokeWidth={3}
+                dot={{ fill: '#ff9100', r: 6, strokeWidth: 2.5, stroke: '#0f1720' }}
+                activeDot={{ r: 8, strokeWidth: 2.5 }}
               />
             </ComposedChart>
           </ResponsiveContainer>
@@ -241,16 +275,16 @@ export default function DiscoveryChannelImpactChart({
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={data.channels} 
-              margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
               <XAxis 
                 dataKey="event_discovery"
                 tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
                 axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
-                angle={-30}
+                angle={-20}
                 textAnchor="end"
-                height={70}
+                height={75}
                 interval={0}
               />
               <YAxis 
@@ -265,16 +299,20 @@ export default function DiscoveryChannelImpactChart({
                 domain={variant === 'satisfaction' ? [0, 5] : [0, 100]}
               />
               <Tooltip content={<CustomTooltip />} />
+              
+              {/* Satisfaction-only: no reference line here (kept in Combined view) */}
+              
               <Bar 
                 dataKey={variant === 'satisfaction' ? 'avg_satisfaction' : 'effectiveness_score'} 
                 radius={[4, 4, 0, 0]}
+                fill="#33b5e5"
               >
                 {data.channels.map((entry, index) => (
                   <Cell 
                     key={`cell-${index}`} 
                     fill={variant === 'satisfaction' 
                       ? getSatisfactionColor(entry.avg_satisfaction)
-                      : `rgba(255, 171, 0, ${0.4 + (entry.effectiveness_score / 200)})`
+                      : getEffectivenessColor(entry.effectiveness_score)
                     } 
                   />
                 ))}
@@ -284,8 +322,8 @@ export default function DiscoveryChannelImpactChart({
         )}
       </div>
 
-      {/* Insights Panel */}
-      <div className="mt-6 p-4 bg-white/5 rounded-lg">
+  {/* Insights Panel */}
+  <div className="mt-4 p-4 bg-white/5 rounded-lg">
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-semibold text-sm flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
             {aiInsights ? (
@@ -427,53 +465,3 @@ export default function DiscoveryChannelImpactChart({
   )
 }
 
-// Sidebar Theory: Discovery Channel Impact Analysis
-/*
-DISCOVERY CHANNEL IMPACT - MARKETING ATTRIBUTION:
-
-WHAT IT MEASURES:
-• Which marketing/promotion channels bring attendees
-• Satisfaction levels by discovery source
-• Channel effectiveness (satisfaction + reach combined)
-
-WHY IT MATTERS:
-• **Marketing ROI:** Know which channels deliver quality attendees
-• **Budget Allocation:** Invest in high-performing channels
-• **Targeting:** Understand audience sources and preferences
-• **Growth Strategy:** Scale what works, fix or cut what doesn't
-
-THREE CHART VARIANTS:
-1. **Satisfaction View:** Avg satisfaction by channel (quality metric)
-2. **Effectiveness View:** Combined score (quality + reach weighted)
-3. **Dual View:** Bars = satisfaction, Line = attendee count (full picture)
-
-EFFECTIVENESS SCORE FORMULA:
-• 70% weight on satisfaction (quality matters most)
-• 30% weight on reach (volume also important)
-• Result: 0-100% score for ranking channels
-
-STRATEGIC INSIGHTS:
-• **High Satisfaction + High Reach:** Your golden channel - invest more
-• **High Satisfaction + Low Reach:** Growth opportunity - increase promotion
-• **Low Satisfaction + High Reach:** Quality problem - review messaging/targeting
-• **Low Satisfaction + Low Reach:** Consider discontinuing
-
-BUSINESS IMPLICATIONS:
-• Event promotion planning for next event
-• Marketing budget distribution across channels
-• Partnership decisions (e.g., pay for Facebook ads?)
-• Community building priorities (email list vs social)
-
-REAL-WORLD EXAMPLE:
-If "Friend Referral" shows:
-→ 4.8/5 satisfaction, 50 attendees, 92% effectiveness
-Action: Implement referral incentive program
-ROI: High-quality attendees already proven, scale the channel
-Compare to "Random Social Post": 3.2/5, 5 attendees, 50% effectiveness
-→ Action: Either improve targeting or reallocate budget elsewhere
-
-CORRELATION METRIC (if shown):
-• Measures if channel type predicts satisfaction
-• Positive correlation = some channels consistently bring happier attendees
-• Use this to prioritize channel investments strategically
-*/

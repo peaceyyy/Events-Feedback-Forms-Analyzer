@@ -154,7 +154,7 @@ export default function CorrelationAnalysisChart({
       </div>
 
       {/* Insights Panel */}
-      <div className="mt-4 p-4 bg-white/5 rounded-lg">
+      <div className="mt-2 p-2 bg-white/5 rounded-lg">
         <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--color-text-primary)' }}>
           Key Findings
         </h4>

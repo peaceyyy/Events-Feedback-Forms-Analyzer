@@ -208,19 +208,28 @@ export default function AspectComparisonChart({
       barColor: (item.difference || 0) > 0 ? '#4CAF50' : '#F44336'
     }))
 
+    // A) Symmetric domain around 0 so the zero line is centered
+    const maxAbs = Math.max(
+      0.1,
+      ...divergingData.map((d: any) => Math.abs(Number(d.deviation) || 0))
+    )
+
     return (
-      <div className="w-full h-full flex flex-col">
+      <div className="w-full min-w-0 h-full flex-1 flex flex-col">
         {/* Chart container - takes all available space */}
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             layout="vertical"
             data={divergingData}
-            margin={{ top: 10, right: 30, left: 100, bottom: 80 }}
+            margin={{ top: 10, right: 30, left: 60, bottom: 50 }}
+            barCategoryGap={10}
+            barGap={2}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis 
               type="number" 
-              domain={['dataMin - 0.3', 'dataMax + 0.3']}
+              domain={[-maxAbs * 1.15, maxAbs * 1.15]}
+              allowDataOverflow
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
               stroke="rgba(255,255,255,0.3)"
               label={{ value: 'Performance vs Baseline', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
@@ -231,7 +240,8 @@ export default function AspectComparisonChart({
               dataKey="aspect"
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
               stroke="rgba(255,255,255,0.3)"
-              width={90}
+              width={80}
+              tickMargin={8}
             />
             
             {/* Baseline reference line */}
