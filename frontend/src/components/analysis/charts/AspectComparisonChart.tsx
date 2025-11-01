@@ -7,7 +7,7 @@ import {
 } from 'recharts'
 
 interface AspectComparisonChartProps {
-  data: any
+  data: any   
   variant?: 'diverging' | 'grouped' | 'bullet' | 'radar'
   onVariantChange?: (variant: 'diverging' | 'grouped' | 'bullet' | 'radar') => void
   options?: {
@@ -96,21 +96,25 @@ export default function AspectComparisonChart({
   // Enhanced tooltip for comparative insights
   // Unified CustomTooltip that adapts to chart type (radial or bar)
   const CustomTooltip = ({ active, payload, label, radial }: any) => {
+    console.log('CustomTooltip called:', { active, payload, label, radial });
+    
     if (!active || !payload || !payload.length) {
       return null;
     }
 
     // Get data from payload - handle different structures
-    // More robustly get the nested payload
-    const data = payload && payload ? payload.payload : null;
+    // For radar charts, payload structure is different
+    const data = payload[0]?.payload || payload[0] || null;
+
+    console.log('Tooltip data:', data);
 
     // Safety check for data existence
-    if (!active || !payload || !payload.length || !data) {
+    if (!data) {
       return null;
     }
 
     // Extract values with fallbacks
-    const aspect = data.aspect || 'Unknown';
+    const aspect = data.aspect || label || 'Unknown';
     const value = data.value || 0;
     const baseline = data.baseline || 0;
     const difference = data.difference !== undefined ? data.difference : (value - baseline);
@@ -205,74 +209,77 @@ export default function AspectComparisonChart({
     }))
 
     return (
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart 
-          layout="vertical"
-          data={divergingData}
-          margin={{ top: 20, right: 60, left: 80, bottom: 60 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-          <XAxis 
-            type="number" 
-            domain={['dataMin - 0.3', 'dataMax + 0.3']}
-            tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-            stroke="rgba(255,255,255,0.3)"
-            label={{ value: 'Performance vs Baseline', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
-            tickFormatter={(value) => Number(value).toFixed(1)}
-          />
-          <YAxis 
-            type="category" 
-            dataKey="aspect"
-            tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-            stroke="rgba(255,255,255,0.3)"
-          width={70}
-          />
-          
-          {/* Baseline reference line */}
-          {options?.showBaseline && (
-            <ReferenceLine x={0} stroke="#FFC107" strokeWidth={2} strokeDasharray="5 5" />
-          )}
-          
-          {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
-          
-          {/* Legend for diverging chart */}
-          {options?.showLegend && (
-            <Legend 
-              verticalAlign="bottom"
-              height={40}
-              wrapperStyle={{ 
-                color: 'var(--color-text-primary)',
-                fontSize: '13px',
-                paddingTop: '15px'
-              }}
-              iconType="rect"
-              content={() => (
-                <div className="flex justify-center items-center gap-6 mt-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded"></div>
-                    <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>Above Baseline</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-red-500 rounded"></div>
-                    <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>Below Baseline</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-0.5 bg-yellow-500 border-dashed"></div>
-                    <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>Baseline Reference</span>
-                  </div>
-                </div>
-              )}
+      <div className="w-full h-full flex flex-col">
+        {/* Chart container - takes all available space */}
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart 
+            layout="vertical"
+            data={divergingData}
+            margin={{ top: 10, right: 30, left: 100, bottom: 80 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+            <XAxis 
+              type="number" 
+              domain={['dataMin - 0.3', 'dataMax + 0.3']}
+              tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
+              stroke="rgba(255,255,255,0.3)"
+              label={{ value: 'Performance vs Baseline', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
+              tickFormatter={(value) => Number(value).toFixed(1)}
             />
-          )}
-          
-          {/* Single bar showing deviation */}
-          <Bar dataKey="deviation" name="Performance vs Baseline" barSize={24}>
-            {divergingData.map((entry: any, index: number) => (
-              <Cell key={`cell-${index}`} fill={entry.barColor} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+            <YAxis 
+              type="category" 
+              dataKey="aspect"
+              tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
+              stroke="rgba(255,255,255,0.3)"
+              width={90}
+            />
+            
+            {/* Baseline reference line */}
+            {options?.showBaseline && (
+              <ReferenceLine x={0} stroke="#FFC107" strokeWidth={2} strokeDasharray="5 5" />
+            )}
+            
+            {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
+            
+            {/* Legend for diverging chart */}
+            {options?.showLegend && (
+              <Legend 
+                verticalAlign="bottom"
+                height={60}
+                wrapperStyle={{ 
+                  color: 'var(--color-text-primary)',
+                  fontSize: '13px',
+                  paddingTop: '15px'
+                }}
+                iconType="rect"
+                content={() => (
+                  <div className="flex justify-center items-center gap-6 mt-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded"></div>
+                      <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>Above Baseline</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-red-500 rounded"></div>
+                      <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>Below Baseline</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-0.5 bg-yellow-500 border-dashed"></div>
+                      <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>Baseline Reference</span>
+                    </div>
+                  </div>
+                )}
+              />
+            )}
+            
+            {/* Single bar showing deviation */}
+            <Bar dataKey="deviation" name="Performance vs Baseline" barSize={24}>
+              {divergingData.map((entry: any, index: number) => (
+                <Cell key={`cell-${index}`} fill={entry.barColor} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     )
     }
 
@@ -419,13 +426,18 @@ export default function AspectComparisonChart({
       )
     }
 
-    // Transform data for radar chart
+    // Transform data for radar chart - include ALL necessary fields for tooltip
     const radarData = chartData.map((item: any) => ({
       aspect: item.aspect,
       value: item.value,
-      baseline: item.baseline, 
+      baseline: item.baseline,
+      difference: item.difference,
+      fill: item.fill,
+      performance: item.performance,
       fullMark: 5
     }));
+
+    console.log('Radar chart data:', radarData);
 
     return (
       <ResponsiveContainer width="100%" height={400}>
@@ -441,7 +453,7 @@ export default function AspectComparisonChart({
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 10 }}
             stroke="rgba(255,255,255,0.3)"
           />
-          {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
+          <Tooltip content={<CustomTooltip radial={true} />} />
           
         
           <Radar 

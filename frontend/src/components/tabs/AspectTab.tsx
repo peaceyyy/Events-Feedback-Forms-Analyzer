@@ -78,7 +78,16 @@ export default function AspectTab({
         </div>
       </div>  
 
-      {/* First Row - Correlation Analysis (Full Width for Detailed View) */}
+        {/* First Row - Per Aspect Averages (Full Width) */}
+      <div className="grid grid-cols-1 gap-8">
+        {(analysisResults as any)?.ratings?.data && (
+          <PerAspectAveragesChart
+            data={(analysisResults as any).ratings.data}
+          />
+        )}
+      </div>
+
+      {/* Second Row - Correlation Analysis (Full Width for Detailed View) */}
       <div className="grid grid-cols-1 gap-8">
         <CorrelationAnalysisChart
           data={(analysisResults as any)?.correlation?.data}
@@ -87,14 +96,7 @@ export default function AspectTab({
         />
       </div>
 
-      {/* Second Row - Per Aspect Averages (Full Width) */}
-      <div className="grid grid-cols-1 gap-8">
-        {(analysisResults as any)?.ratings?.data && (
-          <PerAspectAveragesChart
-            data={(analysisResults as any).ratings.data}
-          />
-        )}
-      </div>
+    
     </div>
   )
 }
