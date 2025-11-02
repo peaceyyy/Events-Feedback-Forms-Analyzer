@@ -7,7 +7,7 @@ import Image from 'next/image'
  */
 export default function AppHeader() {
   return (
-    <header className="text-center mb-12">
+    <header className="text-center mb-1">
       <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">
         <span className="text-text-primary transition-colors duration-500">
           Event Insights

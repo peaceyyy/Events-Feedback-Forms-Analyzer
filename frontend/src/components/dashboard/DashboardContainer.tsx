@@ -168,7 +168,7 @@ export default function DashboardContainer() {
             tabs={tabs}
             defaultTab={activeTab}
             onTabChange={handleTabChange}
-            className="mt-8"
+            className="mt-1"
           />
         </main>
       </div>

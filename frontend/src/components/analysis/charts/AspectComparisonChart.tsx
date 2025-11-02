@@ -221,7 +221,7 @@ export default function AspectComparisonChart({
           <BarChart 
             layout="vertical"
             data={divergingData}
-            margin={{ top: 10, right: 30, left: 60, bottom: 50 }}
+            margin={{ top: 10, right: 30, left: -4, bottom: 50 }}
             barCategoryGap={10}
             barGap={2}
           >
@@ -240,7 +240,7 @@ export default function AspectComparisonChart({
               dataKey="aspect"
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
               stroke="rgba(255,255,255,0.3)"
-              width={80}
+              width={60}
               tickMargin={8}
             />
             
@@ -259,7 +259,7 @@ export default function AspectComparisonChart({
                 wrapperStyle={{ 
                   color: 'var(--color-text-primary)',
                   fontSize: '13px',
-                  paddingTop: '15px'
+                  paddingTop: '55px'
                 }}
                 iconType="rect"
                 content={() => (
@@ -303,12 +303,14 @@ export default function AspectComparisonChart({
       )
     }
     
+    // Get baseline value (it's constant across all aspects)
+    const baselineValue = chartData[0]?.baseline || 4.0
+    
     return (
       <ResponsiveContainer width="100%" height={400}>
         <BarChart 
           data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
-          barGap={8}
+          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
           <XAxis 
@@ -327,22 +329,26 @@ export default function AspectComparisonChart({
             label={{ value: 'Rating (0-5)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
           />
           
-          {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
-          {options?.showLegend && (
-            <Legend 
-              verticalAlign="bottom"
-              height={40}
-              wrapperStyle={{ 
-                color: 'var(--color-text-primary)',
-                fontSize: '13px',
-                paddingTop: '15px'
+          {/* Baseline reference line - shows the threshold */}
+          {options?.showBaseline && (
+            <ReferenceLine 
+              y={baselineValue} 
+              stroke="#FFC107" 
+              strokeWidth={2} 
+              strokeDasharray="5 5"
+              label={{ 
+                value: `Baseline (${baselineValue.toFixed(1)})`, 
+                position: 'right',
+                fill: '#FFC107',
+                fontSize: 12
               }}
-              iconType="rect"
             />
           )}
           
-          <Bar dataKey="baseline" fill="#FF9800" name="Baseline" barSize={30} />
-          <Bar dataKey="value" fill="var(--color-usc-green)" name="Aspect Rating" barSize={30}>
+          {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
+          
+          {/* Single bar series - color-coded by performance */}
+          <Bar dataKey="value" name="Aspect Rating" barSize={35}>
             {chartData.map((entry: any, index: number) => (
               <Cell key={`cell-${index}`} fill={entry.fill} />
             ))}
@@ -490,9 +496,9 @@ export default function AspectComparisonChart({
           {options?.showLegend && (
             <Legend 
               wrapperStyle={{ 
-                fontSize: '12px', 
-                paddingTop: '10px',
-                color: 'var(--color-text-secondary)'
+          fontSize: '12px', 
+          paddingTop: '0px', // Adjusted from 10px to 0px to move it up
+          color: 'var(--color-text-secondary)'
               }}
             />
           )}
