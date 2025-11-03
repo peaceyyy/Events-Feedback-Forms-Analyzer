@@ -99,7 +99,6 @@ export default function AspectTab({
       <div className="grid grid-cols-1 gap-8">
         <CorrelationAnalysisChart
           data={(analysisResults as any)?.correlation?.data}
-          title="Aspect Impact Analysis"
           height={450}
         />
       </div>

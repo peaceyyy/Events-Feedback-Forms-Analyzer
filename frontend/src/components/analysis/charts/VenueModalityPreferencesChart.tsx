@@ -222,47 +222,27 @@ export default function VenueModalityPreferencesChart({
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="glass-card-dark p-3 rounded-lg">
-          <p
-            className="text-xs"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Venues
-          </p>
-          <p
-            className="text-2xl font-bold mt-1"
-            style={{ color: "var(--color-text-primary)" }}
-          >
+      <div className="glass-card-dark p-3 rounded-lg flex flex-row items-center justify-between">
+        <div className="flex-1 text-center">
+          <div className="text-xs" style={{ color: "var(--color-text-secondary)" }}>Venues</div>
+          <div className="text-xl font-bold mt-1" style={{ color: "var(--color-text-primary)" }}>
             {stats.unique_venues}
-          </p>
+          </div>
         </div>
-        <div className="glass-card-dark p-3 rounded-lg">
-          <p
-            className="text-xs"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            In-Person
-          </p>
-          <p
-            className="text-2xl font-bold mt-1"
-            style={{ color: "var(--color-usc-green)" }}
-          >
+        <div className="flex-1 text-center">
+          <div className="text-xs" style={{ color: "var(--color-text-secondary)" }}>In-Person</div>
+          <div className="text-xl font-bold mt-1" style={{ color: "var(--color-usc-green)" }}>
             {stats.in_person_preference_count}
-          </p>
+          </div>
         </div>
-        <div className="glass-card-dark p-3 rounded-lg">
-          <p
-            className="text-xs"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Online
-          </p>
-          <p className="text-2xl font-bold mt-1" style={{ color: "#ea4335" }}>
+        <div className="flex-1 text-center">
+          <div className="text-xs" style={{ color: "var(--color-text-secondary)" }}>Online</div>
+          <div className="text-xl font-bold mt-1" style={{ color: "#ea4335" }}>
             {stats.online_preference_count}
-          </p>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+  

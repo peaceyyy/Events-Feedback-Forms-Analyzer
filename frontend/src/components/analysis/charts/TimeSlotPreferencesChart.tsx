@@ -191,20 +191,19 @@ export default function TimeSlotPreferencesChart({
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="glass-card-dark p-3 rounded-lg">
-          <p className="text-xs" style={{color: 'var(--color-text-secondary)'}}>Total Responses</p>
-          <p className="text-2xl font-bold mt-1" style={{color: 'var(--color-text-primary)'}}>
+      <div className="glass-card-dark p-3 rounded-lg flex flex-row items-center justify-between">
+        <div className="flex-1 text-center">
+          <div className="text-xs" style={{color: 'var(--color-text-secondary)'}}>Total Responses</div>
+          <div className="text-xl font-bold mt-1" style={{color: 'var(--color-text-primary)'}}>
             {stats.specified_responses}
-          </p>
+          </div>
         </div>
-        <div className="glass-card-dark p-3 rounded-lg">
-          <p className="text-xs" style={{color: 'var(--color-text-secondary)'}}>Time Slots</p>
-          <p className="text-2xl font-bold mt-1" style={{color: 'var(--color-text-primary)'}}>
+        <div className="flex-1 text-center">
+          <div className="text-xs" style={{color: 'var(--color-text-secondary)'}}>Time Slots</div>
+          <div className="text-xl font-bold mt-1" style={{color: 'var(--color-text-primary)'}}>
             {stats.unique_time_slots}
-          </p>
+          </div>
         </div>
- 
       </div>
     </div>
   )

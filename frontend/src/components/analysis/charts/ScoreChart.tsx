@@ -126,25 +126,21 @@ export default function ScoreChart({ data, variant, options, config }: ScoreChar
     ];
 
     return (
-      // The parent container only needs to establish a positioning context.
-      // We remove flexbox properties as they are no longer needed for centering.
-      <div className="relative w-full h-[400px]"> {/* Use a fixed height for stability */}
+      // Reduced height for tighter spacing
+      <div className="relative w-full h-[320px]">
       
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={gaugeData}
-              // These coordinates are our anchor point
               cx="50%"
-              cy="55%" 
+              cy="50%" 
               startAngle={180}
               endAngle={0}
-              // Adjust radii slightly for better proportions
               innerRadius="60%"
               outerRadius="80%"
               dataKey="value"
               stroke="none"
-              // Add paddingAngle for a cleaner look between segments
               paddingAngle={1} 
             >
               {gaugeData.map((entry, index) => (
@@ -154,34 +150,29 @@ export default function ScoreChart({ data, variant, options, config }: ScoreChar
           </PieChart>
         </ResponsiveContainer>
 
-        {/* 
-          THE FIX: We position this div precisely relative to the parent.
-          top/left move the top-left corner of the div to the gauge's center.
-          'transform' then pulls the div up and left by half its own size,
-          perfectly centering it over the anchor point.
-        */}
+        {/* Tighter positioning and reduced spacing */}
         <div 
           className="absolute flex flex-col items-center"
           style={{
-            top: '85%', // Match the Pie's cy
-            left: '50%', // Match the Pie's cx
-            transform: 'translate(-50%, -120%)' // Pull it left by 50% of its width and UP by 120% of its height
+            top: '82%',
+            left: '50%',
+            transform: 'translate(-50%, -115%)'
           }}
         >
           <div 
-            className="text-7xl font-extrabold" // Removed mb-3, control spacing with parent
+            className="text-6xl font-extrabold"
             style={{ color: scoreColor }}
           >
             {scoreData.value.toFixed(0)}
           </div>
-          <div className="text-xl font-semibold mt-1" style={{ color: 'var(--color-text-primary)' }}>
+          <div className="text-lg font-semibold mt-1" style={{ color: 'var(--color-text-primary)' }}>
             {scoreData.category}
           </div>
-          <div className="text-sm font-medium mt-1" style={{ color: 'var(--color-text-secondary)' }}>
+          <div className="text-xs font-medium mt-1" style={{ color: 'var(--color-text-secondary)' }}>
             NPS Range: {scoreData.min !== undefined ? `${scoreData.min} to +${scoreData.max}` : `0 to ${scoreData.max}`}
           </div>
           {scoreData.total > 0 && (
-            <div className="text-xs mt-3 px-3 py-1 rounded-full bg-white/10" style={{ color: 'var(--color-text-tertiary)' }}>
+            <div className="text-xs mt-2 px-2 py-0.5 rounded-full bg-white/10" style={{ color: 'var(--color-text-tertiary)' }}>
               Based on {scoreData.total} responses
             </div>
           )}

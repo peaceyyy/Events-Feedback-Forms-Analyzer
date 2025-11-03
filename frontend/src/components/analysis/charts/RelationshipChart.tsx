@@ -473,9 +473,9 @@ const CustomTooltip = ({ active, payload }: any) => {
     }
 
     return (
-      <div className="w-full h-full min-h-[400px]">
-        <ResponsiveContainer width="100%" height={400}>
-          <ScatterChart margin={{ top: 20, right: 30, left: 40, bottom: 60 }}>
+      <div className="w-full h-full min-h-[320px]">
+        <ResponsiveContainer width="100%" height={320}>
+          <ScatterChart margin={{ top: 20, right: 30, left: 40, bottom: 50 }}>
             {/* Axes and Grid */}
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
             <XAxis 
@@ -503,14 +503,11 @@ const CustomTooltip = ({ active, payload }: any) => {
 
             {/* A custom legend would be needed to show all categories. */}
             {/* For now, we can hide the default one or accept its limitation. */}
-            <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
+            <Legend wrapperStyle={{ paddingTop: '10px' }} iconType="circle" />
 
-            {/* --- The Key Change --- */}
-            {/* Use a SINGLE Scatter component with the flat data array */}
+      
             <Scatter 
-              name="All Responses"
-              data={flatChartData}
-              fill="#cccccc" // A default fill
+                data={flatChartData}
             >
               {/* Map over the data to give each dot its specific color */}
               {flatChartData.map((entry: any, index: number) => (
@@ -545,11 +542,11 @@ const renderLine = () => {
   const yLabel = isRecommendationScale ? 'Average Recommendation Score (0-10)' : 'Average Rating (0-5)'
 
   return (
-    <div className="w-full h-full min-h-[400px]">
-      <ResponsiveContainer width="100%" height={400}>
+    <div className="w-full h-full min-h-[100px]">
+      <ResponsiveContainer width="100%" height={200}>
         <LineChart
           data={chartData}
-          margin={{ top: 20, right: 50, left: 20, bottom: 60 }}
+          margin={{ top: 20, right: 50, left: 20, bottom:60 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
           <XAxis 

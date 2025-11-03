@@ -96,7 +96,7 @@ export default function CorrelationAnalysisChart({
       <div style={{ height: `${height}px` }}>
         {data.scatter_data ? (
           <ResponsiveContainer width="100%" height="100%">
-            <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+            <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
               <XAxis 
                 type="number"
@@ -126,12 +126,9 @@ export default function CorrelationAnalysisChart({
               />
               <Tooltip content={<ScatterTooltip />} />
               <Legend 
-                verticalAlign="bottom" 
-                align="center"
-                wrapperStyle={{ 
-                  paddingTop: '25px',
-                  fontSize: '12px'
-                }}
+                verticalAlign="top" 
+                align="right"
+                wrapperStyle={{ fontSize: '12px', marginBottom: '80px' }}
               />
               {data.scatter_data.map((aspectData, index) => (
                 <Scatter
@@ -154,7 +151,7 @@ export default function CorrelationAnalysisChart({
       </div>
 
       {/* Insights Panel */}
-      <div className="mt-2 p-2 bg-white/5 rounded-lg">
+      <div className="mt-2 p-3 bg-white/5 rounded-lg">
         <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--color-text-primary)' }}>
           Key Findings
         </h4>

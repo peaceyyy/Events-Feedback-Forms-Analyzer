@@ -158,41 +158,18 @@ export default function PacingAnalysisChart({
 
       {/* Statistics Summary */}
       <div className="glass-card-dark p-4 rounded-xl">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div>
-            <div className="text-xl font-bold mb-1" style={{ color: '#42be65' }}>
-              {data.stats.total_responses}
-            </div>
-            <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              Total Responses
-            </div>
+        <div className="grid grid-cols-3 md:grid-cols-3 gap-2 text-center">
+          <div className="flex flex-col items-center justify-center px-2 py-1" style={{ minWidth: '0', lineHeight: 1.15 }}>
+            <span className="font-bold text-base mb-0" style={{ color: '#78a9ff', lineHeight: 1.7 }}>{data.stats.best_pacing}</span>
+            <span className="text-s" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.15 }}>Best Pacing</span>
           </div>
-          
-          <div>
-            <div className="text-xl font-bold p-3" style={{ color: '#78a9ff' }}>
-              {data.stats.best_pacing}
-            </div>
-            <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              Best Pacing
-            </div>
+          <div className="flex flex-col items-center justify-center px-2 py-1" style={{ minWidth: '0', lineHeight: 1.10 }}>
+            <span className="font-bold text-base mb-0" style={{ color: '#ffab00', lineHeight: 1.7 }}>{data.stats.satisfaction_range.highest.toFixed(1)}/5</span>
+            <span className="text-s" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.15 }}>Highest Satisfaction</span>
           </div>
-          
-          <div>
-            <div className="text-xl font-bold p-3" style={{ color: '#ffab00' }}>
-              {data.stats.satisfaction_range.highest.toFixed(1)}/5
-            </div>
-            <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              Highest Satisfaction
-            </div>
-          </div>
-
-          <div>
-            <div className="text-xl font-bold p-3" style={{ color: '#ff8389' }}>
-              ±{data.stats.satisfaction_range.difference.toFixed(1)}
-            </div>
-            <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              Pacing Impact
-            </div>
+          <div className="flex flex-col items-center justify-center px-2 py-1" style={{ minWidth: '0', lineHeight: 1.15 }}>
+            <span className="font-bold text-base mb-0" style={{ color: '#ff8389', lineHeight: 1.7 }}>±{data.stats.satisfaction_range.difference.toFixed(1)}</span>
+            <span className="text-s" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.15 }}>Pacing Impact</span>
           </div>
         </div>
       </div>

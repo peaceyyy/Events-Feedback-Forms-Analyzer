@@ -155,22 +155,8 @@ export default function UnifiedWordCloud({
       {/* Statistics Panel (optional) */}
       {showStats && stats && (
         <div className="glass-card-dark p-4 rounded-xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div>
-              <div
-                className="text-xl font-bold mb-1"
-                style={{ color: '#42be65' }}
-              >
-                {stats.total_responses}
-              </div>
-              <div
-                className="text-sm"
-                style={{ color: 'var(--color-text-secondary)' }}
-              >
-                Total Descriptions
-              </div>
-            </div>
-
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+          
             <div>
               <div
                 className="text-xl font-bold mb-1"

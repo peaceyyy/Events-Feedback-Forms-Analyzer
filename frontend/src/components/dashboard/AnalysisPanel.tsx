@@ -35,8 +35,8 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
         analysisData.satisfaction.data,
         {
           subtitle: `${analysisData.satisfaction.data.stats?.total_responses || 0} responses analyzed`,
-          chartVariant: 'horizontalBar', // Default to horizontal for better satisfaction label reading
-          allowVariantToggle: true
+          chartVariant: 'horizontalBar',
+          allowVariantToggle: false
         }
       ))
     }
@@ -141,7 +141,6 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
           </p>
         </div>
         
-        {/* Refresh button for future use */}
         <button 
           className="glass-card-dark p-3 rounded-lg border border-white/20 hover:bg-white/10 transition-all duration-300"
           onClick={() => window.location.reload()}
@@ -150,7 +149,6 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
         </button>
       </div>
 
-      {/* THE FIX: Re-architected the grid for a more logical and visually appealing layout */}
       <div className="space-y-10">
         {/* Row 1: Satisfaction Distribution (Full Width) */}
         {chartConfigs.filter(c => c.id === 'satisfaction-dist').map(config => (
@@ -161,12 +159,12 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
           </div>
         ))}
 
-        {/* Row 2: NPS Score and Aspect Ratings (Side-by-Side) */}
+        {/* Row 2: NPS Score and Aspect Ratings (Side-by-Side, reduced bottom margin) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {chartConfigs
             .filter(c => c.id === 'nps-score' || c.id === 'rating-comparison')
             .map(config => (
-              <div key={config.id} className="w-full min-h-[450px]">
+              <div key={config.id} className="w-full min-h-[450px] ">
                 <ChartFactory config={config} className="w-full h-full" />
               </div>
             ))}
@@ -194,8 +192,8 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
 
         {/* Row 4: Satisfaction vs Recommendation Correlation (Full Width) */}
         {chartConfigs.filter(c => c.id === 'satisfaction-vs-recommendation').map(config => (
-          <div key={config.id} className="grid grid-cols-1 gap-8">
-            <div className="w-full min-h-[450px]">
+          <div key={config.id} className="grid grid-cols-1 gap-8 mb-2">
+            <div className="w-full min-h-[450px] mb-0">
               <ChartFactory config={config} className="w-full h-full" />
             </div>
           </div>
@@ -260,7 +258,6 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
           </div>
         </div>
 
-        {/* Additional Insights */}
         {analysisData?.nps?.data?.nps_score !== undefined && (
           <div className="mt-6 pt-6 border-t border-white/10">
             <div className="grid md:grid-cols-2 gap-6 text-center">
