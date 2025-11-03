@@ -136,35 +136,28 @@ export default function PacingSatisfactionChart({
         </ResponsiveContainer>
       </div>
 
-      {/* Stats Summary */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="glass-card-dark p-3 rounded-lg">
-          <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>Best Pacing</p>
-          <p className="text-lg font-bold mt-1" style={{ color: 'var(--color-text-primary)' }}>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="glass-card-dark p-2 rounded-lg flex flex-col justify-center items-center" style={{ lineHeight: 1.2, minHeight: '56px' }}>
+          <p className="text-xs mb-0" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.2 }}>Best Pacing</p>
+          <p className="text-base font-bold mt-1 mb-0" style={{ color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
             {stats?.best_pacing || 'N/A'}
           </p>
         </div>
-        <div className="glass-card-dark p-3 rounded-lg">
-          <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>Highest Score</p>
-          <p className="text-lg font-bold mt-1" style={{ color: '#4CAF50' }}>
+        <div className="glass-card-dark p-2 rounded-lg flex flex-col justify-center items-center" style={{ lineHeight: 1.2, minHeight: '56px' }}>
+          <p className="text-xs mb-0" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.2 }}>Highest Score</p>
+          <p className="text-base font-bold mt-1 mb-0" style={{ color: '#4CAF50', lineHeight: 1.2 }}>
             {stats?.satisfaction_range?.highest || 'N/A'}/5.0
-          </p>
-        </div>
-        <div className="glass-card-dark p-3 rounded-lg">
-          <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>Difference</p>
-          <p className="text-lg font-bold mt-1" style={{ color: 'var(--color-text-primary)' }}>
-            {stats?.satisfaction_range?.difference || 'N/A'}
           </p>
         </div>
       </div>
 
-      {/* Insights */}
+      {/* Insights - reduce top margin and padding for compactness */}
       {data.insights && data.insights.length > 0 && (
-        <div className="mt-4 p-3 glass-card-dark rounded-lg">
-          <p className="text-xs font-semibold mb-2" style={{ color: 'var(--color-text-tertiary)' }}>
+        <div className="mt-2 p-2 glass-card-dark rounded-lg" style={{ lineHeight: 1.3 }}>
+          <p className="text-xs font-semibold mb-1" style={{ color: 'var(--color-text-tertiary)', lineHeight: 1.2 }}>
             Key Insight
           </p>
-          <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+          <p className="text-sm mb-0" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.3 }}>
             {data.insights[0]}
           </p>
         </div>

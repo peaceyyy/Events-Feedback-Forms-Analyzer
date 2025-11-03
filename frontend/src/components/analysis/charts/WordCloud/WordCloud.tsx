@@ -36,22 +36,31 @@ export default function UnifiedWordCloud({
 }: UnifiedWordCloudProps) {
   const [useFallback, setUseFallback] = useState(false);
 
+  // Assign each word a unique group for color mapping
+  const colorPalette = [
+    '#78a9ff', '#82cfff', '#42be65', '#ffab00', '#ee5396', '#be95ff', '#ff7eb6', '#fa4d56', '#08bdba', '#6fdc8c', '#d2a106', '#a56eff', '#ff6f00', '#393939', '#0f62fe', '#9f1853', '#198038', '#b28600', '#002d9c', '#005d5d', '#5c5c5c', '#e5e5e5', '#1192e8', '#007d79', '#6f6e6e', '#d12771', '#d2a106', '#eeaaff', '#ffb3b3', '#b3ffb3', '#b3b3ff'
+  ];
+  const enrichedData = data.map((item, idx) => ({
+    ...item,
+    group: item.word // Each word gets its own group
+  }));
 
   const options = {
-    title: title,
+    title: '', // Remove duplicate title - we use our own h3
     resizable: true,
     theme: 'dark',
     height: `${height}px`,
     wordCloud: {
       fontFamily: 'IBM Plex Sans, sans-serif',
-      fontSizeRange: () => [20, 80], // Larger font range for better visibility
-
-      padding: 18, // More generous spacing between words
+      fontSizeRange: () => [20, 80],
+      padding: 18,
     },
     color: {
-      scale: {
-        descriptions: '#78a9ff',
-      },
+      scale: enrichedData.reduce((acc: Record<string, string>, item, idx) => {
+        acc[item.group] = colorPalette[idx % colorPalette.length];
+        return acc;
+      }, {} as Record<string, string>),
+      groupMapsTo: 'group',
     },
     tooltip: { enabled: false },
     legend: { enabled: false },
@@ -129,7 +138,7 @@ export default function UnifiedWordCloud({
         {useFallback ? (
           renderFallbackWordCloud()
         ) : (
-          <WordCloudChart data={data} options={options as any} />
+          <WordCloudChart data={enrichedData} options={options as any} />
         )}
 
         {/* Attribution */}
