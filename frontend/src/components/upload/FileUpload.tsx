@@ -26,6 +26,9 @@ interface FileUploadProps {
 export default function FileUpload({ onUploadSuccess, onUploadError, onReset, isMinimized = false }: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [dragActive, setDragActive] = useState(false)
+  
+  // Check if debug mode is enabled (only show Quick Test in development/debug)
+  const isDebugMode = process.env.NEXT_PUBLIC_DEBUG_MODE === 'true'
 
   // Use custom hook for all upload logic (separation of concerns)
   const { upload, isUploading, progress, error, reset } = useFileUpload({
@@ -138,28 +141,30 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
             Upload your event feedback CSV to generate insights
           </p>
           
-          {/* Quick Test Button*/}
-          <button
-            onClick={handleQuickTest}
-            disabled={isUploading}
-            className="btn-secondary text-sm py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
-            style={{
-              background: 'linear-gradient(135deg, rgba(103, 58, 183, 0.1), rgba(63, 81, 181, 0.1))',
-              border: '1.5px solid rgba(103, 58, 183, 0.3)',
-            }}
-          >
-            {isUploading ? (
-              <div className="flex items-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-400"></div>
-                <span>Processing...</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <ScienceIcon sx={{ fontSize: 16 }} />
-                <span style={{ color: "white" }}>Quick Test with Sample Data</span>
-              </div>
-            )}
-          </button>
+          {/* Quick Test Button - Only visible in debug mode */}
+          {isDebugMode && (
+            <button
+              onClick={handleQuickTest}
+              disabled={isUploading}
+              className="btn-secondary text-sm py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
+              style={{
+                background: 'linear-gradient(135deg, rgba(103, 58, 183, 0.1), rgba(63, 81, 181, 0.1))',
+                border: '1.5px solid rgba(103, 58, 183, 0.3)',
+              }}
+            >
+              {isUploading ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-400"></div>
+                  <span>Processing...</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <ScienceIcon sx={{ fontSize: 16 }} />
+                  <span style={{ color: "white" }}>Quick Test with Sample Data</span>
+                </div>
+              )}
+            </button>
+          )}
         </div>
 
         {/* Minimized State Content */}
