@@ -1,13 +1,3 @@
-/**
- * Sessions Tab Component
- * 
- * Displays session performance analytics including:
- * - Session popularity and attendance metrics
- * - Session performance matrix (bubble chart)
- * - Discovery channel impact analysis
- * - Future analytics placeholders
- */
-
 'use client'
 
 import type { UploadResponse } from '@/types/upload'
@@ -16,6 +6,8 @@ import SessionPerformanceMatrixChart from '@/components/analysis/charts/SessionP
 import DiscoveryChannelImpactChart from '@/components/analysis/charts/DiscoveryChannelImpactChart'
 import TimeSlotPreferencesChart from '@/components/analysis/charts/TimeSlotPreferencesChart'
 import VenueModalityPreferencesChart from '@/components/analysis/charts/VenueModalityPreferencesChart'
+import ChannelSatisfactionChart from '@/components/analysis/charts/ChannelSatisfactionChart'
+import VenueSatisfactionChart from '@/components/analysis/charts/VenueSatisfactionChart'
 
 interface SessionsTabProps {
   analysisResults: UploadResponse
@@ -31,6 +23,14 @@ export default function SessionsTab({
   return (
     <div className="space-y-8">
       {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>
+          Session & Event Analytics
+        </h2>
+        <p style={{ color: 'var(--color-text-secondary)' }}>
+          Performance metrics, attendance patterns, and strategic insights for event optimization
+        </p>
+      </div>
 
       {/* Session Performance Chart */}
       {(analysisResults as any)?.sessions?.data && (
@@ -55,6 +55,8 @@ export default function SessionsTab({
         </div>
       )}
 
+
+
       {/* Session Analytics - Detailed Views */}
       <div className="grid grid-cols-1 gap-8">
         {/* Session Performance Matrix - Bubble Chart */}
@@ -74,20 +76,24 @@ export default function SessionsTab({
         />
       </div>
 
-      {/* Future Analytics - Time & Venue Preferences */}
+            {/* Satisfaction Correlation Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Time Slot Preferences */}
-        <TimeSlotPreferencesChart
-          data={(analysisResults as any)?.time_preferences}
-          variant="bar"
+        {/* Discovery Channel vs Satisfaction */}
+        {(analysisResults as any)?.discovery_channels && (
+          <ChannelSatisfactionChart 
+            data={(analysisResults as any).discovery_channels}
           />
+        )}
 
-        {/* Venue/Modality Preferences */}
-        <VenueModalityPreferencesChart
-          data={(analysisResults as any)?.venue_preferences}
-          variant="venue_breakdown"
-        />
+        {/* Venue/Modality vs Satisfaction */}
+        {(analysisResults as any)?.venue_preferences && (
+          <VenueSatisfactionChart 
+            data={(analysisResults as any).venue_preferences}
+          />
+        )}
       </div>
+
+
     </div>
   )
 }

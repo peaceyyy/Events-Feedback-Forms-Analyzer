@@ -39,6 +39,8 @@ interface EventAspectsInsightsProps {
   data: any;
   themeData?: ThemeData;
   aiInsights?: AIInsights;
+  isLoadingAI?: boolean;
+  aiError?: string;
   onGenerateAIInsights?: () => Promise<AIInsights>;
   title?: string;
   className?: string; 
@@ -47,7 +49,9 @@ interface EventAspectsInsightsProps {
 export default function EventAspectsInsights({
   data,
   themeData,
-  aiInsights: initialAIInsights,
+  aiInsights,
+  isLoadingAI = false,
+  aiError = "",
   onGenerateAIInsights,
   title = "Event Performance Insights",
   className = "",
@@ -57,44 +61,22 @@ export default function EventAspectsInsights({
     console.log('=== EventAspectsInsights Props ===');
     console.log('data:', data);
     console.log('themeData:', themeData);
-    console.log('initialAIInsights:', initialAIInsights);
+    console.log('aiInsights:', aiInsights);
     console.log('onGenerateAIInsights:', onGenerateAIInsights ? 'provided' : 'NOT provided');
-  }, [data, themeData, initialAIInsights, onGenerateAIInsights]);
+  }, [data, themeData, aiInsights, onGenerateAIInsights]);
 
   // Simple state for swipeable card navigation
   const [currentView, setCurrentView] = React.useState<
     "summary" | "details" | "recommendations"
   >("summary");
-  
-  const [aiInsights, setAiInsights] = React.useState<AIInsights | null>(initialAIInsights || null);
-  const [isLoadingAI, setIsLoadingAI] = React.useState(false);
 
-  // Sync with parent prop updates
-  React.useEffect(() => {
-    console.log('EventAspectsInsights: initialAIInsights prop changed:', initialAIInsights);
-    if (initialAIInsights) {
-      setAiInsights(initialAIInsights);
-    }
-  }, [initialAIInsights]);
-
+  // Use lifted state for AI insights and loading
   const handleGenerateAIInsights = async () => {
     if (!onGenerateAIInsights) {
       console.warn('No onGenerateAIInsights function provided');
       return;
     }
-
-    console.log('Starting AI insights generation...');
-    setIsLoadingAI(true);
-    try {
-      const insights = await onGenerateAIInsights();
-      console.log('AI insights received:', insights);
-      setAiInsights(insights);
-    } catch (error) {
-      console.error('Failed to generate AI insights:', error);
-      setAiInsights({ error: 'Failed to generate insights' });
-    } finally {
-      setIsLoadingAI(false);
-    }
+    await onGenerateAIInsights();
   };
 
   if (!data) {
@@ -117,7 +99,7 @@ export default function EventAspectsInsights({
 
   const views = {
     summary: {
-      title: "AI Theme Summary",
+      title: "Summary",
       content: (
         <div className="space-y-4">
           {/* Dynamic Statistics from Theme Data */}
@@ -475,7 +457,14 @@ export default function EventAspectsInsights({
         </div>
       )}
 
-      {/* AI Analysis Status Note - Legacy themeData */}
+      {/* Show error if AI generation fails */}
+      {aiError && (
+        <div className="mt-2 p-2 bg-red-500/10 rounded border border-red-400/30">
+          <span className="text-xs text-red-400 font-medium">{aiError}</span>
+        </div>
+      )}
+
+      {/* AI Analysis Status Note */}
       {!onGenerateAIInsights && currentView === "summary" && (
         <div className="mt-3 p-2 bg-purple-500/10 rounded-lg border border-purple-400/30">
           <div className="text-xs text-purple-300 font-medium">
@@ -485,7 +474,7 @@ export default function EventAspectsInsights({
             className="text-xs mt-1"
             style={{ color: "var(--color-text-tertiary)" }}
           >
-            {themeData ? "Powered by Gemini AI" : "Generate AI insights to activate"}
+            {themeData ? "Powered by Gemini 2.5 Flash" : "Generate AI insights to activate"}
           </div>
         </div>
       )}

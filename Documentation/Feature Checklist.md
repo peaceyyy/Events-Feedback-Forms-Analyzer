@@ -7,35 +7,13 @@
 
 visual comparison analysis
 
-* [ ] aspects visual comparison graphs are not scaled prope
+* [X] aspects visual comparison graphs are not scaled prope
 * [X] legends are undreadable
 * [X] imrpove bullet chart look and feel
 * [X] fix spacing and a little life to the card without changing any color
 * [ ] highlight too bright for diverged
 * [ ]
 
-**DIFFERENT TABS**
-
-* [X] Main Summary Dashboard
-* [X] word cloud
-
-* Overall performance analyis
-
-  * Maybe with Gemini insights
-  * 
-* Average of all scores
-
-  * Per aspect
-  * Overall recommendation score (NPS)
-  * Overall satisfaciton score
-* Recommendation vs satisfaction charts
-* Pacing chart
-* one word description Word cloud
-* **"Headline" Insights:** **Add two more KPI cards:**
-
-  * **Top-Rated Aspect:** **(e.g., "Speakers: 4.8/5") - Instantly shows what to double down on.**
-  * **Lowest-Rated Aspect:** **(e.g., "Venue: 3.2/5") - Instantly shows the biggest problem area.**
-    This provides immediate, actionable headlines without needing to dig into another tab.
 
 * [ ] Open ended Tab
 
@@ -53,37 +31,8 @@ Gemini api summary
   * 
 * Result: You can then create a chart titled "Sentiment by Theme," which is incredibly powerful. It might show that while "Speaker" comments were 90% positive, "Venue" comments were 70% negative.
 
-* [ ] Aspects comparison tab
 
-* per aspect overall average
-* events stregths and weaknesses analysis summary ✅
-* satisfaction and aspects radar ✅
-* aspect performance comparison
-* * **Visualization:** **A simple** **Bar Chart** **showing the correlation coefficient of each aspect with the overall score. ✅**
-
-* [X] Session-related tab
-
-* per session type attendance count
-* per session type satisfaction score
-* event discovery channel info
-* preferred time chart
-* prefferd venue/modality chart
-
- **Combine your two main metrics (**Attendance Count **and** **Satisfaction Score per Session**) into one chart.
-
-* **Visualization:** **A** **Bubble Chart**.✅
-
-  * **X-Axis:** **Average Satisfaction Score**
-* **Y-Axis:** **Attendance Count**
-* **Each Bubble:** **A session (e.g., "Keynote," "Workshop A").**
-* **The Story it Tells:** **This creates a** **Session Performance Matrix** **that reveals four strategic categories:**
-
-  * **High Attendance / High Satisfaction (Stars):** **Your winning content. Repeat and promote it.**
-  * **Low Attendance / High Satisfaction (Hidden Gems):** **People who went loved it. Market this better next time!**
-  * **High Attendance / Low Satisfaction (Overhyped & Underwhelming):** **A popular session that needs a content overhaul. This is a critical problem to fix.**
-  * **Low Attendance / Low Satisfaction (Underperformers):** **Content that didn't resonate. Consider replacing it.**
-
-* [ ] **Attendee Segmentation Tab** 
+* [ ] **Attendee Segmentation Tab**
 
 * **Insight 1: Does Pacing Affect Satisfaction?**
 

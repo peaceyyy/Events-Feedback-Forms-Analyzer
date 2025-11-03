@@ -82,11 +82,15 @@ export interface FeedbackRecord {
   event_discovery?: string;
   feedback_text?: string;
   timestamp?: string;
+  // Text feedback fields (backend renames these)
+  improvement_feedback?: string;  // "What could be improved?"
+  additional_comments?: string;   // "Any additional comments?"
+  positive_feedback?: string;     // "What did you like most about the event?"
+  one_word_desc?: string;         // "One-Word Description"
+  preferred_time?: string;        // "Preferred Time Slot"
+  preferred_venue?: string;       // "Preferred Venue"
 }
 
-// ============================================================================
-// Analysis Section Types (used across all analysis endpoints)
-// ============================================================================
 
 /**
  * Generic wrapper for all analysis sections.

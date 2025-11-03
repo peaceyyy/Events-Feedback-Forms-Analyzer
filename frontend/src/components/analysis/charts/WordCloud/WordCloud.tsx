@@ -1,4 +1,4 @@
-// UnifiedWordCloud.tsx - Single component handling both Carbon Charts and fallback
+  // UnifiedWordCloud.tsx - Single component handling both Carbon Charts and fallback
 'use client';
 import React, { useEffect, useState } from 'react';
 import { WordCloudChart } from '@carbon/charts-react';
@@ -100,8 +100,8 @@ export default function UnifiedWordCloud({
               color: getWordColor(item.value),
               opacity: 0.9 + (item.value / maxValue) * 0.1,
               lineHeight: 1.3,
-              margin: '0.5rem', // More generous margins
-              padding: '0.25rem 0.5rem', // Add padding for better spacing
+              margin: '0.5rem', 
+                            padding: '0.25rem 0.5rem',
               textShadow: '0 2px 4px rgba(0,0,0,0.5)',
               fontWeight: Math.min(900, 500 + (item.value / maxValue) * 400),
             }}

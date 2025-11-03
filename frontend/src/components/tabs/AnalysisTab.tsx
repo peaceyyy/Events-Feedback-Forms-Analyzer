@@ -17,6 +17,10 @@ import UploadPill from '@/components/upload/UploadPill'
 import ChartFactory, { createChartConfig } from '@/components/analysis/charts/ChartFactory'
 import PacingAnalysisChart from '@/components/analysis/charts/PacingAnalysisChart'
 import UnifiedWordCloud from '@/components/analysis/charts/WordCloud/WordCloud'
+import TimeSlotPreferencesChart from '@/components/analysis/charts/TimeSlotPreferencesChart'
+import VenueModalityPreferencesChart from '@/components/analysis/charts/VenueModalityPreferencesChart'
+import ChannelSatisfactionChart from '@/components/analysis/charts/ChannelSatisfactionChart'
+
 import {
   UploadFile as UploadFileIcon,
   Dashboard as DashboardIcon,
@@ -314,7 +318,7 @@ export default function AnalysisTab({
               
               {/* Word Cloud - Larger with More Words */}
               <UnifiedWordCloud
-                title="One-Word Descriptions"
+                title="One-Word Descriptions  "
                 data={
                   (analysisResults as any)?.one_word_descriptions?.data?.word_cloud
                     ? (analysisResults as any).one_word_descriptions.data.word_cloud.map((item: any) => ({
@@ -329,6 +333,23 @@ export default function AnalysisTab({
                 showStats={true}
               />
             </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Time Slot Preferences - Now defaults to Pie Chart */}
+        <TimeSlotPreferencesChart
+          data={(analysisResults as any)?.time_preferences}
+          variant="pie"
+        />
+
+        
+
+        {/* Venue/Modality Preferences */}
+        <VenueModalityPreferencesChart
+          data={(analysisResults as any)?.venue_preferences}
+          variant="venue_breakdown"
+        />
+      </div>
+
           </div>
         </div>
       ) : (

@@ -96,7 +96,7 @@ export default function CorrelationAnalysisChart({
       <div style={{ height: `${height}px` }}>
         {data.scatter_data ? (
           <ResponsiveContainer width="100%" height="100%">
-            <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+            <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
               <XAxis 
                 type="number"
@@ -129,7 +129,7 @@ export default function CorrelationAnalysisChart({
                 verticalAlign="bottom" 
                 align="center"
                 wrapperStyle={{ 
-                  paddingTop: '20px',
+                  paddingTop: '25px',
                   fontSize: '12px'
                 }}
               />

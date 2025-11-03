@@ -169,7 +169,7 @@ export default function PacingAnalysisChart({
           </div>
           
           <div>
-            <div className="text-xl font-bold mb-1" style={{ color: '#78a9ff' }}>
+            <div className="text-xl font-bold p-3" style={{ color: '#78a9ff' }}>
               {data.stats.best_pacing}
             </div>
             <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
@@ -178,7 +178,7 @@ export default function PacingAnalysisChart({
           </div>
           
           <div>
-            <div className="text-xl font-bold mb-1" style={{ color: '#ffab00' }}>
+            <div className="text-xl font-bold p-3" style={{ color: '#ffab00' }}>
               {data.stats.satisfaction_range.highest.toFixed(1)}/5
             </div>
             <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
@@ -187,7 +187,7 @@ export default function PacingAnalysisChart({
           </div>
 
           <div>
-            <div className="text-xl font-bold mb-1" style={{ color: '#ff8389' }}>
+            <div className="text-xl font-bold p-3" style={{ color: '#ff8389' }}>
               ±{data.stats.satisfaction_range.difference.toFixed(1)}
             </div>
             <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
@@ -199,38 +199,3 @@ export default function PacingAnalysisChart({
     </div>
   )
 }
-
-// Sidebar Theory: Pacing Analysis
-/*
-PACING ANALYSIS - EVENT FLOW OPTIMIZATION:
-
-WHY IT MATTERS:
-• Event timing affects engagement: Too fast = lost audience, too slow = boredom
-• Direct correlation with satisfaction: Optimal pacing improves overall event rating
-• Actionable insights: Specific feedback on event structure and timing
-• Future planning: Data-driven timing decisions for subsequent events
-
-IMPLEMENTATION APPROACH:
-1. Correlation Analysis: Map pacing categories to average satisfaction scores
-2. Statistical Significance: Include response counts and standard deviation
-3. Visual Hierarchy: Color-code bars based on satisfaction levels (green=excellent, red=poor)
-4. Actionable Insights: Generate specific recommendations based on data patterns
-
-BUSINESS VALUE:
-• Event Design: Optimize session timing and breaks based on audience preference
-• Speaker Briefing: Guide presenters on delivery pace expectations
-• Venue Planning: Adjust schedule structure for maximum engagement
-• ROI Impact: Higher satisfaction from optimal pacing leads to better recommendations and repeat attendance
-
-INTERPRETATION GUIDE:
-• "Just Right" typically scores highest (4.0+ satisfaction)
-• Large differences (>1.0) between categories indicate pacing sensitivity
-• High standard deviation suggests mixed audience preferences
-• Response count indicates confidence level in each category
-
-TECHNICAL NOTES:
-• Uses grouped bar chart for clear category comparison
-• Tooltip shows detailed statistics including percentages
-• Color coding provides immediate visual feedback on performance
-• Statistics panel summarizes key findings for executive reporting
-*/

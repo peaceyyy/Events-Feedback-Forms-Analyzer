@@ -26,15 +26,21 @@ type UseTabsParams = {
   analysisError: string;
   feedbackData: any[];
   aiInsights: any;
+  aiTextInsights: any;
   aspectChartVariant: "diverging" | "grouped" | "bullet" | "radar";
   // handlers
   onUploadSuccess: (results: any, filename?: string) => void;
   onResetToUpload: () => void;
   onInsightsGenerated: (v: any) => void;
+  onTextInsightsGenerated: (v: any) => void;
   onVariantChange: (v: any) => void;
   onGenerateAspectInsights: () => Promise<any> | any;
   onGenerateSessionInsights: (d: any) => Promise<any> | any;
   onGenerateMarketingInsights: (d: any) => Promise<any> | any;
+  // lifted AI aspect state
+  aiAspectLoading: boolean;
+  aiAspectResult: any;
+  aiAspectError: string;
 };
 
 export default function useTabs({
@@ -45,14 +51,19 @@ export default function useTabs({
   analysisError,
   feedbackData,
   aiInsights,
+  aiTextInsights,
   aspectChartVariant,
   onUploadSuccess,
   onResetToUpload,
   onInsightsGenerated,
+  onTextInsightsGenerated,
   onVariantChange,
   onGenerateAspectInsights,
   onGenerateSessionInsights,
   onGenerateMarketingInsights,
+  aiAspectLoading,
+  aiAspectResult,
+  aiAspectError,
 }: UseTabsParams): Tab[] {
   const tabs = useMemo(() => {
     const t: Tab[] = [];
@@ -77,14 +88,14 @@ export default function useTabs({
     if (analysisResults) {
       t.push({
         id: "text-insights",
-        label: "Text Insights [AI]",
+        label: "Text Insights",
         icon: <TextFieldsIcon sx={{ fontSize: 20 }} />,
         content: (
           <TextInsightsTab
             feedbackData={feedbackData}
             analysisResults={analysisResults}
-            aiInsights={aiInsights}
-            onInsightsGenerated={onInsightsGenerated}
+            aiInsights={aiTextInsights}
+            onInsightsGenerated={onTextInsightsGenerated}
           />
         ),
       });
@@ -100,6 +111,9 @@ export default function useTabs({
             aspectChartVariant={aspectChartVariant}
             onVariantChange={onVariantChange}
             onGenerateAspectInsights={onGenerateAspectInsights}
+            aiAspectLoading={aiAspectLoading}
+            aiAspectResult={aiAspectResult}
+            aiAspectError={aiAspectError}
           />
         ),
       });
@@ -134,14 +148,19 @@ export default function useTabs({
     analysisError,
     feedbackData,
     aiInsights,
+    aiTextInsights,
     aspectChartVariant,
     onUploadSuccess,
     onResetToUpload,
     onInsightsGenerated,
+    onTextInsightsGenerated,
     onVariantChange,
     onGenerateAspectInsights,
     onGenerateSessionInsights,
     onGenerateMarketingInsights,
+    aiAspectLoading,
+    aiAspectResult,
+    aiAspectError,
   ]);
 
   return tabs;

@@ -22,6 +22,9 @@ interface AspectTabProps {
   aspectChartVariant: 'diverging' | 'grouped' | 'bullet' | 'radar'
   onVariantChange: (variant: 'diverging' | 'grouped' | 'bullet' | 'radar') => void
   onGenerateAspectInsights: () => Promise<any>
+  aiAspectLoading: boolean
+  aiAspectResult: any
+  aiAspectError: string
 }
 
 export default function AspectTab({ 
@@ -29,7 +32,10 @@ export default function AspectTab({
   aiInsights,
   aspectChartVariant,
   onVariantChange,
-  onGenerateAspectInsights
+  onGenerateAspectInsights,
+  aiAspectLoading,
+  aiAspectResult,
+  aiAspectError
 }: AspectTabProps) {
   return (
     <div className="space-y-8">
@@ -68,7 +74,9 @@ export default function AspectTab({
               <EventAspectsInsights 
                 data={(analysisResults as any).ratings.data} 
                 themeData={aiInsights?.themes?.data}
-                aiInsights={aiInsights?.aspects?.data}
+                aiInsights={aiAspectResult}
+                isLoadingAI={aiAspectLoading}
+                aiError={aiAspectError}
                 onGenerateAIInsights={onGenerateAspectInsights}
                 className="h-full"
               />

@@ -14,9 +14,10 @@ interface TimeSlotPreferencesChartProps {
 
 export default function TimeSlotPreferencesChart({
   data,
-  variant = 'bar',
+  variant: initialVariant = 'pie',
   className = "flex-1" 
 }: TimeSlotPreferencesChartProps) { 
+  const [variant, setVariant] = React.useState<'pie' | 'bar'>(initialVariant) 
   const chartData = React.useMemo(() => {
     if (!data || !data.data || !data.data.distribution) {
       return []
@@ -149,20 +150,43 @@ export default function TimeSlotPreferencesChart({
 
   return (
     <div className={`glass-card  ${className}`}>
-
-    
-
       {/* Chart */}
-      
       <div className="glass-card-dark p-4 rounded-lg mb-4" style={{minHeight: '420px'}}>
-          <div className="mb-4">
-        <h3 className="text-lg font-semibold mb-1" style={{color: 'var(--color-text-primary)'}}>
-          Preferred Time Slots
-        </h3>
-        <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
-          When attendees prefer sessions to be scheduled
-        </p>
-      </div>
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold mb-1" style={{color: 'var(--color-text-primary)'}}>
+              Preferred Time Slots
+            </h3>
+            <p className="text-sm" style={{color: 'var(--color-text-secondary)'}}>
+              When attendees prefer sessions to be scheduled
+            </p>
+          </div>
+          {/* Toggle between Pie and Bar */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setVariant('pie')}
+              className={`px-3 py-1 rounded-lg text-xs transition-colors ${
+                variant === 'pie' 
+                  ? 'bg-blue-500/30 border border-blue-400/50' 
+                  : 'bg-white/5 border border-white/10'
+              }`}
+              style={{color: 'var(--color-text-secondary)'}}
+            >
+              Pie Chart
+            </button>
+            <button
+              onClick={() => setVariant('bar')}
+              className={`px-3 py-1 rounded-lg text-xs transition-colors ${
+                variant === 'bar' 
+                  ? 'bg-blue-500/30 border border-blue-400/50' 
+                  : 'bg-white/5 border border-white/10'
+              }`}
+              style={{color: 'var(--color-text-secondary)'}}
+            >
+              Bar Chart
+            </button>
+          </div>
+        </div>
         {variant === 'pie' ? renderPieChart() : renderBarChart()}
       </div>
 

@@ -39,6 +39,14 @@ export default function DashboardContainer() {
   >("diverging");
   const [topAspect, setTopAspect] = useState<AspectHighlight | null>(null);
   const [lowestAspect, setLowestAspect] = useState<AspectHighlight | null>(null);
+
+  // LIFTED AI Aspect Insight State (separate from text insights)
+  const [aiAspectLoading, setAiAspectLoading] = useState<boolean>(false);
+  const [aiAspectResult, setAiAspectResult] = useState<any>(null);
+  const [aiAspectError, setAiAspectError] = useState<string>("");
+  
+  // Text Insights State (separate from aspect insights)
+  const [aiTextInsights, setAiTextInsights] = useState<any>(null);
   
   // Navigation state
   const [activeTab, setActiveTab] = useState("analysis");
@@ -93,6 +101,9 @@ export default function DashboardContainer() {
     setUploadedFilename("");
     setFeedbackData([]);
     setAiInsights(null);
+    setAiTextInsights(null);
+    setAiAspectResult(null);
+    setAiAspectError("");
     setActiveTab("analysis");
   };
 
@@ -107,23 +118,25 @@ export default function DashboardContainer() {
   const handleGenerateMarketingInsights = (channelImpactData: any) => 
     generateMarketingInsights(channelImpactData);
 
+  // Centralized AI Aspect Insight Handler
   const handleGenerateAspectInsights = async () => {
-    console.log('handleGenerateAspectInsights called');
-    console.log('analysisResults?.ratings?.data:', (analysisResults as any)?.ratings?.data);
-    
-    const insights = await generateAspectInsights((analysisResults as any)?.ratings?.data);
-    console.log('Generated insights:', insights);
-    
-    setAiInsights((prev: any) => {
-      const updated = {
-        ...prev,
-        aspects: { data: insights }
-      };
-      console.log('Updated aiInsights state:', updated);
-      return updated;
-    });
-    
-    return insights;
+    setAiAspectLoading(true);
+    setAiAspectError("");
+    try {
+      const result = await generateAspectInsights((analysisResults as any)?.ratings?.data);
+      setAiAspectResult(result);
+      return result;
+    } catch (err) {
+      setAiAspectError("Failed to generate insights.");
+      return null;
+    } finally {
+      setAiAspectLoading(false);
+    }
+  };
+
+  // Text Insights Handler (separate from aspect insights)
+  const handleTextInsightsGenerated = (insights: any) => {
+    setAiTextInsights(insights);
   };
 
   // Generate tab configuration using custom hook
@@ -135,14 +148,20 @@ export default function DashboardContainer() {
     analysisError,
     feedbackData,
     aiInsights,
+    aiTextInsights,
     aspectChartVariant,
     onUploadSuccess: handleUploadSuccess,
     onResetToUpload: handleResetToUpload,
     onInsightsGenerated: setAiInsights,
+    onTextInsightsGenerated: handleTextInsightsGenerated,
     onVariantChange: setAspectChartVariant,
     onGenerateAspectInsights: handleGenerateAspectInsights,
     onGenerateSessionInsights: handleGenerateSessionInsights,
     onGenerateMarketingInsights: handleGenerateMarketingInsights,
+    // LIFTED AI Aspect State
+    aiAspectLoading,
+    aiAspectResult,
+    aiAspectError,
   })
 
   return (

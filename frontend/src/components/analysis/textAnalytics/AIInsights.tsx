@@ -5,11 +5,6 @@ import {
   Psychology as PsychologyIcon,
   AutoAwesome as AIIcon,
   Error as ErrorIcon,
-  Star as StarIcon,
-  Warning as WarningIcon,
-  Lightbulb as LightbulbIcon,
-  FlashOn as FlashOnIcon,
-  Flag as FlagIcon,
 } from '@mui/icons-material'
 import SentimentAnalysis from './SentimentAnalysis'
 import ThemeAnalysis from './ThemeAnalysis'
@@ -171,7 +166,7 @@ export default function AIInsightsContainer({
 
   return (
     <div className="space-y-8">
-      {/* Strategic Insights - with integrated refresh button */}
+      {/* Strategic Insights - Primary card at top */}
       {aiResults?.strategic_insights && (
         <StrategicInsights 
           data={aiResults.strategic_insights.data}
@@ -183,125 +178,25 @@ export default function AIInsightsContainer({
         />
       )}
 
-      {/* Sentiment Analysis */}
-      {aiResults?.sentiment && (
-        <SentimentAnalysis 
-          data={aiResults.sentiment.data} 
-          error={aiResults.sentiment.error}
-        />
-      )}
+      {/* Two-column layout for Sentiment and Theme Analysis */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Sentiment Analysis */}
+        {aiResults?.sentiment && (
+          <SentimentAnalysis 
+            data={aiResults.sentiment.data} 
+            error={aiResults.sentiment.error}
+          />
+        )}
 
-      {/* Theme Analysis */}
-      {aiResults?.themes && (
-        <ThemeAnalysis 
-          data={aiResults.themes.data}
-          analyzed_responses={aiResults.themes.analyzed_responses}
-          error={aiResults.themes.error}
-        />
-      )}
-
-      {/* Individual Strategic Components */}
-      {aiResults?.strategic_insights?.data && (
-        <>
-          {/* Top Strengths */}
-          {aiResults.strategic_insights.data.top_strengths && (
-            <div className="glass-card-dark p-6 rounded-xl">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" 
-                  style={{ color: 'var(--color-usc-green)' }}>
-                <StarIcon sx={{ fontSize: 20, color: 'var(--color-usc-green)' }} />
-                Top Strengths
-              </h3>
-              <div className="space-y-3">
-                {aiResults.strategic_insights.data.top_strengths.map((strength: string, index: number) => (
-                  <div key={index} className="p-3 bg-green-500/15 rounded-lg border-l-4 border-r-2 border-r-green-400/30 shadow-sm" 
-                       style={{ borderLeftColor: 'var(--color-usc-green)', backgroundColor: 'rgba(34, 197, 94, 0.15)' }}>
-                    <p style={{ color: 'var(--color-text-primary)' }}>{strength}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Critical Improvements */}
-          {aiResults.strategic_insights.data.critical_improvements && (
-            <div className="glass-card-dark p-6 rounded-xl">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" 
-                  style={{ color: 'var(--color-usc-orange)' }}>
-                <WarningIcon sx={{ fontSize: 20, color: 'var(--color-usc-orange)' }} />
-                Critical Improvements
-              </h3>
-              <div className="space-y-3">
-                {aiResults.strategic_insights.data.critical_improvements.map((improvement: string, index: number) => (
-                  <div key={index} className="p-3 bg-red-500/12 rounded-lg border-l-4 border-r-2 border-r-red-400/25 shadow-sm" 
-                       style={{ borderLeftColor: 'var(--color-usc-orange)', backgroundColor: 'rgba(239, 68, 68, 0.12)' }}>
-                    <p style={{ color: 'var(--color-text-primary)' }}>{improvement}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Strategic Recommendations */}
-          {aiResults.strategic_insights.data.strategic_recommendations && (
-            <div className="glass-card-dark p-6 rounded-xl">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" 
-                  style={{ color: 'var(--color-google-blue)' }}>
-                <LightbulbIcon sx={{ fontSize: 20, color: 'var(--color-google-blue)' }} />
-                Detailed Strategic Recommendations
-              </h3>
-              <div className="space-y-3">
-                {aiResults.strategic_insights.data.strategic_recommendations.map((recommendation: string, index: number) => (
-                  <div key={index} className="p-3 bg-blue-500/13 rounded-lg border-l-4 border-r-2 border-r-blue-400/30 shadow-sm" 
-                       style={{ borderLeftColor: 'var(--color-google-blue)', backgroundColor: 'rgba(59, 130, 246, 0.13)' }}>
-                    <p style={{ color: 'var(--color-text-primary)' }}>{recommendation}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Quick Wins and Long Term Goals */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Quick Wins */}
-            {aiResults.strategic_insights.data.quick_wins && (
-              <div className="glass-card-dark p-6 rounded-xl">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" 
-                    style={{ color: 'var(--color-google-yellow)' }}>
-                  <FlashOnIcon sx={{ fontSize: 20, color: 'var(--color-google-yellow)' }} />
-                  Quick Wins
-                </h3>
-                <div className="space-y-2">
-                  {aiResults.strategic_insights.data.quick_wins.map((win: string, index: number) => (
-                    <div key={index} className="p-3 bg-yellow-500/14 rounded-lg border-l-3 border-r-1 border-r-yellow-400/25 shadow-sm text-sm" 
-                         style={{ borderLeftColor: 'var(--color-google-yellow)', backgroundColor: 'rgba(234, 179, 8, 0.14)' }}>
-                      <p style={{ color: 'var(--color-text-secondary)' }}>• {win}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Long Term Goals */}
-            {aiResults.strategic_insights.data.long_term_goals && (
-              <div className="glass-card-dark p-6 rounded-xl">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" 
-                    style={{ color: 'var(--color-purple-400)' }}>
-                  <FlagIcon sx={{ fontSize: 20, color: 'var(--color-purple-400)' }} />
-                  Long Term Goals
-                </h3>
-                <div className="space-y-2">
-                  {aiResults.strategic_insights.data.long_term_goals.map((goal: string, index: number) => (
-                    <div key={index} className="p-3 bg-purple-500/12 rounded-lg border-l-3 border-r-1 border-r-purple-400/25 shadow-sm text-sm" 
-                         style={{ borderLeftColor: 'var(--color-purple-400)', backgroundColor: 'rgba(168, 85, 247, 0.12)' }}>
-                      <p style={{ color: 'var(--color-text-secondary)' }}>• {goal}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </>
-      )}
+        {/* Theme Analysis */}
+        {aiResults?.themes && (
+          <ThemeAnalysis 
+            data={aiResults.themes.data}
+            analyzed_responses={aiResults.themes.analyzed_responses}
+            error={aiResults.themes.error}
+          />
+        )}
+      </div>
     </div>
   )
 }

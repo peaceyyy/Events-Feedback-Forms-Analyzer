@@ -380,15 +380,15 @@ export default function DiscoveryChannelImpactChart({
         </ul>
       </div>
 
-      {/* Recommendations */}
-      {(aiInsights?.marketing_recommendations || data.recommendations) && (
+      {/* Recommendations: Only show if AI insights have been generated */}
+      {aiInsights?.marketing_recommendations && aiInsights.marketing_recommendations.length > 0 && (
         <div className="mt-4 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
           <h4 className="font-semibold mb-2 text-sm text-blue-400 flex items-center gap-2">
             <CampaignIcon sx={{ fontSize: 16 }} />
-            <span>{aiInsights ? 'Strategic Recommendations' : 'Recommendations'}</span>
+            <span>Strategic Recommendations</span>
           </h4>
           <ul className="space-y-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-            {(aiInsights?.marketing_recommendations || data.recommendations).map((rec, index) => (
+            {aiInsights.marketing_recommendations.map((rec, index) => (
               <li key={index} className="flex items-start gap-2">
                 <span className="text-blue-400">→</span>
                 <span>{rec}</span>
@@ -435,7 +435,7 @@ export default function DiscoveryChannelImpactChart({
       )}
 
       {/* Stats Summary */}
-      <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+      <div className="mt-4 grid grid-cols-2 gap-4 text-center">
         <div className="p-3 bg-white/5 rounded-lg">
           <div className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
             {data.stats.total_channels}
@@ -444,14 +444,7 @@ export default function DiscoveryChannelImpactChart({
             Channels
           </div>
         </div>
-        <div className="p-3 bg-white/5 rounded-lg">
-          <div className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
-            {data.stats.total_responses}
-          </div>
-          <div className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-            Responses
-          </div>
-        </div>
+        
         <div className="p-3 bg-white/5 rounded-lg">
           <div className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
             {data.stats.overall_avg_satisfaction.toFixed(1)}/5

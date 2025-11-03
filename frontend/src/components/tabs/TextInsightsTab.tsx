@@ -12,6 +12,7 @@
 import type { UploadResponse, FeedbackRecord } from '@/types/upload'
 import AIInsightsContainer from '@/components/analysis/textAnalytics/AIInsights'
 import RecurringTopics from '@/components/analysis/textAnalytics/RecurringTopics'
+import FeedbackSamplesCarousel from '@/components/analysis/textAnalytics/FeedbackSamplesCarousel'
 
 interface TextInsightsTabProps {
   feedbackData: FeedbackRecord[]
@@ -41,20 +42,8 @@ export default function TextInsightsTab({
         </p>
       </div>
 
-      {/* Feedback Samples - Placeholder for sliding window */}
-      <div className="glass-card-dark p-8 rounded-xl border border-white/10">
-        <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-          Feedback Samples
-        </h3>
-        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          Interactive sliding window to browse actual feedback responses - to be implemented
-        </p>
-        <div className="mt-4 p-4 bg-blue-500/10 rounded-lg">
-          <p className="text-sm text-blue-300">
-            Coming Soon: Sliding window interface to explore individual feedback responses  
-          </p>
-        </div>
-      </div>
+      {/* Feedback Samples - Auto-rotating carousel */}
+      <FeedbackSamplesCarousel feedbackData={feedbackData} />
 
       {/* Recurring Topics */}
       {aiInsights?.themes?.data?.recurring_topics && (
