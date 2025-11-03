@@ -61,7 +61,7 @@ export default function TimeSlotPreferencesChart({
 
   const renderPieChart = () => {
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={400}>
         <PieChart>
           <Pie
             data={chartData}
@@ -69,7 +69,7 @@ export default function TimeSlotPreferencesChart({
             cy="50%"
             labelLine={false}
             label={({ name, percentage }) => `${name}: ${percentage}%`}
-            outerRadius={100}
+            outerRadius={120}
             fill="#8884d8"
             dataKey="value"
           >
@@ -92,19 +92,19 @@ export default function TimeSlotPreferencesChart({
 
   const renderBarChart = () => {
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={400}>
         <BarChart 
           data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+          margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
           <XAxis 
             dataKey="name"
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
             stroke="rgba(255,255,255,0.3)"
-            angle={-20}
+            angle={-25}
             textAnchor="end"
-            height={60}
+            height={80}
           />
           <YAxis 
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
@@ -117,7 +117,7 @@ export default function TimeSlotPreferencesChart({
             }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="value" name="Preferences" barSize={50}>
+          <Bar dataKey="value" name="Preferences" barSize={60}>
             {chartData.map((entry: any, index: number) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
@@ -151,7 +151,11 @@ export default function TimeSlotPreferencesChart({
 
   return (
     <div className={`glass-card p-6 ${className}`}>
-      <div className="mb-4">
+   
+
+      {/* Chart */}
+      <div className="glass-card-dark p-4 rounded-lg mb-4">
+           <div className="mb-4">
         <h3 className="text-lg font-semibold mb-1" style={{color: 'var(--color-text-primary)'}}>
           Preferred Time Slots
         </h3>
@@ -159,9 +163,11 @@ export default function TimeSlotPreferencesChart({
           When attendees prefer sessions to be scheduled
         </p>
       </div>
+        {variant === 'pie' ? renderPieChart() : renderBarChart()}
+      </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-4">
         <div className="glass-card-dark p-3 rounded-lg">
           <p className="text-xs" style={{color: 'var(--color-text-secondary)'}}>Total Responses</p>
           <p className="text-2xl font-bold mt-1" style={{color: 'var(--color-text-primary)'}}>
@@ -180,11 +186,6 @@ export default function TimeSlotPreferencesChart({
             {stats.most_popular?.time_slot || 'N/A'}
           </p>
         </div>
-      </div>
-
-      {/* Chart */}
-      <div className="mt-4">
-        {variant === 'pie' ? renderPieChart() : renderBarChart()}
       </div>
     </div>
   )

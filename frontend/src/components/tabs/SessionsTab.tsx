@@ -31,18 +31,6 @@ export default function SessionsTab({
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h2
-          className="text-2xl font-bold mb-2"
-          style={{ color: "var(--color-text-primary)" }}
-        >
-          Session Performance Analysis
-        </h2>
-        <p style={{ color: "var(--color-text-secondary)" }}>
-          In-depth analysis of session popularity, attendance, and
-          satisfaction
-        </p>
-      </div>
 
       {/* Session Performance Chart */}
       {(analysisResults as any)?.sessions?.data && (

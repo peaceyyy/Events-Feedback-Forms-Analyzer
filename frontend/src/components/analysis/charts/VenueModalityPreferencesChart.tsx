@@ -78,19 +78,19 @@ export default function VenueModalityPreferencesChart({
 
   const renderVenueBreakdown = () => {
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={400}>
         <BarChart 
           data={venueData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+          margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
           <XAxis 
             dataKey="name"
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
             stroke="rgba(255,255,255,0.3)"
-            angle={-20}
+            angle={-25}
             textAnchor="end"
-            height={60}
+            height={80}
           />
           <YAxis 
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
@@ -103,7 +103,7 @@ export default function VenueModalityPreferencesChart({
             }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="value" name="Preferences" barSize={50}>
+          <Bar dataKey="value" name="Preferences" barSize={60}>
             {venueData.map((entry: any, index: number) => (
               <Cell key={`cell-${index}`} fill={entry.fill} />
             ))}
@@ -115,7 +115,7 @@ export default function VenueModalityPreferencesChart({
 
   const renderModalitySplit = () => {
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={400}>
         <PieChart>
           <Pie
             data={modalityData}
@@ -123,7 +123,7 @@ export default function VenueModalityPreferencesChart({
             cy="50%"
             labelLine={false}
             label={({ name, percentage }) => `${name}: ${percentage}%`}
-            outerRadius={100}
+            outerRadius={120}
             dataKey="value"
           >
             {modalityData.map((entry: any, index: number) => (
@@ -167,7 +167,12 @@ export default function VenueModalityPreferencesChart({
 
   return (
     <div className={`glass-card p-6 ${className}`}>
-      <div className="mb-4">
+   
+
+      {/* Chart */}
+      
+      <div className="glass-card-dark p-4 rounded-lg mb-4">
+           <div className="mb-4">
         <h3 className="text-lg font-semibold mb-1" style={{color: 'var(--color-text-primary)'}}>
           Venue & Modality Preferences
         </h3>
@@ -177,9 +182,11 @@ export default function VenueModalityPreferencesChart({
             : 'Online vs In-Person preference split'}
         </p>
       </div>
+        {variant === 'venue_breakdown' ? renderVenueBreakdown() : renderModalitySplit()}
+      </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-4 gap-3 mb-4">
         <div className="glass-card-dark p-3 rounded-lg">
           <p className="text-xs" style={{color: 'var(--color-text-secondary)'}}>Total</p>
           <p className="text-2xl font-bold mt-1" style={{color: 'var(--color-text-primary)'}}>
@@ -206,14 +213,9 @@ export default function VenueModalityPreferencesChart({
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="mt-4">
-        {variant === 'venue_breakdown' ? renderVenueBreakdown() : renderModalitySplit()}
-      </div>
-
       {/* Most Popular Venue Callout */}
       {stats.most_popular_venue && variant === 'venue_breakdown' && (
-        <div className="mt-4 glass-card-dark p-4 rounded-lg border-l-4" style={{borderColor: 'var(--color-usc-green)'}}>
+        <div className="glass-card-dark p-4 rounded-lg border-l-4" style={{borderColor: 'var(--color-usc-green)'}}>
           <p className="text-xs" style={{color: 'var(--color-text-secondary)'}}>Most Preferred</p>
           <p className="text-lg font-bold mt-1" style={{color: 'var(--color-text-primary)'}}>
             {stats.most_popular_venue.venue_type}
