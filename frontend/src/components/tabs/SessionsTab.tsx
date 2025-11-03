@@ -14,6 +14,8 @@ import type { UploadResponse } from '@/types/upload'
 import ChartFactory, { createChartConfig } from '@/components/analysis/charts/ChartFactory'
 import SessionPerformanceMatrixChart from '@/components/analysis/charts/SessionPerformanceMatrixChart'
 import DiscoveryChannelImpactChart from '@/components/analysis/charts/DiscoveryChannelImpactChart'
+import TimeSlotPreferencesChart from '@/components/analysis/charts/TimeSlotPreferencesChart'
+import VenueModalityPreferencesChart from '@/components/analysis/charts/VenueModalityPreferencesChart'
 
 interface SessionsTabProps {
   analysisResults: UploadResponse
@@ -86,29 +88,17 @@ export default function SessionsTab({
 
       {/* Future Analytics - Placeholders */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
-          <h4 className="text-base font-semibold mb-3 text-usc-orange">
-            Preferred Time Analysis
-          </h4>
-          <p
-            className="text-sm"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Time slot preferences and effectiveness metrics
-          </p>
-        </div>
+        {/* Time Slot Preferences */}
+        <TimeSlotPreferencesChart
+          data={(analysisResults as any)?.time_preferences}
+          variant="bar"
+        />
 
-        <div className="glass-card-dark p-6 rounded-2xl border border-white/10">
-          <h4 className="text-base font-semibold mb-3 text-usc-orange">
-            Venue/Modality Preferences
-          </h4>
-          <p
-            className="text-sm"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Online vs in-person preference analysis for hybrid events
-          </p>
-        </div>
+        {/* Venue/Modality Preferences */}
+        <VenueModalityPreferencesChart
+          data={(analysisResults as any)?.venue_preferences}
+          variant="venue_breakdown"
+        />
       </div>
     </div>
   )

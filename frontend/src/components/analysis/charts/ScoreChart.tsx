@@ -15,17 +15,7 @@ interface ScoreChartProps {
 }
 
 /**
- * ScoreChart - Template for single metric/KPI visualization
- * 
- * Industry Use Cases:
- * • NPS Score (-100 to +100) - Gauge ideal for score ranges with context
- * • Average satisfaction (1-5) - Progress bar good for goal comparison  
- * • Completion rates (0-100%) - Donut effective for percentage display
- * 
- * Design Principles:
- * • Gauges: Best for scores with meaningful ranges and thresholds
- * • Progress bars: Best for goal-oriented metrics with targets
- * • Score donuts: Best for percentages and ratios with context
+ * ScoreChart - Template for single metric/KPI visualizations
  */
 export default function ScoreChart({ data, variant, options, config }: ScoreChartProps) {
   

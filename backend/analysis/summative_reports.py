@@ -12,7 +12,12 @@ from collections import Counter
 
 # Import from modularized analysis modules
 from .metrics_analysis import generate_satisfaction_analysis, generate_recommendation_analysis
-from .session_analytics import generate_session_popularity, generate_session_performance_matrix
+from .session_analytics import (
+    generate_session_popularity, 
+    generate_session_performance_matrix,
+    generate_time_slot_preferences,
+    generate_venue_modality_preferences
+)
 from .comparative_analysis import generate_rating_comparison, generate_correlation_analysis, generate_pacing_analysis
 from .textual_analytics import generate_one_word_descriptions, generate_text_insights
 from .marketing_analytics import generate_discovery_channel_impact
@@ -131,6 +136,22 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     except Exception as e:
         print(f"DEBUG: Discovery channel impact failed: {e}")
         analysis_result["discovery_channels"] = {"error": str(e)}
+    
+    # NEW: Time Slot Preferences
+    try:
+        analysis_result["time_preferences"] = generate_time_slot_preferences(data)
+        print("DEBUG: Time slot preferences analysis completed")
+    except Exception as e:
+        print(f"DEBUG: Time slot preferences failed: {e}")
+        analysis_result["time_preferences"] = {"error": str(e)}
+    
+    # NEW: Venue Modality Preferences
+    try:
+        analysis_result["venue_preferences"] = generate_venue_modality_preferences(data)
+        print("DEBUG: Venue modality preferences analysis completed")
+    except Exception as e:
+        print(f"DEBUG: Venue modality preferences failed: {e}")
+        analysis_result["venue_preferences"] = {"error": str(e)}
     
     # Add scatter data
     analysis_result["scatter_data"] = {
