@@ -74,13 +74,13 @@ export default function SessionsTab({
         />
       </div>
 
-      {/* Future Analytics - Placeholders */}
+      {/* Future Analytics - Time & Venue Preferences */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Time Slot Preferences */}
         <TimeSlotPreferencesChart
           data={(analysisResults as any)?.time_preferences}
           variant="bar"
-        />
+          />
 
         {/* Venue/Modality Preferences */}
         <VenueModalityPreferencesChart

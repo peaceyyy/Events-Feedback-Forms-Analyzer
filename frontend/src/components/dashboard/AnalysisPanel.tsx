@@ -87,8 +87,8 @@ export default function Dashboard({ analysisData, className = '' }: DashboardPro
         analysisData.ratings.data,
         {
           subtitle: 'Venue • Speakers • Content performance',
-          chartVariant: 'radar', // Perfect for multi-aspect comparison
-          allowVariantToggle: false // Radar is the best choice for this data type
+          chartVariant: 'radar', 
+                    allowVariantToggle: false 
         }
       ))
     }

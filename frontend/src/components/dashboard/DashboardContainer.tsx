@@ -23,8 +23,8 @@ export default function DashboardContainer() {
   logger.debug("Dashboard container loaded (client-side).");
   
   // Theme & UI state
-  const [darkMode, setDarkMode] = useState(true); // Start with dark mode (GDG style)
-  const [enableSpaceBackground, setEnableSpaceBackground] = useState<boolean>(false); // off by default
+  const [darkMode, setDarkMode] = useState(true); 
+  const [enableSpaceBackground, setEnableSpaceBackground] = useState<boolean>(false); // Space Background off by default
   
   // Analysis state
   const [analysisResults, setAnalysisResults] = useState<UploadResponse | null>(null);

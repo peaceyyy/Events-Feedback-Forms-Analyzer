@@ -12,13 +12,11 @@ interface TimeSlotPreferencesChartProps {
   className?: string
 }
 
-export default function TimeSlotPreferencesChart({ 
-  data, 
+export default function TimeSlotPreferencesChart({
+  data,
   variant = 'bar',
-  className = "" 
-}: TimeSlotPreferencesChartProps) {
-
-  // Transform data for charts
+  className = "flex-1" 
+}: TimeSlotPreferencesChartProps) { 
   const chartData = React.useMemo(() => {
     if (!data || !data.data || !data.data.distribution) {
       return []
@@ -43,7 +41,7 @@ export default function TimeSlotPreferencesChart({
     return (
       <div className="glass-card-dark p-3 rounded-lg border border-white/20">
         <p className="font-semibold text-sm mb-2" style={{color: 'var(--color-text-primary)'}}>
-          {data.name}
+          {data.name}   
         </p>
         <div className="space-y-1 text-xs">
           <p style={{color: 'var(--color-text-secondary)'}}>
@@ -95,7 +93,7 @@ export default function TimeSlotPreferencesChart({
       <ResponsiveContainer width="100%" height={400}>
         <BarChart 
           data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+          margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
           <XAxis 
@@ -150,12 +148,14 @@ export default function TimeSlotPreferencesChart({
   const stats = data.data.stats
 
   return (
-    <div className={`glass-card p-6 ${className}`}>
-   
+    <div className={`glass-card  ${className}`}>
+
+    
 
       {/* Chart */}
-      <div className="glass-card-dark p-4 rounded-lg mb-4">
-           <div className="mb-4">
+      
+      <div className="glass-card-dark p-4 rounded-lg mb-4" style={{minHeight: '420px'}}>
+          <div className="mb-4">
         <h3 className="text-lg font-semibold mb-1" style={{color: 'var(--color-text-primary)'}}>
           Preferred Time Slots
         </h3>
@@ -167,7 +167,7 @@ export default function TimeSlotPreferencesChart({
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div className="glass-card-dark p-3 rounded-lg">
           <p className="text-xs" style={{color: 'var(--color-text-secondary)'}}>Total Responses</p>
           <p className="text-2xl font-bold mt-1" style={{color: 'var(--color-text-primary)'}}>
@@ -180,12 +180,7 @@ export default function TimeSlotPreferencesChart({
             {stats.unique_time_slots}
           </p>
         </div>
-        <div className="glass-card-dark p-3 rounded-lg">
-          <p className="text-xs" style={{color: 'var(--color-text-secondary)'}}>Most Popular</p>
-          <p className="text-sm font-bold mt-1 truncate" style={{color: 'var(--color-usc-green)'}} title={stats.most_popular?.time_slot}>
-            {stats.most_popular?.time_slot || 'N/A'}
-          </p>
-        </div>
+ 
       </div>
     </div>
   )
