@@ -128,7 +128,7 @@ export default function CorrelationAnalysisChart({
               <Legend 
                 verticalAlign="top" 
                 align="right"
-                wrapperStyle={{ fontSize: '12px', marginBottom: '80px' }}
+                wrapperStyle={{ fontSize: '12px', marginTop: '-80px' }}
               />
               {data.scatter_data.map((aspectData, index) => (
                 <Scatter

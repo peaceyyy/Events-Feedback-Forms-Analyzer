@@ -102,102 +102,10 @@ export default function EventAspectsInsights({
       title: "Summary",
       content: (
         <div className="space-y-4">
-          {/* Dynamic Statistics from Theme Data */}
-          {themeData ? (
-            <div className="grid grid-cols-3 gap-3 mb-4">
-              <div className="text-center p-2 bg-green-500/10 rounded-lg">
-                <div className="text-lg font-bold text-green-400">
-                  {themeData.positive_themes?.length || 0}
-                </div>
-                <div className="text-xs text-green-300">Strengths</div>
-              </div>
-              <div className="text-center p-2 bg-orange-500/10 rounded-lg">
-                <div className="text-lg font-bold text-orange-400">
-                  {themeData.improvement_themes?.length || 0}
-                </div>
-                <div className="text-xs text-orange-300">To Improve</div>
-              </div>
-              <div className="text-center p-2 bg-purple-500/10 rounded-lg">
-                <div className="text-lg font-bold text-purple-400">
-                  {themeData.recurring_topics?.length || 0}
-                </div>
-                <div className="text-xs text-purple-300">Key Topics</div>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 gap-3 mb-4">
-              <div className="text-center p-2 bg-gray-500/10 rounded-lg">
-                <div className="text-lg font-bold text-gray-400">-</div>
-                <div className="text-xs text-gray-400">Strengths</div>
-              </div>
-              <div className="text-center p-2 bg-gray-500/10 rounded-lg">
-                <div className="text-lg font-bold text-gray-400">-</div>
-                <div className="text-xs text-gray-400">To Improve</div>
-              </div>
-              <div className="text-center p-2 bg-gray-500/10 rounded-lg">
-                <div className="text-lg font-bold text-gray-400">-</div>
-                <div className="text-xs text-gray-400">Key Topics</div>
-              </div>
-            </div>
-          )}
+         
 
           <div className="space-y-3 text-sm">
-            {/* Legacy themeData section - only if available */}
-            {themeData && (
-              <>
-                {/* Top Strength */}
-                {themeData.positive_themes?.length > 0 && (
-                  <div className="flex items-start gap-2">
-                    <StarIcon
-                      sx={{
-                        fontSize: 16,
-                        color: "var(--color-chart-green)",
-                        mt: "1px",
-                      }}
-                    />
-                    <p>
-                      <span className="font-semibold text-green-400">Top Strength:</span>{" "}
-                      {themeData.positive_themes[0].theme} ({themeData.positive_themes[0].frequency} mentions)
-                    </p>
-                  </div>
-                )}
-                
-                {/* Priority Improvement */}
-                {themeData.improvement_themes?.length > 0 && (
-                  <div className="flex items-start gap-2">
-                    <BuildIcon
-                      sx={{
-                        fontSize: 16,
-                        color: "var(--color-chart-red)",
-                        mt: "2px",
-                      }}
-                    />
-                    <p>
-                      <span className="font-semibold text-orange-400">Priority:</span>{" "}
-                      {themeData.improvement_themes[0].theme} ({themeData.improvement_themes[0].frequency} mentions)
-                    </p>
-                  </div>
-                )}
-
-                {/* Key Topic */}
-                {themeData.recurring_topics?.length > 0 && (
-                  <div className="flex items-start gap-2">
-                    <CheckCircleOutlineIcon
-                      sx={{
-                        fontSize: 16,
-                        color: "var(--color-chart-purple)",
-                        mt: "2px",
-                      }}
-                    />
-                    <p>
-                      <span className="font-semibold text-purple-400">Key Topic:</span>{" "}
-                      {themeData.recurring_topics[0]}
-                    </p>
-                  </div>
-                )}
-              </>
-            )}
-
+          
             {/* Key Insights Section - AI Generated (ALWAYS SHOW IF AVAILABLE) */}
             {aiInsights?.key_insights && aiInsights.key_insights.length > 0 && (
               <div className="mt-4 pt-4 border-t border-white/10">
@@ -218,7 +126,7 @@ export default function EventAspectsInsights({
 
             {/* Empty state - only if no themeData AND no AI insights */}
             {!themeData && (!aiInsights || !aiInsights.key_insights || aiInsights.key_insights.length === 0) && (
-              <div className="text-center py-4">
+              <div className="flex items-center justify-center py-4 min-h-[120px]">
                 <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
                   {onGenerateAIInsights ? 'Click "Generate AI Insights" to see analysis' : 'Generate AI analysis to see theme insights'}
                 </p>

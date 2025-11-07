@@ -132,7 +132,7 @@ export default function FeedbackSamplesCarousel({ feedbackData }: FeedbackSample
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-right justify-between">
         {/* Previous/Next Buttons */}
         <div className="flex gap-2">
           <button

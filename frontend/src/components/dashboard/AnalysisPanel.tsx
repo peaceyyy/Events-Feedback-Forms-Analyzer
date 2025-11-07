@@ -2,7 +2,7 @@
 'use client'
 import React from 'react'
 import ChartFactory, { createChartConfig, ChartConfig } from '../analysis/charts/ChartFactory'
-import EventAspectsInsights from '../analysis/EventAspectsInsights'
+import EventAspectsInsights from '../analysis/textAnalytics/EventAspectsInsights'
 import { UnifiedWordCloud } from '../analysis/charts/WordCloud'
 import { Refresh as RefreshIcon, Dashboard as DashboardIcon } from '@mui/icons-material'
 

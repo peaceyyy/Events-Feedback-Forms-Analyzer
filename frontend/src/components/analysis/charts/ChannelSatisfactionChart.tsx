@@ -109,7 +109,7 @@ export default function ChannelSatisfactionChart({
         <ResponsiveContainer width="100%" height={350}>
           <BarChart
             data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+            margin={{ top: 30, right: 30, left: 20, bottom: 25}}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis

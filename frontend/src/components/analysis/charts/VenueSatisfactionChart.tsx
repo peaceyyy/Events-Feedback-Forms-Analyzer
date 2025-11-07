@@ -107,7 +107,7 @@ export default function VenueSatisfactionChart({
         <ResponsiveContainer width="100%" height={350}>
           <BarChart
             data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+            margin={{ top: 60, right: 30, left: 20, bottom: 5}}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis

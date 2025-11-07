@@ -12,7 +12,7 @@
 
 import type { UploadResponse } from '@/types/upload'
 import AspectComparisonChart from '@/components/analysis/charts/AspectComparisonChart'
-import EventAspectsInsights from '@/components/analysis/EventAspectsInsights'
+import EventAspectsInsights from '@/components/analysis/textAnalytics/EventAspectsInsights'
 import CorrelationAnalysisChart from '@/components/analysis/charts/CorrelationAnalysisChart'
 import PerAspectAveragesChart from '@/components/analysis/charts/PerAspectAveragesChart'
 

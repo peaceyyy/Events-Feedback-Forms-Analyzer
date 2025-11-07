@@ -1,10 +1,9 @@
-// Server Component - Static header markup (no interactivity)
-
-import Image from 'next/image'
-
 /**
  * AppHeader - Static hero section
  */
+
+import Image from 'next/image'
+
 export default function AppHeader() {
   return (
     <header className="text-center mb-1">
