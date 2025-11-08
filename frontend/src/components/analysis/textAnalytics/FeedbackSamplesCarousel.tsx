@@ -107,7 +107,7 @@ export default function FeedbackSamplesCarousel({ feedbackData }: FeedbackSample
         </div>
       </div>
 
-      {/* Carousel Display */}
+      {/* Carousel */}
       <div className="relative min-h-[120px] mb-6">
         <div 
           className={`transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}
