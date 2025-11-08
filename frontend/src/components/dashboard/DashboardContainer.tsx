@@ -158,7 +158,6 @@ export default function DashboardContainer() {
     onGenerateAspectInsights: handleGenerateAspectInsights,
     onGenerateSessionInsights: handleGenerateSessionInsights,
     onGenerateMarketingInsights: handleGenerateMarketingInsights,
-    // LIFTED AI Aspect State
     aiAspectLoading,
     aiAspectResult,
     aiAspectError,
@@ -181,13 +180,12 @@ export default function DashboardContainer() {
       <ScrollToTopButton />
 
       {/* Main content area */}
-      <div className="relative z-20 container mx-auto px-6 py-12 max-w-6xl">
+      <div className="relative z-20 container mx-auto px-6 max-w-6xl">
         <main className="max-w-6xl mx-auto">
           <Tabs
             tabs={tabs}
             defaultTab={activeTab}
             onTabChange={handleTabChange}
-            className="mt-1"
           />
         </main>
       </div>

@@ -276,10 +276,111 @@ export default function SpaceBackground({
     };
   }, [isDark, reduceMotion]);
 
-  if (!isDark) return null;
-
   return (
     <div className="starfield-container">
+      {!isDark && (
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-blue-50 opacity-70" style={{ zIndex: -1 }} />
+      )}
+
+      {isDark && (
+        <style jsx global>{`
+          @keyframes starLineTwinkle { 
+            0%, 100% { opacity: ${LINE_OPACITY_TWINKLE_MIN}; } 
+            50% { opacity: ${LINE_OPACITY_TWINKLE_MAX}; } 
+          }
+        `}</style>
+      )}
+
+      {/* Blob layer first (below stars/lines). SVG for gradients + subtle animations */}
+      {isDark && (
+        <svg className="absolute inset-0" width="100%" height="100%" style={{ zIndex: 0, pointerEvents: 'none' }}>
+          <defs>
+            <radialGradient id="uscGreenGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#4CAF50" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#4CAF50" stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="uscOrangeGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#FF9800" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#FF9800" stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="googleBlueGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#4285f4" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#4285f4" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          {particles.map(p => (
+            <g key={p.id}>
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r={p.size}
+                fill={`url(#${p.color === '#4CAF50' ? 'uscGreenGradient' : p.color === '#FF9800' ? 'uscOrangeGradient' : 'googleBlueGradient'})`}
+                opacity={p.opacity}
+              >
+                {!reduceMotion && (
+                  <>
+                    <animate attributeName="r" values={`${p.size};${p.size * 1.2};${p.size}`} dur="6s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values={`${p.opacity};${p.opacity * 1.5};${p.opacity}`} dur="4s" repeatCount="indefinite" />
+                  </>
+                )}
+              </circle>
+            </g>
+          ))}
+        </svg>
+      )}
+
+      {/* Constellation lines (subtle, crisp) */}
+      {isDark && constellationLines.map(line => (
+        <div
+          key={line.id}
+          data-starline="1"
+          style={{
+            position: 'absolute',
+            zIndex: 1,
+            left: `${line.x1}%`,
+            top: `${line.y1}%`,
+            width: `${line.length}%`,
+            height: '1px',
+            backgroundColor: line.type === 'green' ? `rgba(${LINE_COLOR_GREEN}, ${LINE_OPACITY_BASE})` : `rgba(${LINE_COLOR_ORANGE}, ${LINE_OPACITY_BASE})`,
+            transform: `rotate(${line.angle}deg)`,
+            transformOrigin: '0 50%',
+            boxShadow: 'none',
+            filter: 'none',
+            pointerEvents: 'none',
+            animation: reduceMotion ? 'none' : `starLineTwinkle ${line.animDuration} ease-in-out infinite`,
+            animationDelay: line.animDelay,
+          }}
+        />
+      ))}
+
+      {/* Stars above lines */}
+      {isDark && stars.map(star => (
+        <div
+          key={`star-${star.id}`}
+          className={`star star-${star.type}`}
+          style={{
+            position: 'absolute',
+            zIndex: 2,
+            top: `${star.yPct}%`,
+            left: `${star.xPct}%`,
+            width: star.size,
+            height: star.size,
+            animationDuration: star.twinkleDur,
+            animationDelay: star.twinkleDelay,
+          }}
+        />
+      ))}
+
+      {/* Optional shooting stars (kept off by default) */}
+      {isDark && enableShooting && shootingStars.map(s => (
+        <div
+          key={`shooting-${s.id}`}
+          className={`shooting-star shooting-star-${s.type}`}
+          style={{ top: s.y, left: s.x, animationDelay: s.animationDelay }}
+        />
+      ))}
+    </div>
+  );
       <style jsx global>{`
         @keyframes starLineTwinkle { 
           0%, 100% { opacity: ${LINE_OPACITY_TWINKLE_MIN}; } 

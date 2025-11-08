@@ -134,7 +134,7 @@ export default function FeedbackSamplesCarousel({ feedbackData }: FeedbackSample
       {/* Navigation Controls */}
       <div className="flex items-right justify-between">
         {/* Previous/Next Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 ml-auto items-center">
           <button
             onClick={goToPrevious}
             className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"

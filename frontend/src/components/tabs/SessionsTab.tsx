@@ -4,8 +4,6 @@ import type { UploadResponse } from '@/types/upload'
 import ChartFactory, { createChartConfig } from '@/components/analysis/charts/ChartFactory'
 import SessionPerformanceMatrixChart from '@/components/analysis/charts/SessionPerformanceMatrixChart'
 import DiscoveryChannelImpactChart from '@/components/analysis/charts/DiscoveryChannelImpactChart'
-import TimeSlotPreferencesChart from '@/components/analysis/charts/TimeSlotPreferencesChart'
-import VenueModalityPreferencesChart from '@/components/analysis/charts/VenueModalityPreferencesChart'
 import ChannelSatisfactionChart from '@/components/analysis/charts/ChannelSatisfactionChart'
 import VenueSatisfactionChart from '@/components/analysis/charts/VenueSatisfactionChart'
 

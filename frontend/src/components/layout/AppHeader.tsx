@@ -36,7 +36,7 @@ export default function AppHeader() {
         </span>
       </div>
 
-      <p className="text-xl max-w-3xl mx-auto mb-8 leading-relaxed text-text-secondary">
+      <p className="text-xl max-w-3xl mx-auto leading-relaxed text-text-secondary">
         Transform your event feedback into actionable insights with AI-powered analysis
         <br />
         <span className="text-base opacity-80 text-text-tertiary">
