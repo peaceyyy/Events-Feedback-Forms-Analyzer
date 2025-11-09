@@ -14,7 +14,7 @@ interface PageControlsProps {
   toggleSpaceBackground: () => void
 }
 
-// Small presentational component for top-right controls (dark mode, bg toggle).
+
 const PageControls: FC<PageControlsProps> = ({
   darkMode,
   toggleDarkMode,
@@ -27,7 +27,7 @@ const PageControls: FC<PageControlsProps> = ({
         onClick={toggleDarkMode}
         aria-pressed={darkMode}
         title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-        className="glass-card-dark p-3 rounded-full border border-white/20 hover:bg-white/10 transition-all duration-300 backdrop-blur-md"
+        className="glass-card-dark p-3 rounded-full border-theme-light hover-theme-surface transition-all duration-300 backdrop-blur-md"
       >
         {darkMode ? (
           <Brightness7Icon sx={{ fontSize: 24, color: '#FFB74D' }} />
@@ -40,7 +40,7 @@ const PageControls: FC<PageControlsProps> = ({
         onClick={toggleSpaceBackground}
         aria-pressed={enableSpaceBackground}
         title={enableSpaceBackground ? 'Disable animated background' : 'Enable animated background'}
-        className="glass-card-dark p-3 rounded-full border border-white/20 hover:bg-white/10 transition-all duration-300 backdrop-blur-md"
+        className="glass-card-dark p-3 rounded-full border-theme-light hover-theme-surface transition-all duration-300 backdrop-blur-md"
       >
         <AutoAwesomeIcon sx={{ fontSize: 20, color: enableSpaceBackground ? '#FFB74D' : '#9CA3AF' }} />
       </button>

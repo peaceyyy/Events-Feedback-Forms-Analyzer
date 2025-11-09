@@ -7,7 +7,7 @@ import DashboardContainer from '@/components/dashboard/DashboardContainer'
 
 export default function Home() {
   return (
-    <div className="min-h-screen relative overflow-hidden transition-colors duration-500 bg-gray-900">
+    <div className="min-h-screen relative overflow-hidden transition-colors duration-500" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
       {/* Static header -  rendered on server */}
       <div className="relative z-20 container mx-auto px-6 py-12 max-w-6xl">
         <AppHeader />

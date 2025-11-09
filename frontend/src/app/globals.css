@@ -28,27 +28,6 @@
     --color-brand-red-light: #f28b81;
     --color-brand-yellow-light: #fee293;
 
-    /* GDG-Inspired Dark Background */
-    --color-bg-primary: #1a1a1a;
-    --color-bg-secondary: #2d2d2d;
-    --color-bg-accent: #1f1f1f;
-    --color-bg-geometric: linear-gradient(135deg, var(--color-usc-green) 0%, var(--color-usc-orange) 100%);
-    
-    /* Surface Colors - Dark Mode First */
-    --color-surface-elevated: rgba(255, 255, 255, 0.08);
-    --color-surface-overlay: rgba(0, 0, 0, 0.4);
-    --color-surface-glass: rgba(255, 255, 255, 0.1);
-
-    /* Text Colors - Dark Theme */
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #e0e0e0;
-    --color-text-tertiary: #b0b0b0;
-    --color-text-accent: var(--color-usc-green-light);
-
-    /* Border Colors - Dark Theme */
-    --color-border-light: rgba(255, 255, 255, 0.12);
-    --color-border-medium: rgba(255, 255, 255, 0.20);
-
     /* Status Colors */
     --color-status-success: #10b981;
     --color-status-warning: #f59e0b;
@@ -68,25 +47,52 @@
     --color-chart-yellow: #FFC107;
     --color-chart-orange: #FF9800;
     --color-chart-red: #F44336;
+  }
+
+  /* Dark mode (default) */
+  :root,
+  .dark {
+    /* GDG-Inspired Dark Background */
+    --color-bg-primary: #0f172a;
+    --color-bg-secondary: #1e293b;
+    --color-bg-accent: #334155;
+    --color-bg-geometric: linear-gradient(135deg, var(--color-usc-green) 0%, var(--color-usc-orange) 100%);
     
-    /* Gauge Background Colors */
+    /* Surface Colors - Dark Mode */
+    --color-surface-elevated: #1e293b;
+    --color-surface-overlay: rgba(15, 23, 42, 0.3);
+    --color-surface-glass: rgba(30, 41, 59, 0.95);
+
+    /* Text Colors - Dark Theme */
+    --color-text-primary: #f1f5f9;
+    --color-text-secondary: #cbd5e1;
+    --color-text-tertiary: #64748b;
+    --color-text-accent: var(--color-usc-green-light);
+
+    /* Border Colors - Dark Theme */
+    --color-border-light: #334155;
+    --color-border-medium: #475569;
+    
+    /* Chart Background Colors */
     --color-background-gauge: rgba(255, 255, 255, 0.1);
     --color-background-card: rgba(0, 0, 0, 0.8);
+    --color-border-chart: rgba(255, 255, 255, 0.15);
   }
 
   /* Light mode colors */
+  html.light,
   .light {
-    --color-bg-primary: #ffffff;
-    --color-bg-secondary: #f8fafc;
-    --color-bg-accent: #f1f5f9;
+    --color-bg-primary: #f8fafc;
+    --color-bg-secondary: #ffffff;
+    --color-bg-accent: #e2e8f0;
     --color-surface-elevated: #ffffff;
-    --color-surface-overlay: rgba(255, 255, 255, 0.25);
-    --color-surface-glass: rgba(255, 255, 255, 0.8);
-    --color-text-primary: #1e293b;
-    --color-text-secondary: #64748b;
-    --color-text-tertiary: #94a3b8;
-    --color-border-light: #e2e8f0;
-    --color-border-medium: #cbd5e1;
+    --color-surface-overlay: rgba(0, 0, 0, 0.05);
+    --color-surface-glass: rgba(255, 255, 255, 0.95);
+    --color-text-primary: #0f172a;
+    --color-text-secondary: #475569;
+    --color-text-tertiary: #64748b;
+    --color-border-light: #cbd5e1;
+    --color-border-medium: #94a3b8;
     
     /* Chart colors stay the same for both light and dark modes for consistency */
     --color-chart-primary: var(--color-usc-green);
@@ -96,23 +102,9 @@
     --color-chart-quint: var(--color-google-red);
     
     /* Gauge colors for light mode */
-    --color-background-gauge: rgba(0, 0, 0, 0.1);
-    --color-background-card: rgba(255, 255, 255, 0.9);
-  }
-
-  /* Dark mode colors (active implementation) */
-  .dark {
-    --color-bg-primary: #0f172a;
-    --color-bg-secondary: #1e293b;
-    --color-bg-accent: #334155;
-    --color-surface-elevated: #1e293b;
-    --color-surface-overlay: rgba(15, 23, 42, 0.3);
-    --color-surface-glass: rgba(30, 41, 59, 1); /* Increased opacity for accessibility */
-    --color-text-primary: #f1f5f9;
-    --color-text-secondary: #cbd5e1;
-    --color-text-tertiary: #64748b;
-    --color-border-light: #334155;
-    --color-border-medium: #475569;
+    --color-background-gauge: rgba(0, 0, 0, 0.05);
+    --color-background-card: rgba(255, 255, 255, 0.95);
+    --color-border-chart: rgba(0, 0, 0, 0.1);
   }
   
 }
@@ -127,7 +119,7 @@
   z-index: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
+  transition: opacity 0.5s ease-in-out;
 }
 
 .dark .starfield-container {
@@ -135,7 +127,7 @@
 }
 
 .light .starfield-container {
-  opacity: 0.3;
+  opacity: 0.15;
 }
 
 /* Enhanced stars with USC color palette */
@@ -211,6 +203,11 @@
 }
 
 /* Google Material Design Typography */
+html {
+  background: var(--color-bg-primary);
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
 body {
   font-family: var(--font-product-sans), 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
@@ -219,6 +216,8 @@ body {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 @keyframes twinkle {
@@ -249,14 +248,24 @@ body {
   }
 }
 
-/* Enhanced Glass Morphism for Dark Theme */
+/* Enhanced Glass Morphism - Theme Aware */
 .glass-card-dark {
   background: var(--color-surface-glass);
   backdrop-filter: blur(20px);
   border: 1px solid var(--color-border-light);
+  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.dark .glass-card-dark {
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.light .glass-card-dark {
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 /* Google Material Button Styles */
@@ -312,9 +321,26 @@ body {
   background-color: var(--color-usc-green);
 }
 
+/* Theme-aware border utilities */
+.border-theme-light {
+  border-color: var(--color-border-light);
+}
+
+.border-theme-medium {
+  border-color: var(--color-border-medium);
+}
+
+/* Theme-aware hover utilities */
+.hover-theme-surface:hover {
+  background-color: var(--color-surface-elevated);
+}
+
 /* Responsive scrollbar hide for tab navigation */
 .scrollbar-hide {
-  -webkit-scrollbar: none;
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

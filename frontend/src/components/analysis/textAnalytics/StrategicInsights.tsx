@@ -61,10 +61,18 @@ export default function StrategicInsights({
           <h3 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
             AI Strategic Insights
           </h3>
-          <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-300 rounded">
+          <span className="text-xs px-2 py-1 rounded font-medium"
+                style={{ 
+                  backgroundColor: 'rgba(66, 133, 244, 0.15)',
+                  color: 'var(--color-google-blue)'
+                }}>
             Based on {based_on.total_responses} responses
             {devMode && (
-              <span className="ml-2 px-2 py-1 bg-orange-500/20 text-orange-300 rounded">
+              <span className="ml-2 px-2 py-1 rounded"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 152, 0, 0.2)',
+                      color: 'var(--color-usc-orange)'
+                    }}>
                 DEV MODE
               </span>
             )}
@@ -75,7 +83,23 @@ export default function StrategicInsights({
           <button
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="px-3 py-1 bg-blue-600/20 hover:bg-blue-600/30 disabled:bg-gray-600/20 text-blue-300 disabled:text-gray-400 rounded text-sm transition-colors inline-flex items-center gap-1"
+            className="px-3 py-1 rounded text-sm transition-all inline-flex items-center gap-1 font-medium"
+            style={{
+              backgroundColor: isRefreshing ? 'rgba(156, 163, 175, 0.15)' : 'rgba(66, 133, 244, 0.15)',
+              color: isRefreshing ? 'var(--color-text-tertiary)' : 'var(--color-google-blue)',
+              cursor: isRefreshing ? 'not-allowed' : 'pointer',
+              opacity: isRefreshing ? 0.6 : 1
+            }}
+            onMouseEnter={(e) => {
+              if (!isRefreshing) {
+                e.currentTarget.style.backgroundColor = 'rgba(66, 133, 244, 0.25)'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isRefreshing) {
+                e.currentTarget.style.backgroundColor = 'rgba(66, 133, 244, 0.15)'
+              }
+            }}
           >
             <RefreshIcon sx={{ fontSize: 16 }} />
             {isRefreshing ? 'Refreshing...' : 'Refresh Analysis'}

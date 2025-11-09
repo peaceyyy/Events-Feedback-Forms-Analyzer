@@ -62,7 +62,8 @@ export default function SentimentAnalysis({ data, error }: SentimentAnalysisProp
 
       {/* Overall Sentiment */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
+        <div className="flex items-center gap-4 p-4 rounded-lg" 
+             style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
           {getSentimentIcon(data.overall_sentiment)}
           <div>
             <div className="text-xl font-bold capitalize" 
@@ -75,7 +76,8 @@ export default function SentimentAnalysis({ data, error }: SentimentAnalysisProp
           </div>
         </div>
 
-        <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
+        <div className="flex items-center gap-4 p-4 rounded-lg" 
+             style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
           <TrendingUpIcon sx={{ fontSize: 32, color: 'var(--color-google-blue)' }} />
           <div>
             <div className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
@@ -95,7 +97,8 @@ export default function SentimentAnalysis({ data, error }: SentimentAnalysisProp
         </h4>
         <div className="grid grid-cols-3 gap-4">
           {Object.entries(data.sentiment_distribution).map(([sentiment, count]) => (
-            <div key={sentiment} className="text-center p-3 bg-white/5 rounded-lg">
+            <div key={sentiment} className="text-center p-3 rounded-lg" 
+                 style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
               <div className="text-lg font-bold" 
                    style={{ color: getSentimentColor(sentiment) }}>
                 {count}
@@ -116,7 +119,11 @@ export default function SentimentAnalysis({ data, error }: SentimentAnalysisProp
         <div className="flex flex-wrap gap-2">
           {data.key_emotions.map((emotion, index) => (
             <span key={index} 
-                  className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
+                  className="px-3 py-1 rounded-full text-sm font-medium"
+                  style={{ 
+                    backgroundColor: 'rgba(66, 133, 244, 0.15)',
+                    color: 'var(--color-google-blue)'
+                  }}>
               {emotion}
             </span>
           ))}
@@ -131,8 +138,9 @@ export default function SentimentAnalysis({ data, error }: SentimentAnalysisProp
         <ul className="space-y-2">
           {data.notable_patterns.map((pattern, index) => (
             <li key={index} 
-                className="flex items-start gap-2 p-3 bg-white/5 rounded-lg">
-              <span className="text-blue-400 font-bold">•</span>
+                className="flex items-start gap-2 p-3 rounded-lg"
+                style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
+              <span style={{ color: 'var(--color-google-blue)' }} className="font-bold">•</span>
               <span style={{ color: 'var(--color-text-secondary)' }}>{pattern}</span>
             </li>
           ))}

@@ -40,7 +40,7 @@ export default function Tabs({ tabs, defaultTab, onTabChange, className = '' }: 
   return (
     <div className={`w-full ${className}`}>
       {/* Tab Navigation */}
-      <div className="border-b border-white/10 mb-6">
+      <div className="border-b border-theme-light mb-6">
         <nav className="-mb-px flex space-x-8 overflow-x-auto scrollbar-hide">
           {tabs.map((tab) => {
             const isActive = tab.id === activeTab
@@ -54,22 +54,30 @@ export default function Tabs({ tabs, defaultTab, onTabChange, className = '' }: 
                 className={`
                   group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200
                   ${isDisabled 
-                    ? 'opacity-50 cursor-not-allowed text-text-tertiary' 
+                    ? 'opacity-50 cursor-not-allowed' 
                     : `cursor-pointer ${
                         isActive 
-                          ? 'border-usc-green text-usc-green' 
-                          : 'text-text-secondary border-transparent hover:text-usc-orange hover:border-usc-orange'
+                          ? 'border-usc-green' 
+                          : 'border-transparent hover:border-usc-orange'
                       }`
                   }
                 `}
                 style={{
-                  borderBottomColor: isActive ? 'var(--color-usc-green)' : undefined,
+                  color: isDisabled 
+                    ? 'var(--color-text-tertiary)' 
+                    : isActive 
+                      ? 'var(--color-usc-green)' 
+                      : 'var(--color-text-secondary)'
                 }}
+                aria-current={isActive ? 'page' : undefined}
               >
                 {tab.icon && (
                   <span className={`mr-2 transition-colors duration-200 ${
-                    isActive ? 'text-usc-green' : 'text-text-tertiary group-hover:text-usc-orange'
-                  } group-hover:text-usc-orange`}>
+                    isActive ? 'text-usc-green' : 'group-hover:text-usc-orange'
+                  }`}
+                  style={{
+                    color: isActive ? 'var(--color-usc-green)' : 'var(--color-text-tertiary)'
+                  }}>
                     {tab.icon}
                   </span>
                 )}

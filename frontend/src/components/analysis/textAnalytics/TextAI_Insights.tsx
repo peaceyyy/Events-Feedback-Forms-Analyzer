@@ -118,7 +118,17 @@ export default function AIInsightsContainer({
         </p>
         <button
           onClick={generateAIInsights}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+          className="px-4 py-2 rounded-lg transition-all font-medium"
+          style={{
+            backgroundColor: 'var(--color-google-blue)',
+            color: 'white'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = '0.9'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = '1'
+          }}
         >
           Retry Analysis
         </button>
@@ -138,7 +148,17 @@ export default function AIInsightsContainer({
         </p>
         <button
           onClick={generateAIInsights}
-          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2"
+          className="px-6 py-3 rounded-lg font-medium transition-all transform inline-flex items-center justify-center gap-2"
+          style={{
+            background: 'linear-gradient(135deg, var(--color-google-blue), var(--color-usc-green))',
+            color: 'white'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)'
+          }}
         >
           <AIIcon sx={{ fontSize: 20 }} />
           Generate AI Insights

@@ -92,6 +92,16 @@ class GeminiAnalysisService:
             if not positive_feedback and not improvement_feedback:
                 return {"error": "No feedback text available for theme analysis"}
             
+            # Count unique responses that contain any analyzable text (avoid double-counting
+            # a single response that has both positive and improvement text).
+            unique_responses_count = sum(
+                1 for r in feedback_data
+                if (
+                    (r.get('positive_feedback') and r['positive_feedback'] != 'No comment')
+                    or (r.get('improvement_feedback') and r['improvement_feedback'] != 'No comment')
+                )
+            )
+
             # 🚀 DEVELOPMENT MODE: Use smaller samples for faster testing
             if self.dev_mode:
                 sample_positive = positive_feedback[:8]  # Limit to 8 for dev
@@ -110,7 +120,11 @@ class GeminiAnalysisService:
                 "data": themes,
                 "analyzed_responses": {
                     "positive": len(positive_feedback),
-                    "improvement": len(improvement_feedback)
+                    "improvement": len(improvement_feedback),
+                    # `unique_responses` counts responses that contained any analyzable
+                    # text (positive or improvement). This avoids double-counting when
+                    # a single response has both positive and improvement comments.
+                    "unique_responses": unique_responses_count
                 },
                 "sample_analyzed": {
                     "positive": len(sample_positive),
