@@ -47,7 +47,7 @@ export default function AIInsightsContainer({
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:5000/api/ai-analysis', {
+      const response = await fetch('/api/ai-analysis', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
