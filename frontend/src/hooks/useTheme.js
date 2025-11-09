@@ -1,5 +1,5 @@
 // Theme Hook for Light/Dark Mode Management
-\
+
 import { useState, useEffect, createContext, useContext } from 'react'
 
 // Theme context
