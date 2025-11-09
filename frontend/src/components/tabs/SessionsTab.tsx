@@ -45,7 +45,7 @@ export default function SessionsTab({
                     ?.length || 0
                 } sessions`,
                 chartVariant: "groupedBar",
-                allowVariantToggle: true,
+                allowVariantToggle: false,
               }
             )}
             className="w-full h-full"

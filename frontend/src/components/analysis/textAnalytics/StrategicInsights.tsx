@@ -7,7 +7,6 @@ import {
   Warning as WarningIcon,
   Lightbulb as LightbulbIcon,
   FlashOn as FlashOnIcon,
-  Flag as FlagIcon,
 } from '@mui/icons-material'
 
 interface StrategicInsightsData {

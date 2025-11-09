@@ -10,7 +10,7 @@
 'use client'
 
 import type { UploadResponse, FeedbackRecord } from '@/types/upload'
-import AIInsightsContainer from '@/components/analysis/textAnalytics/AIInsights'
+import AIInsightsContainer from '@/components/analysis/textAnalytics/TextAI_Insights'
 import RecurringTopics from '@/components/analysis/textAnalytics/RecurringTopics'
 import FeedbackSamplesCarousel from '@/components/analysis/textAnalytics/FeedbackSamplesCarousel'
 
