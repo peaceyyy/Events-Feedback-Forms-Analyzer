@@ -60,18 +60,20 @@ export default function TimeSlotPreferencesChart({
 
   const renderPieChart = () => {
     return (
-      <ResponsiveContainer width="100%" height={400}>
-        <PieChart>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={({ name, percentage }) => `${name}: ${percentage}%`}
-            outerRadius={120}
-            fill="#8884d8"
-            dataKey="value"
-          >
+      <div style={{ overflow: 'visible' }}>
+        <ResponsiveContainer width="100%" height={460}>
+          <PieChart>
+            {/* Custom label renderer positions labels outside the pie to avoid clipping */}
+            <Pie
+              data={chartData}
+              cx="50%"
+              cy="45%"
+              labelLine={true}
+              label={renderCustomizedLabel}
+              outerRadius={110}
+              fill="#8884d8"
+              dataKey="value"
+            >
             {chartData.map((entry: any, index: number) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
@@ -86,16 +88,36 @@ export default function TimeSlotPreferencesChart({
           />
         </PieChart>
       </ResponsiveContainer>
+      </div>
+    )
+  }
+
+  // Custom label renderer for Pie to place labels outside slices with connector lines
+  function renderCustomizedLabel({ cx, cy, midAngle, outerRadius, index, percent }: any) {
+    const RAD = Math.PI / 180
+    const radius = outerRadius + 22 // offset labels slightly outside the slice
+    const x = cx + radius * Math.cos(-midAngle * RAD)
+    const y = cy + radius * Math.sin(-midAngle * RAD)
+
+    const textAnchor = x > cx ? 'start' : 'end'
+    const entry = chartData && chartData[index]
+    const label = entry ? `${entry.name}: ${entry.percentage}%` : `${Math.round((percent || 0) * 100)}%`
+
+    return (
+      <text x={x} y={y} fill="var(--color-text-primary)" textAnchor={textAnchor} dominantBaseline="central" style={{ fontSize: 12 }}>
+        {label}
+      </text>
     )
   }
 
   const renderBarChart = () => {
     return (
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart 
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-        >
+      <div style={{ overflow: 'visible' }}>
+        <ResponsiveContainer width="100%" height={460}>
+          <BarChart 
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+          >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
           <XAxis 
             dataKey="name"
@@ -123,6 +145,7 @@ export default function TimeSlotPreferencesChart({
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+      </div>
     )
   }
 
