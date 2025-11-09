@@ -262,7 +262,7 @@ export default function AnalysisTab({
             {/* NPS Score and Recommendation vs Satisfaction */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {(analysisResults as any)?.nps?.data && (
-                <div className="w-full max-h-[380px]">
+                <div className="w-full">
                   <ChartFactory
                     config={createChartConfig(
                       "nps-score",
@@ -284,7 +284,7 @@ export default function AnalysisTab({
               )}
 
               {(analysisResults as any)?.scatter_data?.data && (
-                <div className="w-full max-h-[380px]">
+                <div className="w-full">
                   <ChartFactory
                     config={createChartConfig(
                       "satisfaction-vs-recommendation",

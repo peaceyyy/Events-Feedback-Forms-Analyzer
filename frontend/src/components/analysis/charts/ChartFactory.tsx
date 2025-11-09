@@ -137,12 +137,14 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
   const variants = getAvailableVariants(config.type, config.availableVariants)
 
   // Helper function to determine optimal aspect ratio for different chart types
-  const getChartAspectRatio = (type: string): string => {
+  const getChartAspectRatio = (type: string, variant?: string): string => {
     switch (type) {
       case 'distribution': return '12/4' // Good for bar/pie charts
       case 'comparison': return '16/9'    // Wide for horizontal bars
-      case 'score': return '4/3'          // Square-ish for gauges
-      case 'relationship': return '1/1'   // Square for radar charts
+      case 'score': return '1/1'          // Square for gauges - maximizes vertical space
+      case 'relationship': 
+        // Line charts need more horizontal space for category labels
+        return variant === 'line' ? '16/9' : '1/1'   // Square for radar/scatter, wide for line
       default: return '16/10'
     }
   }
@@ -185,7 +187,7 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
       {/* Chart Content with Responsive Container - Much larger */}
       {/* THE FIX: Use the getChartAspectRatio function to dynamically set the shape of the chart container.
           This replaces the fixed h-96 height with a responsive aspect ratio, improving visual consistency. */}
-      <div className="w-full" style={{ aspectRatio: getChartAspectRatio(config.type), minHeight: '400px' }}>
+      <div className="w-full" style={{ aspectRatio: getChartAspectRatio(config.type, selectedVariant), minHeight: '500px' }}>
         {renderChart()}
       </div>
 

@@ -1,13 +1,3 @@
-/**
- * About Tab Component
- * 
- * Static informational tab displaying:
- * - Project branding and description
- * - Tech stack visualization
- * - Mission and core features (placeholders)
- * 
- * This is a pure presentational component with no dependencies or state.
- */
 
 import { 
   Insights as InsightsIcon,
@@ -15,7 +5,7 @@ import {
 } from "@mui/icons-material"
 import {
   SiNextdotjs,
-  SiFastapi,
+  SiFlask,
   SiPython,
   SiTypescript,
   SiMui,
@@ -28,7 +18,6 @@ export default function AboutTab() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* --- LEFT COLUMN --- */}
         <div className="lg:col-span-1 space-y-8">
-          {/* Main Branding Card (sticky) */}
           <div className="glass-card-dark p-6 rounded-2xl sticky top-8">
             <div className="flex items-center gap-4 mb-4">
               <div
@@ -91,15 +80,15 @@ export default function AboutTab() {
                 </span>
               </div>
               {/* Tech Item */}
-              <div className="flex items-center gap-2">
-                <SiFastapi size={18} className="text-green-400" />
+                <div className="flex items-center gap-2">
+                <SiFlask size={18} className="text-gray-400" />
                 <span
                   className="text-sm font-medium"
                   style={{ color: "var(--color-text-secondary)" }}
                 >
-                  FastAPI
+                  Flask
                 </span>
-              </div>
+                </div>
               {/* Tech Item */}
               <div className="flex items-center gap-2">
                 <SiPython size={18} className="text-yellow-400" />

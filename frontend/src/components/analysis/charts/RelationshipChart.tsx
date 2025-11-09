@@ -92,7 +92,7 @@ export default function RelationshipChart({ data, variant, options, config }: Re
                            category.includes('Satisfied (3.5') ? 4.0 :
                            category.includes('Neutral') ? 3.0 :
                            category.includes('Dissatisfied (1.5') ? 2.0 : 1.25
-        })).sort((a, b) => b.satisfaction_avg - a.satisfaction_avg) // Sort by satisfaction level
+        })).sort((a, b) => a.satisfaction_avg - b.satisfaction_avg) // Sort ascending (left to right: low to high)
       }
       
       // Default scatter format for scatter/radar variants
@@ -224,6 +224,24 @@ export default function RelationshipChart({ data, variant, options, config }: Re
       domain: [0, 5]
     }))
   }, [chartData])
+
+  // Customized Y-axis label renderer so we can nudge the label position precisely
+  const YAxisLabel = ({ x, y, value }: any) => {
+    // Move the rotated label down by 18px to avoid clipping and improve spacing
+    const dy = 10
+    return (
+      <text
+        x={x}
+        y={y + dy}
+        transform={`rotate(-90 ${x} ${y + dy})`}
+        fill="var(--color-text-secondary)"
+        textAnchor="middle"
+        style={{ fontSize: 11 }}
+      >
+        {value}
+      </text>
+    )
+  }
 
   // Custom tooltip for business insights (with debug info)
   const CustomTooltip = ({ active, payload }: any) => {
@@ -473,8 +491,9 @@ export default function RelationshipChart({ data, variant, options, config }: Re
 
     return (
       <div className="w-full h-full min-h-[320px]">
-        <ResponsiveContainer width="100%" height={320}>
-          <ScatterChart margin={{ top: 20, right: 30, left: 40, bottom: 80 }}>
+        <ResponsiveContainer width="100%" height="100%">
+        
+          <ScatterChart margin={{ top: 40, right: 30, left: 50, bottom: 80 }}>
             {/* Show custom tooltip for scatter points (uses CustomTooltip defined above) */}
             {options?.showTooltip !== false && (
               <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.08)' }} />
@@ -483,22 +502,23 @@ export default function RelationshipChart({ data, variant, options, config }: Re
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
             <XAxis 
               type="number" 
-              dataKey="x" // Plots the jittered value
+              dataKey="x" 
               name="Satisfaction"
-              domain={[0.5, 5.5]} // Widen domain for jitter
+              domain={[0.5, 5.5]} 
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
               stroke="rgba(255,255,255,0.3)"
-              label={{ value: 'Satisfaction Rating (1-5)', position: 'insideBottom', offset: -10 }}
+              label={{ value: 'Satisfaction Rating (1-5)', position: 'insideBottom', offset: -20 }}
             />
             <YAxis 
               type="number" 
-              dataKey="y" // Plots the jittered value
+              dataKey="y" 
               name="Recommendation" 
-              domain={[-0.5, 10.5]} // Widen domain for jitter
+              domain={[-0.5, 10.5]} 
               tickCount={6}
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 11}}
               stroke="rgba(255,255,255,0.3)"
-              label={{ value: 'Recommendation Score (0-10)', angle: -90, position: 'insideLeft'}}
+             
+              label={{ value: 'Recommendation Score (0-10)', angle: -90, position: 'left', offset: 35, style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
             />
             
             <Scatter 
@@ -539,12 +559,12 @@ const renderLine = () => {
   const yLabel = isRecommendationScale ? 'Average Recommendation Score (0-10)' : 'Average Rating (0-5)'
 
   return (
-    <div className="w-full h-full min-h-[100px]">
-      <ResponsiveContainer width="100%" height={200}>
-        <LineChart
-          data={chartData}
-          margin={{ top: 20, right: 50, left: 20, bottom:60 }}
-        >
+    <div className="w-full h-full min-h-[320px]">
+      <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={chartData}
+            margin={{ top: 40, right: 50, left: 50, bottom:80 }}
+          >
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
           <XAxis 
             dataKey="name"
@@ -563,12 +583,7 @@ const renderLine = () => {
             stroke="var(--color-chart-green)"
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
             domain={yDomain}
-            label={{ 
-              value: yLabel, 
-              angle: -90, 
-              position: 'insideLeft',
-              style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' }
-            }}
+            label={{ value: yLabel, angle: -90, position: 'left', offset: 35, style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
           />
 
           {/* Secondary Y-Axis for response count */}

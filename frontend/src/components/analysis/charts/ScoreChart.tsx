@@ -117,6 +117,21 @@ export default function ScoreChart({ data, variant, options, config }: ScoreChar
     scoreData.min === -100 ? 'nps' : 'rating'
   )
 
+  // Get contextual recommendation based on NPS score
+  const getNPSRecommendation = (score: number): string => {
+    if (score >= 70) {
+      return "Exceptional loyalty! Focus on maintaining excellence and amplifying positive word-of-mouth."
+    } else if (score >= 50) {
+      return "Strong performance. Identify and replicate what's working across all touchpoints."
+    } else if (score >= 30) {
+      return "Good foundation. Target passive attendees to convert them into promoters."
+    } else if (score >= 0) {
+      return "Improvement needed. Prioritize addressing detractor concerns and pain points."
+    } else {
+      return "Critical attention required. Immediate action needed to reverse negative sentiment."
+    }
+  }
+
   // Render gauge chart (semicircle with needle effect)
   const renderGauge = () => {
     // This data setup is perfect. No changes needed.
@@ -126,22 +141,22 @@ export default function ScoreChart({ data, variant, options, config }: ScoreChar
     ];
 
     return (
-      // Reduced height for tighter spacing
-      <div className="relative w-full h-[320px]">
-      
+      // Slightly taller container so the gauge and contextual text breathe
+      <div className="relative w-full h-[420px]">
+
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={gaugeData}
               cx="50%"
-              cy="50%" 
+              cy="50%"
               startAngle={180}
               endAngle={0}
               innerRadius="60%"
               outerRadius="80%"
               dataKey="value"
               stroke="none"
-              paddingAngle={1} 
+              paddingAngle={1}
             >
               {gaugeData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -150,33 +165,37 @@ export default function ScoreChart({ data, variant, options, config }: ScoreChar
           </PieChart>
         </ResponsiveContainer>
 
-        {/* Tighter positioning and reduced spacing */}
-        <div 
-          className="absolute flex flex-col items-center"
-          style={{
-            top: '82%',
-            left: '50%',
-            transform: 'translate(-50%, -115%)'
-          }}
-        >
-          <div 
-            className="text-6xl font-extrabold"
-            style={{ color: scoreColor }}
-          >
-            {scoreData.value.toFixed(0)}
-          </div>
-          <div className="text-lg font-semibold mt-1" style={{ color: 'var(--color-text-primary)' }}>
-            {scoreData.category}
-          </div>
-          <div className="text-xs font-medium mt-1" style={{ color: 'var(--color-text-secondary)' }}>
-            NPS Range: {scoreData.min !== undefined ? `${scoreData.min} to +${scoreData.max}` : `0 to ${scoreData.max}`}
-          </div>
-          {scoreData.total > 0 && (
-            <div className="text-xs mt-2 px-2 py-0.5 rounded-full bg-white/10" style={{ color: 'var(--color-text-tertiary)' }}>
-              Based on {scoreData.total} responses
+        {/* Centered overlay: vertically & horizontally center the metric and metadata */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="flex flex-col items-center gap-3 text-center" style={{ maxWidth: '80%' }}>
+            <div className="text-6xl font-extrabold" style={{ color: scoreColor }}>
+              {scoreData.value.toFixed(0)}
             </div>
-          )}
+
+            <div className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+              {scoreData.category}
+            </div>
+
+            <div className="text-xs font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+              NPS Range: {scoreData.min !== undefined ? `${scoreData.min} to +${scoreData.max}` : `0 to ${scoreData.max}`}
+            </div>
+
+            {scoreData.total > 0 && (
+              <div className="text-xs px-3 py-1 rounded-full bg-white/10" style={{ color: 'var(--color-text-tertiary)' }}>
+                Based on {scoreData.total} responses
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Contextual NPS Recommendation - pinned near the bottom center */}
+        {scoreData.min === -100 && (
+          <div className="absolute left-1/2 transform -translate-x-1/2 bottom-6 w-11/12 text-center pointer-events-none">
+            <p className="text-sm font-medium leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+              {getNPSRecommendation(scoreData.value)}
+            </p>
+          </div>
+        )}
       </div>
     );
   }
