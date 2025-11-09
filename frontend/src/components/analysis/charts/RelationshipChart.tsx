@@ -226,15 +226,14 @@ export default function RelationshipChart({ data, variant, options, config }: Re
   }, [chartData])
 
   // Custom tooltip for business insights (with debug info)
-const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       // Safely access the nested payload from the first item in the array
-      // Safely access the nested payload from the first item in the array
-      const data = payload[0]?.payload;;
+      const data = payload[0]?.payload
 
       // If data is still not valid, exit early
       if (!data) {
-        return null;
+        return null
       }
 
       return (
@@ -277,10 +276,10 @@ const CustomTooltip = ({ active, payload }: any) => {
             )}
           </div>
         </div>
-      );
+      )
     }
-    return null;
-}
+    return null
+  }
 
   // Render radar chart (multi-dimensional comparison with baseline)
   const renderRadar = () => {
@@ -476,6 +475,10 @@ const CustomTooltip = ({ active, payload }: any) => {
       <div className="w-full h-full min-h-[320px]">
         <ResponsiveContainer width="100%" height={320}>
           <ScatterChart margin={{ top: 20, right: 30, left: 40, bottom: 80 }}>
+            {/* Show custom tooltip for scatter points (uses CustomTooltip defined above) */}
+            {options?.showTooltip !== false && (
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.08)' }} />
+            )}
             {/* Axes and Grid */}
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
             <XAxis 
