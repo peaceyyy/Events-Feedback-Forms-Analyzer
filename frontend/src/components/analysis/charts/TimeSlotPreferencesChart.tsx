@@ -61,7 +61,7 @@ export default function TimeSlotPreferencesChart({
   const renderPieChart = () => {
     return (
       <div style={{ overflow: 'visible' }}>
-        <ResponsiveContainer width="100%" height={460}>
+        <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             {/* Custom label renderer positions labels outside the pie to avoid clipping */}
             <Pie
@@ -116,7 +116,7 @@ export default function TimeSlotPreferencesChart({
         <ResponsiveContainer width="100%" height={460}>
           <BarChart 
             data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+            margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
           >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
           <XAxis 
