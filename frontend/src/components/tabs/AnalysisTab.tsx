@@ -262,7 +262,7 @@ export default function AnalysisTab({
             {/* NPS Score and Recommendation vs Satisfaction */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {(analysisResults as any)?.nps?.data && (
-                <div className="w-full min-h-[450px]">
+                <div className="w-full max-h-[380px]">
                   <ChartFactory
                     config={createChartConfig(
                       "nps-score",
@@ -275,7 +275,7 @@ export default function AnalysisTab({
                           "Score Analysis"
                         }`,
                         chartVariant: "gauge",
-                        allowVariantToggle: true,
+                        allowVariantToggle: false,
                       }
                     )}
                     className="w-full h-full"
@@ -284,7 +284,7 @@ export default function AnalysisTab({
               )}
 
               {(analysisResults as any)?.scatter_data?.data && (
-                <div className="w-full min-h-[450px]">
+                <div className="w-full max-h-[380px]">
                   <ChartFactory
                     config={createChartConfig(
                       "satisfaction-vs-recommendation",

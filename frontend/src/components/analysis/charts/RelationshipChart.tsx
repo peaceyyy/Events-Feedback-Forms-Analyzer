@@ -109,10 +109,10 @@ export default function RelationshipChart({ data, variant, options, config }: Re
       }))
     }
 
-    // Handle legacy scatter plot data (satisfaction vs recommendation) - Flask structure
+    // Handle legacy scatter plot data (satisfaction vs recommendation) 
     if (data.scatter_data && Array.isArray(data.scatter_data)) {
       if (variant === 'line') {
-        // Transform to line format - group by satisfaction ranges
+        
         const satisfactionGroups = data.scatter_data.reduce((acc: any, point: any) => {
           const satisfaction = point.satisfaction || point.x || 0
           const recommendation = point.recommendation_score || point.recommendation || point.y || 0
@@ -475,7 +475,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     return (
       <div className="w-full h-full min-h-[320px]">
         <ResponsiveContainer width="100%" height={320}>
-          <ScatterChart margin={{ top: 20, right: 30, left: 40, bottom: 50 }}>
+          <ScatterChart margin={{ top: 20, right: 30, left: 40, bottom: 80 }}>
             {/* Axes and Grid */}
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
             <XAxis 
@@ -495,17 +495,9 @@ const CustomTooltip = ({ active, payload }: any) => {
               tickCount={6}
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 11}}
               stroke="rgba(255,255,255,0.3)"
-              label={{ value: 'Recommendation Score (0-10)', angle: -90, position: 'insideLeft' }}
+              label={{ value: 'Recommendation Score (0-10)', angle: -90, position: 'insideLeft'}}
             />
             
-            {/* This will now receive the correct, unambiguous payload */}
-            <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3' }} />
-
-            {/* A custom legend would be needed to show all categories. */}
-            {/* For now, we can hide the default one or accept its limitation. */}
-            <Legend wrapperStyle={{ paddingTop: '10px' }} iconType="circle" />
-
-      
             <Scatter 
                 data={flatChartData}
             >
@@ -515,6 +507,8 @@ const CustomTooltip = ({ active, payload }: any) => {
               ))}
             </Scatter>
 
+
+          
           </ScatterChart>
         </ResponsiveContainer>
       </div>
