@@ -13,6 +13,6 @@
     }
   ],
   "env": {
-    "NEXT_PUBLIC_DEBUG_MODE": "true"
+    "NEXT_PUBLIC_DEBUG_MODE": "false"
   }
 }
