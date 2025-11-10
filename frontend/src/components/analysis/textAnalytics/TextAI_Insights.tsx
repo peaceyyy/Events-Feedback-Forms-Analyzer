@@ -195,6 +195,7 @@ export default function AIInsightsContainer({
           onRefresh={generateAIInsights}
           isRefreshing={loading}
           devMode={aiResults?.sentiment?.dev_mode}
+          feedbackSamples={feedbackData}
         />
       )}
 
