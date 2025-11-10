@@ -47,18 +47,16 @@ export default function ThemeAnalysis({ data, analyzed_responses, error }: Theme
     : (analyzed_responses.positive + analyzed_responses.improvement)
 
   return (
-    <div className="glass-card-dark p-8 rounded-xl elevation-2">
-      <div className="flex items-start gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <CategoryIcon sx={{ fontSize: 28, color: 'var(--color-google-blue)' }} />
-          <div>
-            <h3 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-              AI Theme Analysis
-            </h3>
-            <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>
-              Summary of recurring positive themes and improvement areas
-            </p>
-          </div>
+    <div className="glass-card-dark p-6 rounded-xl elevation-2">
+      <div className="flex items-center gap-3 mb-6">
+        <CategoryIcon sx={{ fontSize: 28, color: 'var(--color-google-blue)' }} />
+        <div>
+          <h3 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+            AI Theme Analysis
+          </h3>
+          <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>
+            Summary of recurring positive themes and improvement areas
+          </p>
         </div>
       </div>
 
@@ -71,21 +69,21 @@ export default function ThemeAnalysis({ data, analyzed_responses, error }: Theme
             Top Strengths
           </h4>
 
-          <div className="grid gap-10">
+          <div className="space-y-3">
             {data.positive_themes?.length ? (
               data.positive_themes.slice(0, 6).map((theme, index) => (
-                <div key={index} className="flex justify-between items-center p-4 rounded-lg"
+                <div key={index} className="flex items-center gap-3 p-4 rounded-lg"
                      style={{
                        backgroundColor: 'var(--color-surface-elevated)',
                        borderLeft: `4px solid var(--color-usc-green)`
                      }}>
-                  <div className="pr-4" style={{ color: 'var(--color-text-primary)' }}>
-                    <div className="font-medium">{theme.theme}</div>
+                  <div className="flex-1 min-w-0" style={{ color: 'var(--color-text-primary)' }}>
+                    <div className="font-medium truncate">{theme.theme}</div>
                     <div className="text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}>
                       {theme.frequency} mentions
                     </div>
                   </div>
-                  <div>
+                  <div className="flex-shrink-0">
                     <span className="text-sm px-3 py-1 rounded-full font-medium"
                           style={{ backgroundColor: 'rgba(76, 175, 80, 0.18)', color: 'var(--color-usc-green)' }}>
                       {theme.frequency}
@@ -109,21 +107,21 @@ export default function ThemeAnalysis({ data, analyzed_responses, error }: Theme
             Improvement Areas
           </h4>
 
-          <div className="grid gap-10">
+          <div className="space-y-3">
             {data.improvement_themes?.length ? (
               data.improvement_themes.slice(0, 6).map((theme, index) => (
-                <div key={index} className="flex justify-between items-center p-4 rounded-lg"
+                <div key={index} className="flex items-center gap-3 p-4 rounded-lg"
                      style={{
                        backgroundColor: 'var(--color-surface-elevated)',
                        borderLeft: `4px solid var(--color-usc-orange)`
                      }}>
-                  <div className="pr-4" style={{ color: 'var(--color-text-primary)' }}>
-                    <div className="font-medium">{theme.theme}</div>
+                  <div className="flex-1 min-w-0" style={{ color: 'var(--color-text-primary)' }}>
+                    <div className="font-medium truncate">{theme.theme}</div>
                     <div className="text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}>
                       {theme.frequency} mentions
                     </div>
                   </div>
-                  <div>
+                  <div className="flex-shrink-0">
                     <span className="text-sm px-3 py-1 rounded-full font-medium"
                           style={{ backgroundColor: 'rgba(255, 152, 0, 0.18)', color: 'var(--color-usc-orange)' }}>
                       {theme.frequency}

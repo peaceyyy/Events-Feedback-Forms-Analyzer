@@ -120,11 +120,7 @@ export default function StrategicInsights({
             <h3 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
               AI Strategic Insights
             </h3>
-            <span className="text-xs px-2 py-1 rounded font-medium"
-                  style={{ 
-                    backgroundColor: 'rgba(66, 133, 244, 0.15)',
-                    color: 'var(--color-google-blue)'
-                  }}></span>
+            
           </div>
           
           <div className="flex items-center gap-2">
