@@ -194,7 +194,6 @@ export default function AIInsightsContainer({
           error={aiResults.strategic_insights.error}
           onRefresh={generateAIInsights}
           isRefreshing={loading}
-          devMode={aiResults?.sentiment?.dev_mode}
           feedbackSamples={feedbackData}
         />
       )}

@@ -60,17 +60,6 @@ export default function ThemeAnalysis({ data, analyzed_responses, error }: Theme
             </p>
           </div>
         </div>
-
-        <div className="ml-auto">
-          <div className="text-sm px-3 py-1 rounded-full font-medium text-center"
-               style={{
-                 backgroundColor: 'rgba(66, 133, 244, 0.12)',
-                 color: 'var(--color-google-blue)',
-                 minWidth: 120
-               }}>
-            {totalAnalyzed} responses analyzed
-          </div>
-        </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
@@ -82,7 +71,7 @@ export default function ThemeAnalysis({ data, analyzed_responses, error }: Theme
             Top Strengths
           </h4>
 
-          <div className="grid gap-4">
+          <div className="grid gap-10">
             {data.positive_themes?.length ? (
               data.positive_themes.slice(0, 6).map((theme, index) => (
                 <div key={index} className="flex justify-between items-center p-4 rounded-lg"
@@ -120,7 +109,7 @@ export default function ThemeAnalysis({ data, analyzed_responses, error }: Theme
             Improvement Areas
           </h4>
 
-          <div className="grid gap-4">
+          <div className="grid gap-10">
             {data.improvement_themes?.length ? (
               data.improvement_themes.slice(0, 6).map((theme, index) => (
                 <div key={index} className="flex justify-between items-center p-4 rounded-lg"

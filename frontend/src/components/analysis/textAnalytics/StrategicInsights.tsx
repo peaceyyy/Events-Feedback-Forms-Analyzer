@@ -36,8 +36,7 @@ interface StrategicInsightsProps {
   error?: string
   onRefresh?: () => Promise<void>
   isRefreshing?: boolean
-  devMode?: boolean
-  feedbackSamples?: any[] // Optional: raw feedback data for sample modal
+  feedbackSamples?: any[] 
 }
 
 export default function StrategicInsights({ 
@@ -46,8 +45,7 @@ export default function StrategicInsights({
   error, 
   onRefresh, 
   isRefreshing = false, 
-  devMode = false,
-  feedbackSamples = []
+    feedbackSamples = []
 }: StrategicInsightsProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalData, setModalData] = useState<{ title: string; samples: string[]; theme?: string }>({
@@ -126,18 +124,7 @@ export default function StrategicInsights({
                   style={{ 
                     backgroundColor: 'rgba(66, 133, 244, 0.15)',
                     color: 'var(--color-google-blue)'
-                  }}>
-              Based on {based_on.total_responses} responses
-              {devMode && (
-                <span className="ml-2 px-2 py-1 rounded"
-                      style={{ 
-                        backgroundColor: 'rgba(255, 152, 0, 0.2)',
-                        color: 'var(--color-usc-orange)'
-                      }}>
-                  DEV MODE
-                </span>
-              )}
-            </span>
+                  }}></span>
           </div>
           
           <div className="flex items-center gap-2">
@@ -191,76 +178,32 @@ export default function StrategicInsights({
               />
             </div>
 
-            {/* Metadata Card */}
-            <div className="glass-card-dark p-4 rounded-lg">
-              <h5 className="text-sm font-semibold mb-3 uppercase tracking-wide" 
-                  style={{ color: 'var(--color-text-primary)' }}>
-                Analysis Overview
-              </h5>
-              <div className="space-y-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                <div className="flex justify-between items-center pb-2 border-b border-white/5">
-                  <span>Responses</span>
-                  <span className="font-semibold" style={{ color: 'var(--color-google-blue)' }}>
-                    {based_on.total_responses}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center pb-2 border-b border-white/5">
-                  <span>Metrics</span>
-                  <span className="font-semibold" style={{ color: 'var(--color-google-blue)' }}>
-                    {based_on.metrics_analyzed}
-                  </span>
-                </div>
-                {based_on.sample_size && (
-                  <div className="flex justify-between items-center">
-                    <span>Sample Size</span>
-                    <span className="font-semibold" style={{ color: 'var(--color-google-blue)' }}>
-                      {based_on.sample_size}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+      
 
-          {/* RIGHT COLUMN: Stacked Insight Panels */}
-          <div className="lg:col-span-2 space-y-5">
-            {/* Top Strengths Card */}
+            {/* Top Strengths Card (moved from right column) */}
             {data.top_strengths && data.top_strengths.length > 0 && (
-              <div className="glass-card-dark p-5 rounded-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2" 
-                      style={{ color: 'var(--color-usc-green)' }}>
-                    <StarIcon sx={{ fontSize: 20, color: 'var(--color-usc-green)' }} />
+              <div className="glass-card-dark p-4 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-base font-semibold flex items-center gap-2" style={{ color: 'var(--color-usc-green)' }}>
+                    <StarIcon sx={{ fontSize: 18, color: 'var(--color-usc-green)' }} />
                     Top Strengths
-                  </h3>
+                  </h4>
                   {feedbackSamples.length > 0 && (
                     <button
                       onClick={() => handleShowSamples('Sample Responses: Top Strengths', 'strengths')}
                       className="text-xs px-2 py-1 rounded transition-all inline-flex items-center gap-1"
-                      style={{
-                        backgroundColor: 'rgba(76, 175, 80, 0.15)',
-                        color: 'var(--color-usc-green)'
-                      }}
+                      style={{ backgroundColor: 'rgba(76, 175, 80, 0.12)', color: 'var(--color-usc-green)' }}
                     >
-                      <ViewIcon sx={{ fontSize: 12 }} />
-                      Show samples
+                      <ViewIcon sx={{ fontSize: 12 }} /> Show samples
                     </button>
                   )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-2">
                   {data.top_strengths.map((strength: string, index: number) => (
-                    <div key={index} 
-                         className="p-3 bg-green-500/8 rounded-lg border-l-3 group hover:bg-green-500/12 transition-all" 
-                         style={{ borderLeftColor: 'var(--color-usc-green)' }}>
-                      <div className="flex items-start justify-between gap-2">
-                        <TruncatedText 
-                          text={strength}
-                          maxLength={180}
-                          style={{ color: 'var(--color-text-primary)', fontSize: '0.9rem' }}
-                        />
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                          <CopyButton text={strength} label="" size="small" />
-                        </div>
+                    <div key={index} className="p-2 bg-green-500/8 rounded-md flex items-start justify-between group">
+                      <TruncatedText text={strength} maxLength={160} style={{ color: 'var(--color-text-primary)' }} />
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <CopyButton text={strength} label="" size="small" />
                       </div>
                     </div>
                   ))}
@@ -268,186 +211,117 @@ export default function StrategicInsights({
               </div>
             )}
 
-
             
+          </div>
+
+          {/* RIGHT COLUMN: Stacked Insight Panels */}
+          <div className="lg:col-span-2 space-y-5">
+          
 
             {/* Unified Insights Carousel: Improvements, Recommendations, Quick Wins, Long-Term Goals */}
             {((data.critical_improvements && data.critical_improvements.length > 0) || 
               (data.strategic_recommendations && data.strategic_recommendations.length > 0) ||
               (data.quick_wins && data.quick_wins.length > 0) ||
               (data.long_term_goals && data.long_term_goals.length > 0)) && (
-              <div className="glass-card-dark p-5 rounded-lg">
-                {/* Tab Navigation */}
-                <div className="mb-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {/* Critical Improvements Tab */}
-                      {data.critical_improvements && data.critical_improvements.length > 0 && (
-                        <button
-                          onClick={() => setInsightsTab('improvements')}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all ${
-                            insightsTab === 'improvements' ? 'shadow-md scale-100' : 'opacity-50 scale-95'
-                          }`}
-                          style={{
-                            backgroundColor: insightsTab === 'improvements' 
-                              ? 'rgba(255, 152, 0, 0.2)' 
-                              : 'rgba(255, 152, 0, 0.08)',
-                            color: 'var(--color-usc-orange)',
-                            filter: insightsTab === 'improvements' ? 'none' : 'blur(0.3px)'
-                          }}
-                        >
-                          <WarningIcon sx={{ fontSize: 18 }} />
-                          <span className="hidden sm:inline">Critical Improvements</span>
-                          <span className="sm:hidden">Improvements</span>
-                          <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
-                            {data.critical_improvements.length}
-                          </span>
-                        </button>
-                      )}
-                      
-                      {/* Strategic Recommendations Tab */}
-                      {data.strategic_recommendations && data.strategic_recommendations.length > 0 && (
-                        <button
-                          onClick={() => setInsightsTab('recommendations')}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all ${
-                            insightsTab === 'recommendations' ? 'shadow-md scale-100' : 'opacity-50 scale-95'
-                          }`}
-                          style={{
-                            backgroundColor: insightsTab === 'recommendations' 
-                              ? 'rgba(66, 133, 244, 0.2)' 
-                              : 'rgba(66, 133, 244, 0.08)',
-                            color: 'var(--color-google-blue)',
-                            filter: insightsTab === 'recommendations' ? 'none' : 'blur(0.3px)'
-                          }}
-                        >
-                          <LightbulbIcon sx={{ fontSize: 18 }} />
-                          Recommendations
-                          <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
-                            {data.strategic_recommendations.length}
-                          </span>
-                        </button>
-                      )}
-
-                      {/* Quick Wins Tab */}
-                      {data.quick_wins && data.quick_wins.length > 0 && (
-                        <button
-                          onClick={() => setInsightsTab('quick')}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all ${
-                            insightsTab === 'quick' ? 'shadow-md scale-100' : 'opacity-50 scale-95'
-                          }`}
-                          style={{
-                            backgroundColor: insightsTab === 'quick' 
-                              ? 'rgba(250, 204, 21, 0.2)' 
-                              : 'rgba(250, 204, 21, 0.08)',
-                            color: 'var(--color-google-yellow)',
-                            filter: insightsTab === 'quick' ? 'none' : 'blur(0.3px)'
-                          }}
-                        >
-                          <FlashOnIcon sx={{ fontSize: 18 }} />
-                          Quick Wins
-                          <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
-                            {data.quick_wins.length}
-                          </span>
-                        </button>
-                      )}
-
-                      {/* Long-Term Goals Tab */}
-                      {data.long_term_goals && data.long_term_goals.length > 0 && (
-                        <button
-                          onClick={() => setInsightsTab('longterm')}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all ${
-                            insightsTab === 'longterm' ? 'shadow-md scale-100' : 'opacity-50 scale-95'
-                          }`}
-                          style={{
-                            backgroundColor: insightsTab === 'longterm' 
-                              ? 'rgba(168, 85, 247, 0.2)' 
-                              : 'rgba(168, 85, 247, 0.08)',
-                            color: 'var(--color-google-purple)',
-                            filter: insightsTab === 'longterm' ? 'none' : 'blur(0.3px)'
-                          }}
-                        >
-                          <StrategyIcon sx={{ fontSize: 18 }} />
-                          Long-Term Goals
-                          <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
-                            {data.long_term_goals.length}
-                          </span>
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Navigation Arrows */}
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => {
-                          const tabs: Array<'improvements' | 'recommendations' | 'quick' | 'longterm'> = [];
-                          if (data.critical_improvements?.length) tabs.push('improvements');
-                          if (data.strategic_recommendations?.length) tabs.push('recommendations');
-                          if (data.quick_wins?.length) tabs.push('quick');
-                          if (data.long_term_goals?.length) tabs.push('longterm');
-                          const currentIndex = tabs.indexOf(insightsTab);
-                          const prevIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
-                          setInsightsTab(tabs[prevIndex]);
-                        }}
-                        className="p-1 rounded hover:bg-white/5 transition-all"
-                        style={{ color: 'var(--color-text-secondary)' }}
-                        title="Previous"
-                      >
-                        <PrevIcon sx={{ fontSize: 18 }} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          const tabs: Array<'improvements' | 'recommendations' | 'quick' | 'longterm'> = [];
-                          if (data.critical_improvements?.length) tabs.push('improvements');
-                          if (data.strategic_recommendations?.length) tabs.push('recommendations');
-                          if (data.quick_wins?.length) tabs.push('quick');
-                          if (data.long_term_goals?.length) tabs.push('longterm');
-                          const currentIndex = tabs.indexOf(insightsTab);
-                          const nextIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
-                          setInsightsTab(tabs[nextIndex]);
-                        }}
-                        className="p-1 rounded hover:bg-white/5 transition-all"
-                        style={{ color: 'var(--color-text-secondary)' }}
-                        title="Next"
-                      >
-                        <NextIcon sx={{ fontSize: 18 }} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Show Samples Button - Positioned below tabs */}
-                  {feedbackSamples.length > 0 && (
+              <div className="glass-card-dark p-5 rounded-lg flex flex-col h-[600px] md:h-[620px]">
+                {/* Tab Navigation - Single Row at Top */}
+                <div className="flex items-center gap-2 flex-wrap mb-4">
+                  {/* Critical Improvements Tab */}
+                  {data.critical_improvements && data.critical_improvements.length > 0 && (
                     <button
-                      onClick={() => {
-                        const titles = {
-                          improvements: 'Sample Responses: Critical Improvements',
-                          recommendations: 'Sample Responses: Strategic Context',
-                          quick: 'Sample Responses: Quick Wins',
-                          longterm: 'Sample Responses: Long-Term Goals'
-                        };
-                          handleShowSamples(titles[insightsTab], insightsTab);
-                      }}
-                      className="text-xs px-3 py-1.5 rounded-lg transition-all inline-flex items-center gap-1"
+                      onClick={() => setInsightsTab('improvements')}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all ${
+                        insightsTab === 'improvements' ? 'shadow-md scale-100' : 'opacity-50 scale-95'
+                      }`}
                       style={{
-                        backgroundColor: 
-                          insightsTab === 'improvements' ? 'rgba(255, 152, 0, 0.15)' :
-                          insightsTab === 'recommendations' ? 'rgba(66, 133, 244, 0.15)' :
-                          insightsTab === 'quick' ? 'rgba(250, 204, 21, 0.15)' :
-                          'rgba(168, 85, 247, 0.15)',
-                        color: 
-                          insightsTab === 'improvements' ? 'var(--color-usc-orange)' :
-                          insightsTab === 'recommendations' ? 'var(--color-google-blue)' :
-                          insightsTab === 'quick' ? 'var(--color-google-yellow)' :
-                          'var(--color-google-purple)'
+                        backgroundColor: insightsTab === 'improvements' 
+                          ? 'rgba(255, 152, 0, 0.2)' 
+                          : 'rgba(255, 152, 0, 0.08)',
+                        color: 'var(--color-usc-orange)',
+                        filter: insightsTab === 'improvements' ? 'none' : 'blur(0.3px)'
                       }}
                     >
-                      <ViewIcon sx={{ fontSize: 12 }} />
-                      Show sample responses
+                      <WarningIcon sx={{ fontSize: 18 }} />
+                      <span className="hidden sm:inline">Critical Improvements</span>
+                      <span className="sm:hidden">Improvements</span>
+                      <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                        {data.critical_improvements.length}
+                      </span>
+                    </button>
+                  )}
+                  
+                  {/* Strategic Recommendations Tab */}
+                  {data.strategic_recommendations && data.strategic_recommendations.length > 0 && (
+                    <button
+                      onClick={() => setInsightsTab('recommendations')}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all ${
+                        insightsTab === 'recommendations' ? 'shadow-md scale-100' : 'opacity-50 scale-95'
+                      }`}
+                      style={{
+                        backgroundColor: insightsTab === 'recommendations' 
+                          ? 'rgba(66, 133, 244, 0.2)' 
+                          : 'rgba(66, 133, 244, 0.08)',
+                        color: 'var(--color-google-blue)',
+                        filter: insightsTab === 'recommendations' ? 'none' : 'blur(0.3px)'
+                      }}
+                    >
+                      <LightbulbIcon sx={{ fontSize: 18 }} />
+                      Recommendations
+                      <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                        {data.strategic_recommendations.length}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Quick Wins Tab */}
+                  {data.quick_wins && data.quick_wins.length > 0 && (
+                    <button
+                      onClick={() => setInsightsTab('quick')}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all ${
+                        insightsTab === 'quick' ? 'shadow-md scale-100' : 'opacity-50 scale-95'
+                      }`}
+                      style={{
+                        backgroundColor: insightsTab === 'quick' 
+                          ? 'rgba(250, 204, 21, 0.2)' 
+                          : 'rgba(250, 204, 21, 0.08)',
+                        color: 'var(--color-google-yellow)',
+                        filter: insightsTab === 'quick' ? 'none' : 'blur(0.3px)'
+                      }}
+                    >
+                      <FlashOnIcon sx={{ fontSize: 18 }} />
+                      Quick Wins
+                      <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                        {data.quick_wins.length}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Long-Term Goals Tab */}
+                  {data.long_term_goals && data.long_term_goals.length > 0 && (
+                    <button
+                      onClick={() => setInsightsTab('longterm')}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all ${
+                        insightsTab === 'longterm' ? 'shadow-md scale-100' : 'opacity-50 scale-95'
+                      }`}
+                      style={{
+                        backgroundColor: insightsTab === 'longterm' 
+                          ? 'rgba(168, 85, 247, 0.2)' 
+                          : 'rgba(168, 85, 247, 0.08)',
+                        color: 'var(--color-google-purple)',
+                        filter: insightsTab === 'longterm' ? 'none' : 'blur(0.3px)'
+                      }}
+                    >
+                      <StrategyIcon sx={{ fontSize: 18 }} />
+                      Long-Term Goals
+                      <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                        {data.long_term_goals.length}
+                      </span>
                     </button>
                   )}
                 </div>
 
-                {/* Content */}
-                <div className="space-y-3">
+                {/* Content: flex-grow to take remaining space with internal scrolling */}
+                <div className="space-y-3 flex-grow overflow-y-auto pr-2">
                   {/* Critical Improvements Content */}
                   {insightsTab === 'improvements' && data.critical_improvements?.map((improvement: string, index: number) => (
                     <div key={index} 
@@ -517,6 +391,77 @@ export default function StrategicInsights({
                       </div>
                     </div>
                   ))}
+                </div>
+
+                {/* Bottom Controls: Navigation Arrows + Show Samples Button */}
+                <div className="flex items-center justify-end gap-3 mt-4 pt-3 border-t border-white/5">
+                  {feedbackSamples.length > 0 && (
+                    <button
+                      onClick={() => {
+                        const titles = {
+                          improvements: 'Sample Responses: Critical Improvements',
+                          recommendations: 'Sample Responses: Strategic Context',
+                          quick: 'Sample Responses: Quick Wins',
+                          longterm: 'Sample Responses: Long-Term Goals'
+                        };
+                        handleShowSamples(titles[insightsTab], insightsTab);
+                      }}
+                      className="text-xs px-3 py-1.5 rounded-lg transition-all inline-flex items-center gap-1"
+                      style={{
+                        backgroundColor: 
+                          insightsTab === 'improvements' ? 'rgba(255, 152, 0, 0.15)' :
+                          insightsTab === 'recommendations' ? 'rgba(66, 133, 244, 0.15)' :
+                          insightsTab === 'quick' ? 'rgba(250, 204, 21, 0.15)' :
+                          'rgba(168, 85, 247, 0.15)',
+                        color: 
+                          insightsTab === 'improvements' ? 'var(--color-usc-orange)' :
+                          insightsTab === 'recommendations' ? 'var(--color-google-blue)' :
+                          insightsTab === 'quick' ? 'var(--color-google-yellow)' :
+                          'var(--color-google-purple)'
+                      }}
+                    >
+                      <ViewIcon sx={{ fontSize: 12 }} />
+                      Show sample responses
+                    </button>
+                  )}
+                  
+                  {/* Navigation Arrows */}
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => {
+                        const tabs: Array<'improvements' | 'recommendations' | 'quick' | 'longterm'> = [];
+                        if (data.critical_improvements?.length) tabs.push('improvements');
+                        if (data.strategic_recommendations?.length) tabs.push('recommendations');
+                        if (data.quick_wins?.length) tabs.push('quick');
+                        if (data.long_term_goals?.length) tabs.push('longterm');
+                        const currentIndex = tabs.indexOf(insightsTab);
+                        const prevIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
+                        setInsightsTab(tabs[prevIndex]);
+                      }}
+                      className="p-1 rounded hover:bg-white/5 transition-all"
+                      style={{ color: 'var(--color-text-secondary)' }}
+                      title="Previous"
+                    >
+                      <PrevIcon sx={{ fontSize: 18 }} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        const tabs: Array<'improvements' | 'recommendations' | 'quick' | 'longterm'> = [];
+                        if (data.critical_improvements?.length) tabs.push('improvements');
+                        if (data.strategic_recommendations?.length) tabs.push('recommendations');
+                        if (data.quick_wins?.length) tabs.push('quick');
+                        if (data.long_term_goals?.length) tabs.push('longterm');
+                        const currentIndex = tabs.indexOf(insightsTab);
+                        const nextIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
+                        setInsightsTab(tabs[nextIndex]);
+                      }}
+                      className="p-1 rounded hover:bg-white/5 transition-all"
+                      style={{ color: 'var(--color-text-secondary)' }}
+                      title="Next"
+                    >
+                      <NextIcon sx={{ fontSize: 18 }} />
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
