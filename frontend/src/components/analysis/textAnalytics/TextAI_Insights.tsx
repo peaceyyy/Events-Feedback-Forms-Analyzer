@@ -180,12 +180,23 @@ export default function AIInsightsContainer({
         <p style={{ color: 'var(--color-text-secondary)' }}>
           Gemini AI is analyzing your feedback data... This may take a few moments.
         </p>
+        {/* Accessibility: announce to screen readers */}
+        <div className="sr-only" role="status" aria-live="polite">
+          AI analysis in progress. Please wait.
+        </div>
       </div>
     )
   }
 
   return (
     <div className="space-y-8">
+      {/* Accessibility: announce when insights are loaded */}
+      {aiResults && (
+        <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          AI insights have been generated successfully. {aiResults.strategic_insights ? 'Strategic insights, ' : ''}{aiResults.sentiment ? 'sentiment analysis, ' : ''}{aiResults.themes ? 'and theme analysis are now available.' : ''}
+        </div>
+      )}
+      
       {/* Strategic Insights - Primary card at top */}
       {aiResults?.strategic_insights && (
         <StrategicInsights 
