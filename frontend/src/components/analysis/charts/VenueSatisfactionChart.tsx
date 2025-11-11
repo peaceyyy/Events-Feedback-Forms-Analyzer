@@ -58,7 +58,7 @@ export default function VenueSatisfactionChart({
     const item = payload[0].payload
     
     return (
-      <div className="glass-card-dark p-2 rounded-lg border border-white/20">
+      <div className="glass-card-theme p-2 rounded-lg border border-white/20">
         <p className="font-semibold text-sm mb-2" style={{ color: 'var(--color-text-primary)' }}>
           {item.name}
         </p>
@@ -109,11 +109,11 @@ export default function VenueSatisfactionChart({
             data={chartData}
             margin={{ top: 60, right: 30, left: 20, bottom: 5}}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
             <XAxis
               dataKey="name"
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 10 }}
-              stroke="rgba(255,255,255,0.3)"
+              stroke="var(--color-axis-line)"
               angle={-35}
               textAnchor="end"
               height={100}
@@ -121,7 +121,7 @@ export default function VenueSatisfactionChart({
             <YAxis
               domain={[0, 5]}
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-              stroke="rgba(255,255,255,0.3)"
+              stroke="var(--color-axis-line)"
               label={{
                 value: 'Average Satisfaction',
                 angle: -90,

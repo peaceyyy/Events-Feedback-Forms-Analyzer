@@ -171,11 +171,18 @@ export default function ChartFactory({ config, className = '' }: ChartFactoryPro
             <select 
               value={selectedVariant}
               onChange={(e) => setSelectedVariant(e.target.value)}
-              className="bg-transparent border border-white/20 rounded-lg px-3 py-1 text-sm"
-              style={{color: 'var(--color-text-secondary)'}}
+              className="border border-theme-light rounded-lg px-3 py-1 text-sm transition-colors"
+              style={{
+                color: 'var(--color-text-secondary)',
+                backgroundColor: 'var(--color-surface-elevated)'
+              }}
             >
               {variants.map(variant => (
-                <option key={variant.value} value={variant.value} className="bg-gray-800">
+                <option 
+                  key={variant.value} 
+                  value={variant.value}
+                  style={{ backgroundColor: 'var(--color-surface-elevated)' }}
+                >
                   {variant.label}
                 </option>
               ))}

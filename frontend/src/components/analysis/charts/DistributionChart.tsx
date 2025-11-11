@@ -103,7 +103,7 @@ export default function DistributionChart({ data, variant, options, config }: Di
       const percentage = ((data.value / total) * 100).toFixed(1)
       
       return (
-        <div className="glass-card-dark p-3 rounded-lg border border-white/20">
+        <div className="glass-card-theme p-3 rounded-lg border border-white/20">
           <p className="font-medium" style={{color: 'var(--color-text-primary)'}}>
             {data.payload.name}
           </p>
@@ -127,7 +127,7 @@ export default function DistributionChart({ data, variant, options, config }: Di
         <XAxis 
           dataKey="name" 
           tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
-          stroke="rgba(255,255,255,0.3)"
+          stroke="var(--color-axis-line)"
           angle={-45}
           textAnchor="end"
           height={80}
@@ -135,10 +135,10 @@ export default function DistributionChart({ data, variant, options, config }: Di
         />
         <YAxis 
           tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-          stroke="rgba(255,255,255,0.3)"
+          stroke="var(--color-axis-line)"
           label={{ value: 'Response Count', angle: -90, position: 'insideLeft' }}
         />
-        {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 255, 255, 0.08)' }} />}
+        {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--color-hover-overlay)' }} />}
         <Bar 
           dataKey="value" 
           name="Response Count" // Override the default "value" legend label
@@ -165,19 +165,19 @@ export default function DistributionChart({ data, variant, options, config }: Di
         <XAxis 
           type="number" 
           tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-          stroke="rgba(255,255,255,0.3)"
+          stroke="var(--color-axis-line)"
           label={{ value: 'Response Count', position: 'bottom', offset: 0 }}
         />
         <YAxis 
           type="category" 
           dataKey="name" 
           tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-          stroke="rgba(255,255,255,0.3)" // Keep stroke for consistency
+          stroke="var(--color-axis-line)" // Keep stroke for consistency
           width={120} // Increase width to comfortably fit "Very Dissatisfied"
           tickLine={false} // Hide the small tick lines for a cleaner look
           axisLine={false} // Hide the vertical axis line itself
         />
-        {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 255, 255, 0.08)' }} />}
+        {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--color-hover-overlay)' }} />}
         <Bar 
           dataKey="value"
           name="Response Count" // Override the default "value" legend label

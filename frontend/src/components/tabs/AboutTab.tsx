@@ -71,7 +71,7 @@ export default function AboutTab() {
             <div className="grid grid-cols-2 gap-4">
               {/* Tech Item */}
               <div className="flex items-center gap-2">
-                <SiNextdotjs size={18} className="text-white" />
+                <SiNextdotjs size={18} style={{ color: 'var(--color-text-primary)' }} />
                 <span
                   className="text-sm font-medium"
                   style={{ color: "var(--color-text-secondary)" }}
@@ -133,7 +133,7 @@ export default function AboutTab() {
               </div>
               {/* Tech Item */}
               <div className="flex items-center gap-2">
-                <SiVercel size={18} className="text-white" />
+                <SiVercel size={18} style={{ color: 'var(--color-text-primary)' }} />
                 <span
                   className="text-sm font-medium"
                   style={{ color: "var(--color-text-secondary)" }}

@@ -255,7 +255,7 @@ export default function RelationshipChart({ data, variant, options, config }: Re
       }
 
       return (
-        <div className="glass-card-dark p-4 rounded-lg border border-white/20 max-w-xs">
+        <div className="glass-card-theme p-4 rounded-lg border border-white/20 max-w-xs">
           <p className="font-semibold mb-2" style={{ color: data.fill || 'var(--color-text-primary)' }}>
             {data.category || data.name || 'Data Point'}
           </p>
@@ -319,7 +319,7 @@ export default function RelationshipChart({ data, variant, options, config }: Re
         const difference = Math.abs(aspectData.value - aspectData.baseline).toFixed(1)
         
         return (
-          <div className="glass-card-dark p-3 rounded-lg border border-white/20 max-w-xs">
+          <div className="glass-card-theme p-3 rounded-lg border border-white/20 max-w-xs">
             <p className="font-semibold text-sm mb-2" style={{color: 'var(--color-text-primary)'}}>
               {aspectData.aspect}
             </p>
@@ -353,7 +353,7 @@ export default function RelationshipChart({ data, variant, options, config }: Re
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart data={chartData} margin={{ top: 40, right: 40, bottom: 40, left: 40 }}>
               <PolarGrid
-                stroke="rgba(255,255,255,0.2)"
+                stroke="var(--color-border-chart)"
                 gridType="polygon"
               />
               <PolarAngleAxis 
@@ -496,7 +496,7 @@ export default function RelationshipChart({ data, variant, options, config }: Re
           <ScatterChart margin={{ top: 40, right: 30, left: 50, bottom: 80 }}>
             {/* Show custom tooltip for scatter points (uses CustomTooltip defined above) */}
             {options?.showTooltip !== false && (
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.08)' }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'var(--color-hover-overlay)' }} />
             )}
             {/* Axes and Grid */}
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
@@ -506,7 +506,7 @@ export default function RelationshipChart({ data, variant, options, config }: Re
               name="Satisfaction"
               domain={[0.5, 5.5]} 
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
-              stroke="rgba(255,255,255,0.3)"
+              stroke="var(--color-axis-line)"
               label={{ value: 'Satisfaction Rating (1-5)', position: 'insideBottom', offset: -20 }}
             />
             <YAxis 
@@ -516,7 +516,7 @@ export default function RelationshipChart({ data, variant, options, config }: Re
               domain={[-0.5, 10.5]} 
               tickCount={6}
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 11}}
-              stroke="rgba(255,255,255,0.3)"
+              stroke="var(--color-axis-line)"
              
               label={{ value: 'Recommendation Score (0-10)', angle: -90, position: 'left', offset: 35, style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
             />
@@ -569,7 +569,7 @@ const renderLine = () => {
           <XAxis 
             dataKey="name"
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 10 }}
-            stroke="rgba(255,255,255,0.3)"
+            stroke="var(--color-axis-line)"
             angle={-45}
             textAnchor="end"
             height={100}

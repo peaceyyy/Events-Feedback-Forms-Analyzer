@@ -124,7 +124,7 @@ export default function AspectComparisonChart({
   
     if (radial) {
       return (
-        <div className="glass-card-dark p-4 rounded-lg border border-white/20 w-64">
+        <div className="glass-card-theme p-4 rounded-lg border border-white/20 w-64">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: fill }} />
             <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
@@ -157,7 +157,7 @@ export default function AspectComparisonChart({
 
     const isStrength = difference > 0;
     return (
-      <div className="glass-card-dark p-3 rounded-lg border border-white/20 max-w-xs">
+      <div className="glass-card-theme p-3 rounded-lg border border-white/20 max-w-xs">
         <p className="font-semibold text-sm mb-2" style={{color: 'var(--color-text-primary)'}}>
           {aspect}
         </p>
@@ -225,13 +225,13 @@ export default function AspectComparisonChart({
             barCategoryGap={10}
             barGap={2}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
             <XAxis 
               type="number" 
               domain={[-maxAbs * 1.15, maxAbs * 1.15]}
               allowDataOverflow
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-              stroke="rgba(255,255,255,0.3)"
+              stroke="var(--color-axis-line)"
               label={{ value: 'Performance vs Baseline', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
               tickFormatter={(value) => Number(value).toFixed(1)}
             />
@@ -239,7 +239,7 @@ export default function AspectComparisonChart({
               type="category" 
               dataKey="aspect"
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-              stroke="rgba(255,255,255,0.3)"
+              stroke="var(--color-axis-line)"
               width={60}
               tickMargin={8}
             />
@@ -312,11 +312,11 @@ export default function AspectComparisonChart({
           data={chartData}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
           <XAxis 
             dataKey="aspect"
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-            stroke="rgba(255,255,255,0.3)"
+            stroke="var(--color-axis-line)"
             angle={-30}
             textAnchor="end"
             height={55}
@@ -325,7 +325,7 @@ export default function AspectComparisonChart({
           <YAxis 
             domain={ [0, 5] }
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-            stroke="rgba(255,255,255,0.3)"
+            stroke="var(--color-axis-line)"
             label={{ value: 'Rating (0-5)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
           />
           
@@ -458,7 +458,7 @@ export default function AspectComparisonChart({
     return (
       <ResponsiveContainer width="100%" height={400}>
         <RadarChart data={radarData}>
-          <PolarGrid stroke="rgba(255,255,255,0.2)" />
+          <PolarGrid stroke="var(--color-border-chart)" />
           <PolarAngleAxis 
             dataKey="aspect" 
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
@@ -467,7 +467,7 @@ export default function AspectComparisonChart({
             angle={90} 
             domain={[0, 5]}
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 10 }}
-            stroke="rgba(255,255,255,0.3)"
+            stroke="var(--color-axis-line)"
           />
           <Tooltip content={<CustomTooltip radial={true} />} />
           

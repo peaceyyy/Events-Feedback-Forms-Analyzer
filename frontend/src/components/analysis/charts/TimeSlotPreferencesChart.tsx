@@ -40,7 +40,7 @@ export default function TimeSlotPreferencesChart({
     const data = payload[0].payload
     
     return (
-      <div className="glass-card-dark p-3 rounded-lg border border-white/20">
+      <div className="glass-card-theme p-3 rounded-lg border border-white/20">
         <p className="font-semibold text-sm mb-2" style={{color: 'var(--color-text-primary)'}}>
           {data.name}   
         </p>
@@ -118,18 +118,18 @@ export default function TimeSlotPreferencesChart({
             data={chartData}
             margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
           >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
           <XAxis 
             dataKey="name"
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
-            stroke="rgba(255,255,255,0.3)"
+            stroke="var(--color-axis-line)"
             angle={-25}
             textAnchor="end"
             height={80}
           />
           <YAxis 
             tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-            stroke="rgba(255,255,255,0.3)"
+            stroke="var(--color-axis-line)"
             label={{ 
               value: 'Number of Responses', 
               angle: -90, 

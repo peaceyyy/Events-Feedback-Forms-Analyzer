@@ -83,7 +83,7 @@ export default function SessionPerformanceMatrixChart({
     if (active && payload && payload.length) {
       const session = payload[0].payload
       return (
-        <div className="glass-card-dark p-4 rounded-lg border border-white/20 shadow-lg">
+        <div className="glass-card-theme p-4 rounded-lg border border-white/20 shadow-lg">
           <p className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>
             {session.session}
           </p>
@@ -151,7 +151,7 @@ export default function SessionPerformanceMatrixChart({
       <div style={{ height: `${height}px` }}>
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart margin={{ top: 20, right: 100, bottom: 60, left: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
             
             {/* X-axis: Attendance */}
             <XAxis 
@@ -159,7 +159,7 @@ export default function SessionPerformanceMatrixChart({
               dataKey="x"
               name="Attendance"
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+              axisLine={{ stroke: 'var(--color-axis-line)' }}
               label={{ 
                 value: 'Attendance Count', 
                 position: 'insideBottom',
@@ -175,7 +175,7 @@ export default function SessionPerformanceMatrixChart({
               name="Satisfaction"
               domain={[0, 5]}
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+              axisLine={{ stroke: 'var(--color-axis-line)' }}
               label={{ 
                 value: 'Avg Satisfaction (1-5)', 
                 angle: -90, 
