@@ -197,8 +197,8 @@ class GeminiAnalysisService:
         return f"""
         Extract key themes from this event feedback. Return JSON with these fields:
         
-        1. positive_themes: array of objects with "theme" and "frequency" (top 5 praise themes)
-        2. improvement_themes: array of objects with "theme" and "frequency" (top 5 improvement areas)
+        1. positive_themes: array of objects with "theme", "frequency", and "mentions" (array of 2-3 specific feedback quotes that exemplify this theme - keep quotes concise, under 100 chars each)
+        2. improvement_themes: array of objects with "theme", "frequency", and "mentions" (array of 2-3 specific feedback quotes that exemplify this theme - keep quotes concise, under 100 chars each)
         3. recurring_topics: array of topics mentioned across both positive and improvement feedback
         4. priority_actions: array of 3-5 specific actionable recommendations based on the themes
         5. theme_categories: group themes into categories like "logistics", "content", "speakers", "venue"

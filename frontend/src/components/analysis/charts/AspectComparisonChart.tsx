@@ -537,16 +537,28 @@ export default function AspectComparisonChart({
           
           {/* Variant Toggle Buttons */}
           {onVariantChange && (
-            <div className="flex gap-1 p-1 bg-white/5 rounded-lg">
+            <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
               {(['diverging', 'grouped', 'bullet', 'radar'] as const).map((v) => (
                 <button
                   key={v}
                   onClick={() => onVariantChange(v)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded transition-all duration-200 ${
-                    variant === v 
-                      ? 'bg-white/20 text-white' 
-                      : 'text-white/60 hover:text-white/80 hover:bg-white/10'
-                  }`}
+                  className={`px-3 py-1.5 text-xs font-medium rounded transition-all duration-200`}
+                  style={{
+                    backgroundColor: variant === v ? 'var(--color-hover-overlay)' : 'transparent',
+                    color: variant === v ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (variant !== v) {
+                      e.currentTarget.style.backgroundColor = 'var(--color-hover-overlay)';
+                      e.currentTarget.style.color = 'var(--color-text-primary)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (variant !== v) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.color = 'var(--color-text-secondary)';
+                    }
+                  }}
                   title={
                     v === 'diverging' ? 'Diverging Bar Chart' :
                     v === 'grouped' ? 'Grouped Bar Chart' :

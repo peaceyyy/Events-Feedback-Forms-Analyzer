@@ -346,9 +346,14 @@ export default function DiscoveryChannelImpactChart({
               disabled={isLoadingAI}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 isLoadingAI
-                  ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-300 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-500/30'
+                  ? 'bg-gray-500/20 cursor-not-allowed'
+                  : 'hover:bg-white/10 border'
               }`}
+              style={{
+                backgroundColor: isLoadingAI ? undefined : 'var(--color-surface-elevated)',
+                color: isLoadingAI ? 'var(--color-text-tertiary)' : 'var(--color-text-primary)',
+                borderColor: isLoadingAI ? undefined : 'var(--color-border-theme)',
+              }}
             >
               <AutoAwesomeIcon sx={{ fontSize: 14 }} />
               {isLoadingAI ? 'Generating...' : aiInsights ? 'Refresh AI Insights' : 'Generate AI Insights'}

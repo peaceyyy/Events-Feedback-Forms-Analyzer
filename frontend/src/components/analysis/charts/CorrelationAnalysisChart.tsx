@@ -36,7 +36,7 @@ export default function CorrelationAnalysisChart({
     if (active && payload && payload.length) {
       const point = payload[0].payload
       return (
-        <div className="glass-card-dark p-3 rounded-lg border border-white/20 shadow-lg">
+        <div className="glass-card-theme p-3 rounded-lg border border-white/20 shadow-lg">
           <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
             Aspect Rating: {point.aspect_rating}/5
           </p>
@@ -97,13 +97,13 @@ export default function CorrelationAnalysisChart({
         {data.scatter_data ? (
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-chart)" />
               <XAxis 
                 type="number"
                 dataKey="aspect_rating"
                 domain={[0, 5]}
                 tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-                axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+                stroke="var(--color-axis-line)"
                 label={{ 
                   value: 'Aspect Rating (1-5)', 
                   position: 'insideBottom',
@@ -116,7 +116,7 @@ export default function CorrelationAnalysisChart({
                 dataKey="satisfaction"
                 domain={[0, 5]}
                 tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
-                axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+                stroke="var(--color-axis-line)"
                 label={{ 
                   value: 'Overall Satisfaction (1-5)', 
                   angle: -90, 
