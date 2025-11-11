@@ -44,13 +44,10 @@ export default function ThemeAnalysis({ data, analyzed_responses, error }: Theme
 
     if (selectedTheme) {
       document.addEventListener('keydown', handleEscape)
-      // Prevent body scroll when modal is open
-      document.body.style.overflow = 'hidden'
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
     }
   }, [selectedTheme])
 
@@ -213,141 +210,137 @@ export default function ThemeAnalysis({ data, analyzed_responses, error }: Theme
       {/* Modal for showing feedback mentions */}
       {selectedTheme && (
         <div 
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999]"
           style={{ 
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(4px)',
-            left: 0,
-            top: 0,
-            right: 0,
-            bottom: 0,
-            position: 'fixed'
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(8px)'
           }}
           onClick={closeModal}
         >
           <div 
-            className="glass-card-theme rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+            className="flex flex-col h-full w-full"
             onClick={(e) => e.stopPropagation()}
             style={{
-              animation: 'modalSlideIn 0.3s ease-out'
+              animation: 'modalSlideIn 0.25s ease-out'
             }}
           >
-            {/* Modal Header */}
+            {/* Modal Header - Fixed */}
             <div 
-              className="p-6 border-b flex items-center justify-between"
+              className="flex-shrink-0 px-8 py-6 border-b flex items-center justify-between"
               style={{ 
                 borderBottomColor: 'var(--color-border-light)',
+                backgroundColor: 'var(--color-surface-base)',
                 background: selectedTheme.type === 'positive' 
-                  ? 'linear-gradient(135deg, rgba(76, 175, 80, 0.1), transparent)'
-                  : 'linear-gradient(135deg, rgba(255, 152, 0, 0.1), transparent)'
+                  ? 'linear-gradient(135deg, rgba(76, 175, 80, 0.1), var(--color-surface-base))'
+                  : 'linear-gradient(135deg, rgba(255, 152, 0, 0.1), var(--color-surface-base))'
               }}
             >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center"
-                  style={{
-                    backgroundColor: selectedTheme.type === 'positive' 
-                      ? 'rgba(76, 175, 80, 0.18)' 
-                      : 'rgba(255, 152, 0, 0.18)'
-                  }}
-                >
-                  <QuoteIcon 
-                    sx={{ 
-                      fontSize: 20, 
-                      color: selectedTheme.type === 'positive' 
-                        ? 'var(--color-usc-green)' 
-                        : 'var(--color-usc-orange)' 
-                    }} 
-                  />
-                </div>
-                <div>
-                  <h3 
-                    className="text-lg font-semibold"
-                    style={{ color: 'var(--color-text-primary)' }}
-                  >
-                    {selectedTheme.theme.theme}
-                  </h3>
-                  <p 
-                    className="text-sm"
-                    style={{ color: 'var(--color-text-secondary)' }}
-                  >
-                    {selectedTheme.theme.frequency} mentions from feedback
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={closeModal}
-                className="p-2 rounded-lg transition-all duration-200 hover:bg-white/10"
-                style={{ color: 'var(--color-text-secondary)' }}
-                aria-label="Close modal"
-              >
-                <CloseIcon sx={{ fontSize: 24 }} />
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6 overflow-y-auto max-h-[calc(80vh-140px)]">
-              <h4 
-                className="text-sm font-semibold mb-4 uppercase tracking-wide"
-                style={{ color: 'var(--color-text-tertiary)' }}
-              >
-                Sample Feedback Mentions
-              </h4>
-              <div className="space-y-3">
-                {selectedTheme.theme.mentions?.map((mention, index) => (
+              <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+                <div className="flex items-center gap-4">
                   <div
-                    key={index}
-                    className="p-4 rounded-lg border-l-4"
+                    className="w-12 h-12 rounded-lg flex items-center justify-center"
                     style={{
-                      backgroundColor: 'var(--color-surface-elevated)',
-                      borderLeftColor: selectedTheme.type === 'positive' 
-                        ? 'var(--color-usc-green)' 
-                        : 'var(--color-usc-orange)'
+                      backgroundColor: selectedTheme.type === 'positive' 
+                        ? 'rgba(76, 175, 80, 0.18)' 
+                        : 'rgba(255, 152, 0, 0.18)'
                     }}
                   >
-                    <div className="flex items-start gap-3">
-                      <QuoteIcon 
-                        sx={{ 
-                          fontSize: 16, 
-                          color: 'var(--color-text-tertiary)',
-                          opacity: 0.5,
-                          marginTop: '2px'
-                        }} 
-                      />
-                      <p 
-                        className="text-sm leading-relaxed flex-1"
-                        style={{ color: 'var(--color-text-primary)' }}
-                      >
-                        "{mention}"
-                      </p>
-                    </div>
+                    <QuoteIcon 
+                      sx={{ 
+                        fontSize: 24, 
+                        color: selectedTheme.type === 'positive' 
+                          ? 'var(--color-usc-green)' 
+                          : 'var(--color-usc-orange)' 
+                      }} 
+                    />
                   </div>
-                ))}
+                  <div>
+                    <h3 
+                      className="text-2xl font-bold"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
+                      {selectedTheme.theme.theme}
+                    </h3>
+                    <p 
+                      className="text-sm mt-1"
+                      style={{ color: 'var(--color-text-secondary)' }}
+                    >
+                      {selectedTheme.theme.frequency} mentions • {selectedTheme.type === 'positive' ? 'Strength' : 'Improvement Area'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="p-2.5 rounded-lg transition-all duration-200"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'var(--color-text-secondary)' 
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+                  }}
+                  aria-label="Close modal"
+                  title="Close (Esc)"
+                >
+                  <CloseIcon sx={{ fontSize: 24 }} />
+                </button>
               </div>
             </div>
 
-            {/* Modal Footer */}
+            {/* Modal Content - Scrollable */}
             <div 
-              className="p-4 border-t flex justify-end"
-              style={{ borderTopColor: 'var(--color-border-light)' }}
+              className="flex-1 overflow-y-auto px-8 py-6"
+              style={{ backgroundColor: 'var(--color-surface-base)' }}
             >
-              <button
-                onClick={closeModal}
-                className="px-4 py-2 rounded-lg font-medium transition-all duration-200"
-                style={{
-                  backgroundColor: 'var(--color-surface-elevated)',
-                  color: 'var(--color-text-primary)',
-                  border: '1px solid var(--color-border-light)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-hover-overlay)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-surface-elevated)'
-                }}
-              >
-                Close
-              </button>
+              <div className="max-w-7xl mx-auto">
+                <h4 
+                  className="text-sm font-semibold mb-4 uppercase tracking-wide"
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                >
+                  Sample Feedback Mentions
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {selectedTheme.theme.mentions?.map((mention, index) => (
+                    <div
+                      key={index}
+                      className="p-4 rounded-lg border-l-4 transition-all hover:scale-[1.01]"
+                      style={{
+                        backgroundColor: 'var(--color-surface-elevated)',
+                        borderLeftColor: selectedTheme.type === 'positive' 
+                          ? 'var(--color-usc-green)' 
+                          : 'var(--color-usc-orange)',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span 
+                          className="text-xs font-mono px-2.5 py-1 rounded flex-shrink-0"
+                          style={{ 
+                            backgroundColor: selectedTheme.type === 'positive' 
+                              ? 'rgba(76, 175, 80, 0.18)' 
+                              : 'rgba(255, 152, 0, 0.18)',
+                            color: selectedTheme.type === 'positive' 
+                              ? 'var(--color-usc-green)' 
+                              : 'var(--color-usc-orange)',
+                            fontWeight: 600
+                          }}
+                        >
+                          #{index + 1}
+                        </span>
+                        <p 
+                          className="text-sm leading-relaxed flex-1"
+                          style={{ color: 'var(--color-text-primary)' }}
+                        >
+                          "{mention}"
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

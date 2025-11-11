@@ -137,189 +137,203 @@ export default function SampleResponsesModal({
   }
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999]"
       style={{ 
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        backdropFilter: 'blur(4px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(8px)',
         animation: isVisible ? 'fadeIn 0.2s ease-out' : 'fadeOut 0.2s ease-out'
       }}
-      onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
+      onClick={onClose}
     >
       <div 
         ref={modalRef}
-        className="glass-card-dark rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+        className="flex flex-col h-full w-full"
         style={{
-          animation: isVisible ? 'slideUp 0.3s ease-out' : 'slideDown 0.3s ease-out'
+          animation: isVisible ? 'slideUp 0.25s ease-out' : 'slideDown 0.25s ease-out'
         }}
-        onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="p-6 border-b"
-             style={{ borderBottomColor: 'var(--color-border-light)' }}>
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-start gap-3">
-              <AIIcon sx={{ fontSize: 24, color: themeColors.colorVar }} aria-hidden="true" />
-              <div>
-                <h3 id="modal-title" className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                  {title}
-                </h3>
-                {theme && (
-                  <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>
-                    Theme: {theme}
+        {/* Header - Fixed at top */}
+        <div 
+          className="flex-shrink-0 px-8 py-6 border-b"
+          style={{ 
+            borderBottomColor: 'var(--color-border-light)',
+            backgroundColor: 'var(--color-surface-base)'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start gap-3">
+                <AIIcon sx={{ fontSize: 28, color: themeColors.colorVar }} aria-hidden="true" />
+                <div>
+                  <h3 id="modal-title" className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                    {title}
+                  </h3>
+                  {theme && (
+                    <p className="text-sm mt-1.5" style={{ color: 'var(--color-text-secondary)' }}>
+                      Theme: <span className="font-medium" style={{ color: themeColors.colorVar }}>{theme}</span>
+                    </p>
+                  )}
+                  <p id="modal-description" className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
+                    {filteredSamples.length} of {samples.length} response{samples.length !== 1 ? 's' : ''}
+                    {searchQuery && ` matching "${searchQuery}"`}
                   </p>
-                )}
-                <p id="modal-description" className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
-                  {filteredSamples.length} of {samples.length} response{samples.length !== 1 ? 's' : ''}
-                  {searchQuery && ` matching "${searchQuery}"`}
-                </p>
+                </div>
               </div>
-            </div>
-            <button
-              ref={closeButtonRef}
-              onClick={onClose}
-              className="p-2 rounded-lg transition-all"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'var(--color-text-secondary)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
-              }}
-              aria-label="Close modal"
-              title="Close (Esc)"
-            >
-              <CloseIcon sx={{ fontSize: 20 }} />
-            </button>
-          </div>
-
-          {/* Search Bar */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <SearchIcon sx={{ fontSize: 18, color: 'var(--color-text-tertiary)' }} />
-            </div>
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search responses..."
-              className="w-full pl-10 pr-10 py-2 rounded-lg text-sm transition-all"
-              style={{
-                backgroundColor: 'var(--color-surface-elevated)',
-                border: '1px solid var(--color-border-light)',
-                color: 'var(--color-text-primary)'
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = themeColors.colorVar
-                e.currentTarget.style.boxShadow = `0 0 0 3px rgba(${themeColors.accentRgb}, 0.1)`
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'var(--color-border-light)'
-                e.currentTarget.style.boxShadow = 'none'
-              }}
-              aria-label="Search through responses"
-            />
-            {searchQuery && (
               <button
-                onClick={handleClearSearch}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 transition-all"
-                style={{ color: 'var(--color-text-tertiary)' }}
+                ref={closeButtonRef}
+                onClick={onClose}
+                className="p-2.5 rounded-lg transition-all"
+                style={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  color: 'var(--color-text-secondary)'
+                }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--color-text-primary)'
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--color-text-tertiary)'
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
                 }}
-                aria-label="Clear search"
-                title="Clear search"
+                aria-label="Close modal"
+                title="Close (Esc)"
               >
-                <ClearIcon sx={{ fontSize: 18 }} />
+                <CloseIcon sx={{ fontSize: 24 }} />
               </button>
-            )}
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative max-w-2xl">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                <SearchIcon sx={{ fontSize: 20, color: 'var(--color-text-tertiary)' }} />
+              </div>
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search responses..."
+                className="w-full pl-12 pr-12 py-3 rounded-lg text-sm transition-all"
+                style={{
+                  backgroundColor: 'var(--color-surface-elevated)',
+                  border: '1px solid var(--color-border-light)',
+                  color: 'var(--color-text-primary)'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = themeColors.colorVar
+                  e.currentTarget.style.boxShadow = `0 0 0 3px rgba(${themeColors.accentRgb}, 0.15)`
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-border-light)'
+                  e.currentTarget.style.boxShadow = 'none'
+                }}
+                aria-label="Search through responses"
+              />
+              {searchQuery && (
+                <button
+                  onClick={handleClearSearch}
+                  className="absolute inset-y-0 right-0 flex items-center pr-4 transition-all"
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--color-text-primary)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--color-text-tertiary)'
+                  }}
+                  aria-label="Clear search"
+                  title="Clear search"
+                >
+                  <ClearIcon sx={{ fontSize: 20 }} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Content */}
+        {/* Content - Scrollable body */}
         <div 
-          className="p-6 overflow-y-auto max-h-[calc(80vh-220px)]"
+          className="flex-1 overflow-y-auto px-8 py-6"
+          style={{ backgroundColor: 'var(--color-surface-base)' }}
           role="region"
           aria-label="Sample responses list"
           tabIndex={0}
           aria-live="polite"
           aria-atomic="false"
+          onClick={(e) => e.stopPropagation()}
         >
-          {filteredSamples.length > 0 ? (
-            <div className="space-y-4" role="list">
-              {filteredSamples.map((sample, index) => {
-                // Find original index for numbering
-                const originalIndex = samples.indexOf(sample)
-                
-                return (
-                  <div 
-                    key={originalIndex}
-                    role="listitem"
-                    className="p-4 rounded-lg border-l-4 focus-within:ring-2 focus-within:ring-offset-2"
-                    style={{
-                      backgroundColor: 'var(--color-surface-elevated)',
-                      borderLeftColor: badgeBorder
-                    }}
-                    tabIndex={0}
-                  >
-                    <div className="flex items-start gap-2">
-                      <span className="text-xs font-mono px-2 py-1 rounded flex-shrink-0"
-                            style={{ 
-                              backgroundColor: badgeBg,
-                              color: themeColors.colorVar
-                            }}
-                            aria-label={`Response ${originalIndex + 1} of ${samples.length}`}>
-                        #{originalIndex + 1}
-                      </span>
-                      <p className="flex-1 leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>
-                        {searchQuery ? (
-                          // Highlight search matches
-                          highlightText(sample, searchQuery)
-                        ) : (
-                          `"${sample}"`
-                        )}
-                      </p>
+          <div className="max-w-7xl mx-auto">
+            {filteredSamples.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="list">
+                {filteredSamples.map((sample, index) => {
+                  // Find original index for numbering
+                  const originalIndex = samples.indexOf(sample)
+                  
+                  return (
+                    <div 
+                      key={originalIndex}
+                      role="listitem"
+                      className="p-4 rounded-lg border-l-4 transition-all hover:scale-[1.01]"
+                      style={{
+                        backgroundColor: 'var(--color-surface-elevated)',
+                        borderLeftColor: badgeBorder,
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                      }}
+                      tabIndex={0}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span 
+                          className="text-xs font-mono px-2.5 py-1 rounded flex-shrink-0"
+                          style={{ 
+                            backgroundColor: badgeBg,
+                            color: themeColors.colorVar,
+                            fontWeight: 600
+                          }}
+                          aria-label={`Response ${originalIndex + 1} of ${samples.length}`}
+                        >
+                          #{originalIndex + 1}
+                        </span>
+                        <p className="flex-1 leading-relaxed text-sm" style={{ color: 'var(--color-text-primary)' }}>
+                          {searchQuery ? (
+                            highlightText(sample, searchQuery)
+                          ) : (
+                            `"${sample}"`
+                          )}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <SearchIcon sx={{ fontSize: 48, color: 'var(--color-text-tertiary)', mb: 2, opacity: 0.5 }} />
-              <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-text-secondary)' }} role="status">
-                {searchQuery ? `No responses match "${searchQuery}"` : 'No sample responses available for this item.'}
-              </p>
-              {searchQuery && (
-                <button
-                  onClick={handleClearSearch}
-                  className="text-xs mt-2 px-3 py-1 rounded-lg transition-all"
-                  style={{
-                    backgroundColor: 'rgba(66, 133, 244, 0.15)',
-                    color: 'var(--color-google-blue)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(66, 133, 244, 0.25)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(66, 133, 244, 0.15)'
-                  }}
-                >
-                  Clear search
-                </button>
-              )}
-            </div>
-          )}
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <SearchIcon sx={{ fontSize: 56, color: 'var(--color-text-tertiary)', mb: 2, opacity: 0.5 }} />
+                <p className="text-base font-medium " style={{ color: 'var(--color-text-secondary)' }} role="status">
+                  {searchQuery ? `No responses match "${searchQuery}"` : 'No sample responses available for this item.'}
+                </p>
+                {searchQuery && (
+                  <button
+                    onClick={handleClearSearch}
+                    className="text-sm mt-3 px-4 py-2 rounded-lg transition-all font-medium"
+                    style={{
+                      backgroundColor: 'rgba(66, 133, 244, 0.15)',
+                      color: 'var(--color-google-blue)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(66, 133, 244, 0.25)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(66, 133, 244, 0.15)'
+                    }}
+                  >
+                    Clear search
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
