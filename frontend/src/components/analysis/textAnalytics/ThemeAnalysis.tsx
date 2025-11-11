@@ -213,10 +213,15 @@ export default function ThemeAnalysis({ data, analyzed_responses, error }: Theme
       {/* Modal for showing feedback mentions */}
       {selectedTheme && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
           style={{ 
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(4px)'
+            backdropFilter: 'blur(4px)',
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            position: 'fixed'
           }}
           onClick={closeModal}
         >

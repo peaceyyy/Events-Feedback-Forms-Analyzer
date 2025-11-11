@@ -136,7 +136,7 @@ export default function PacingAnalysisChart({
 
         {/* Insights */}
         {data.insights && data.insights.length > 0 && (
-          <div className="mt-4 p-4 bg-white/5 rounded-lg">
+          <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
             <h4 className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>
               Key Insights
             </h4>

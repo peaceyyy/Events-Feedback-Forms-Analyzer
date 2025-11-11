@@ -252,8 +252,8 @@ export default function SessionPerformanceMatrixChart({
         </ResponsiveContainer>
       </div>
 
-      {/* Insights Panel */}
-      <div className="mt-6 p-4 bg-white/5 rounded-lg">
+      {/* Key Insights Panel */}
+      <div className="mt-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-semibold text-sm flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
             {aiInsights ? (
@@ -369,7 +369,7 @@ export default function SessionPerformanceMatrixChart({
 
       {/* Stats Summary */}
       <div className="mt-4 grid grid-cols-3 gap-4 text-center">
-        <div className="p-3 bg-white/5 rounded-lg">
+        <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
           <div className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
             {data.stats.total_sessions}
           </div>
@@ -377,7 +377,7 @@ export default function SessionPerformanceMatrixChart({
             Total Sessions
           </div>
         </div>
-        <div className="p-3 bg-white/5 rounded-lg">
+        <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
           <div className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
             {data.stats.avg_attendance.toFixed(1)}
           </div>
@@ -385,7 +385,7 @@ export default function SessionPerformanceMatrixChart({
             Avg Attendance
           </div>
         </div>
-        <div className="p-3 bg-white/5 rounded-lg">
+        <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
           <div className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
             {data.stats.avg_satisfaction.toFixed(1)}/5
           </div>

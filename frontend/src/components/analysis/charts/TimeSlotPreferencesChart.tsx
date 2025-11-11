@@ -188,23 +188,31 @@ export default function TimeSlotPreferencesChart({
           <div className="flex gap-2">
             <button
               onClick={() => setVariant('pie')}
-              className={`px-3 py-1 rounded-lg text-xs transition-colors ${
+              className={`px-3 py-1 rounded-lg text-xs transition-colors border ${
                 variant === 'pie' 
-                  ? 'bg-blue-500/30 border border-blue-400/50' 
-                  : 'bg-white/5 border border-white/10'
+                  ? 'bg-blue-500/30 border-blue-400/50' 
+                  : ''
               }`}
-              style={{color: 'var(--color-text-secondary)'}}
+              style={variant !== 'pie' ? {
+                backgroundColor: 'var(--color-surface-elevated)',
+                color: 'var(--color-text-secondary)',
+                borderColor: 'var(--color-border-theme)'
+              } : { color: 'var(--color-text-secondary)' }}
             >
               Pie Chart
             </button>
             <button
               onClick={() => setVariant('bar')}
-              className={`px-3 py-1 rounded-lg text-xs transition-colors ${
+              className={`px-3 py-1 rounded-lg text-xs transition-colors border ${
                 variant === 'bar' 
-                  ? 'bg-blue-500/30 border border-blue-400/50' 
-                  : 'bg-white/5 border border-white/10'
+                  ? 'bg-blue-500/30 border-blue-400/50' 
+                  : ''
               }`}
-              style={{color: 'var(--color-text-secondary)'}}
+              style={variant !== 'bar' ? {
+                backgroundColor: 'var(--color-surface-elevated)',
+                color: 'var(--color-text-secondary)',
+                borderColor: 'var(--color-border-theme)'
+              } : { color: 'var(--color-text-secondary)' }}
             >
               Bar Chart
             </button>

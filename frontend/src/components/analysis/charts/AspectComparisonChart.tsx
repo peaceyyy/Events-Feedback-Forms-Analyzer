@@ -249,7 +249,7 @@ export default function AspectComparisonChart({
               <ReferenceLine x={0} stroke="#FFC107" strokeWidth={2} strokeDasharray="5 5" />
             )}
             
-            {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
+            {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--color-hover-overlay)' }} />}
             
             {/* Legend for diverging chart */}
             {options?.showLegend && (
@@ -345,7 +345,7 @@ export default function AspectComparisonChart({
             />
           )}
           
-          {options?.showTooltip && <Tooltip content={<CustomTooltip />} />}
+          {options?.showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--color-hover-overlay)' }} />}
           
           {/* Single bar series - color-coded by performance */}
           <Bar dataKey="value" name="Aspect Rating" barSize={35}>
@@ -354,7 +354,7 @@ export default function AspectComparisonChart({
             ))}
           </Bar>
         </BarChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
     )
   }
 

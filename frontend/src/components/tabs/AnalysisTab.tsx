@@ -79,7 +79,7 @@ export default function AnalysisTab({
 
               {/* Enhanced KPI Cards: responsive — 1 / 2 / 3 / 5 columns for sm/md/lg/xl */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
+                <div className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
                   <CheckCircleIcon
                     sx={{ fontSize: 32, color: "var(--color-usc-green)" }}
                   />
@@ -99,7 +99,7 @@ export default function AnalysisTab({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
+                <div className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
                   <InsightsIcon
                     sx={{ fontSize: 32, color: "var(--color-google-blue)" }}
                   />
@@ -123,7 +123,7 @@ export default function AnalysisTab({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
+                <div className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
                   <TrendingUpIcon
                     sx={{ fontSize: 32, color: "var(--color-usc-orange)" }}
                   />
@@ -146,7 +146,7 @@ export default function AnalysisTab({
                 </div>
 
                 {/* Top Aspect KPI Card */}
-                <div className={`flex items-center gap-4 p-4 bg-white/5 rounded-lg ${!topAspect ? 'opacity-50' : ''}`}>
+                <div className={`flex items-center gap-4 p-4 rounded-lg ${!topAspect ? 'opacity-50' : ''}`} style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
                   <CategoryIcon
                     sx={{
                       fontSize: 32,
@@ -189,7 +189,7 @@ export default function AnalysisTab({
                 </div>
 
                 {/* Lowest Aspect KPI Card */}
-                <div className={`flex items-center gap-4 p-4 bg-white/5 rounded-lg ${!lowestAspect ? 'opacity-50' : ''}`}>
+                <div className={`flex items-center gap-4 p-4 rounded-lg ${!lowestAspect ? 'opacity-50' : ''}`} style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
                   <CategoryIcon
                     sx={{
                       fontSize: 32,

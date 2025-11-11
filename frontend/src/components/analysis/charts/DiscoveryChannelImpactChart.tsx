@@ -166,8 +166,13 @@ export default function DiscoveryChannelImpactChart({
             className={`px-3 py-1 rounded-lg text-xs transition-all ${
               variant === 'satisfaction'
                 ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                : 'border'
             }`}
+            style={variant !== 'satisfaction' ? {
+              backgroundColor: 'var(--color-surface-elevated)',
+              color: 'var(--color-text-secondary)',
+              borderColor: 'var(--color-border-theme)'
+            } : {}}
           >
             Satisfaction
           </button>
@@ -176,8 +181,13 @@ export default function DiscoveryChannelImpactChart({
             className={`px-3 py-1 rounded-lg text-xs transition-all ${
               variant === 'effectiveness'
                 ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                : 'border'
             }`}
+            style={variant !== 'effectiveness' ? {
+              backgroundColor: 'var(--color-surface-elevated)',
+              color: 'var(--color-text-secondary)',
+              borderColor: 'var(--color-border-theme)'
+            } : {}}
           >
             Effectiveness
           </button>
@@ -186,8 +196,13 @@ export default function DiscoveryChannelImpactChart({
             className={`px-3 py-1 rounded-lg text-xs transition-all ${
               variant === 'dual'
                 ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                : 'border'
             }`}
+            style={variant !== 'dual' ? {
+              backgroundColor: 'var(--color-surface-elevated)',
+              color: 'var(--color-text-secondary)',
+              borderColor: 'var(--color-border-theme)'
+            } : {}}
           >
             Combined
           </button>
@@ -323,7 +338,7 @@ export default function DiscoveryChannelImpactChart({
       </div>
 
   {/* Insights Panel */}
-  <div className="mt-4 p-4 bg-white/5 rounded-lg">
+  <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-semibold text-sm flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
             {aiInsights ? (
@@ -441,7 +456,7 @@ export default function DiscoveryChannelImpactChart({
 
       {/* Stats Summary */}
       <div className="mt-4 grid grid-cols-2 gap-4 text-center">
-        <div className="p-3 bg-white/5 rounded-lg">
+        <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
           <div className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
             {data.stats.total_channels}
           </div>
@@ -450,7 +465,7 @@ export default function DiscoveryChannelImpactChart({
           </div>
         </div>
         
-        <div className="p-3 bg-white/5 rounded-lg">
+        <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
           <div className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
             {data.stats.overall_avg_satisfaction.toFixed(1)}/5
           </div>

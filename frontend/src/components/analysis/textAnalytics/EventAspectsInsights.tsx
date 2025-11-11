@@ -82,7 +82,8 @@ export default function EventAspectsInsights({
   if (!data) {
     return (
       <div
-        className={`glass-card-dark p-6 rounded-2xl border border-white/10 ${className}`}
+        className={`glass-card-theme p-6 rounded-2xl ${className}`}
+        style={{ borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border-theme)' }}
       >
         <h3
           className="text-lg font-semibold mb-4"
@@ -108,7 +109,7 @@ export default function EventAspectsInsights({
           
             {/* Key Insights Section - AI Generated (ALWAYS SHOW IF AVAILABLE) */}
             {aiInsights?.key_insights && aiInsights.key_insights.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-white/10">
+              <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--color-border-theme)' }}>
                 <h4 className="text-xs font-semibold mb-2 text-purple-400 flex items-center gap-1">
                   <StarIcon sx={{ fontSize: 14 }} />
                   Key Insights
@@ -177,7 +178,7 @@ export default function EventAspectsInsights({
 
           {/* Improvement Recommendations Section - AI Generated (ALWAYS SHOW IF AVAILABLE) */}
           {aiInsights?.improvement_recommendations && aiInsights.improvement_recommendations.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-white/10">
+            <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--color-border-theme)' }}>
               <h4 className="text-xs font-semibold mb-2 text-blue-400 flex items-center gap-1">
                 <TrendingUpIcon sx={{ fontSize: 14 }} />
                 Improvement Recommendations
@@ -227,7 +228,7 @@ export default function EventAspectsInsights({
 
           {/* Strategic Priorities Section - AI Generated */}
           {aiInsights?.strategic_priorities && aiInsights.strategic_priorities.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-white/10">
+            <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--color-border-theme)' }}>
               <h4 className="text-xs font-semibold mb-2 text-orange-400 flex items-center gap-1">
                 <FlagIcon sx={{ fontSize: 14 }} />
                 Strategic Priorities
@@ -282,7 +283,8 @@ export default function EventAspectsInsights({
 
   return (
     <div
-      className={`glass-card-dark p-6 rounded-2xl border border-white/10 h-full flex flex-col ${className}`}
+      className={`glass-card-theme p-6 rounded-2xl h-full flex flex-col ${className}`}
+      style={{ borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border-theme)' }}
     >
       {/* Card Header with Navigation */}
       <div className="flex items-center justify-between mb-4">
@@ -303,7 +305,10 @@ export default function EventAspectsInsights({
                   : "details"
               )
             }
-            className="p-1 hover:bg-white/10 rounded-full transition-colors"
+            className="p-1 rounded-full transition-colors"
+            style={{ backgroundColor: 'transparent' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-hover-overlay)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
             <ChevronLeft
               sx={{ fontSize: 20, color: "var(--color-text-secondary)" }}
@@ -313,9 +318,10 @@ export default function EventAspectsInsights({
             {(Object.keys(views) as Array<keyof typeof views>).map((view) => (
               <div
                 key={view}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  currentView === view ? "bg-blue-400" : "bg-white/30"
-                }`}
+                className={`w-2 h-2 rounded-full transition-colors`}
+                style={{
+                  backgroundColor: currentView === view ? '#60A5FA' : 'var(--color-border-theme)'
+                }}
               />
             ))}
           </div>
@@ -329,7 +335,10 @@ export default function EventAspectsInsights({
                   : "summary"
               )
             }
-            className="p-1 hover:bg-white/10 rounded-full transition-colors"
+            className="p-1 rounded-full transition-colors"
+            style={{ backgroundColor: 'transparent' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-hover-overlay)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
             <ChevronRight
               sx={{ fontSize: 20, color: "var(--color-text-secondary)" }}
@@ -343,8 +352,15 @@ export default function EventAspectsInsights({
 
       {/* Generate AI Insights Button */}
       {onGenerateAIInsights && (
-        <div className="mt-3 flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
-          <div className="flex items-center gap-2">
+        <div 
+          className="mt-3 flex items-center justify-between p-3 rounded-lg"
+          style={{
+            backgroundColor: 'var(--color-surface-elevated)',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'var(--color-border-theme)'
+          }}
+        >          <div className="flex items-center gap-2">
             <AutoAwesomeIcon sx={{ fontSize: 16 }} className="text-purple-400" />
             <span className="text-xs font-medium" style={{ color: 'var(--color-text-primary)' }}>
               {aiInsights ? 'AI Insights Active' : 'AI Aspect Analysis'}

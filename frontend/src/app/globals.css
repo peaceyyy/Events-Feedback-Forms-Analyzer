@@ -404,3 +404,42 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Prevent text selection and focus outlines on charts */
+svg,
+canvas,
+.recharts-wrapper,
+.recharts-surface,
+.recharts-layer,
+.recharts-bar,
+.recharts-pie,
+.recharts-sector,
+.recharts-line,
+.recharts-area,
+.recharts-scatter,
+.recharts-radar,
+.recharts-radial-bar {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: none !important;
+}
+
+/* Remove focus outline from chart containers */
+.recharts-wrapper:focus,
+.recharts-surface:focus,
+svg:focus,
+canvas:focus {
+  outline: none !important;
+}
+
+
+.recharts-text,
+.recharts-label,
+.recharts-cartesian-axis-tick-value {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

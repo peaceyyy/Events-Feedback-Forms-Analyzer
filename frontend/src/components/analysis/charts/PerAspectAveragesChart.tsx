@@ -75,9 +75,6 @@ export default function PerAspectAveragesChart({
       >
         Per Aspect Averages
       </h3>
-      <p className="text-xs mb-4" style={{ color: "var(--color-text-secondary)" }}>
-        {chartData.length} responses analyzed
-      </p>
 
       {/* Stylized Horizontal Bars */}
       <div className="space-y-4">
@@ -92,7 +89,7 @@ export default function PerAspectAveragesChart({
             </div>
 
             {/* Bar Container */}
-            <div className="flex-1 relative h-8 bg-white/5 rounded-lg overflow-hidden">
+            <div className="flex-1 relative h-8 rounded-lg overflow-hidden" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
               {/* Filled Bar with Gradient */}
               <div
                 className="h-full rounded-lg transition-all duration-500 ease-out"

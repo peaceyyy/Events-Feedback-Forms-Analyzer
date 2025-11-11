@@ -19,7 +19,6 @@ interface ComparisonChartProps {
 export default function ComparisonChart({ data, variant, options, config }: ComparisonChartProps) {
   
 
-
   // Transform backend data to chart format
   const chartData = React.useMemo(() => {
     
@@ -223,17 +222,17 @@ const renderGroupedBar = () => {
           />
         </YAxis>
         
-        {/* --- REFINED Secondary Y-Axis --- */}
         <YAxis 
           yAxisId="right"
           orientation="right"
-          stroke="var(--color-chart-orange)" // Color association
-          tick={{ fill: 'var(--color-chart-orange)', fontSize: 12, fontWeight: 'bold' }} // Stronger ticks
-          domain={[0, 'dataMax + 10']} // Give some headroom above the max attendance
+          stroke="var(--color-chart-orange)" 
+          tick={{ fill: 'var(--color-chart-orange)', fontSize: 12, fontWeight: 'bold' }} 
+          domain={[0, 'dataMax + 3']}
+          allowDecimals={false}
+          tickCount={6}
         >
-          {/* THE FIX: Add an explicit label to the axis */}
           <Label 
-            value="Attendance Count" 
+            value="Attendance Count"  
             angle={-90} 
             position="insideRight" 
             style={{ textAnchor: 'middle', fill: 'var(--color-chart-orange)' }} 
@@ -254,8 +253,8 @@ const renderGroupedBar = () => {
           dataKey="attendance"
           name="Attendance" 
           fill="var(--color-chart-orange)" 
-          radius={[0, 0, 0, 0]} // Increase radius for rounder bars
-          maxBarSize={100} // Increase max bar size for thickness
+          radius={[0, 0, 0, 0]} 
+          maxBarSize={100} 
         />
       </BarChart>
     </ResponsiveContainer>
