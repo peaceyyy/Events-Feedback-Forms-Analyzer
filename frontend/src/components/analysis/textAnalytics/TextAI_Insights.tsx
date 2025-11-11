@@ -5,6 +5,7 @@ import {
   Psychology as PsychologyIcon,
   AutoAwesome as AIIcon,
   Error as ErrorIcon,
+  ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material'
 import SentimentAnalysis from './SentimentAnalysis'
 import ThemeAnalysis from './ThemeAnalysis'
@@ -97,9 +98,27 @@ export default function AIInsightsContainer({
         <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>
           AI Insights Unavailable
         </h3>
-        <p style={{ color: 'var(--color-text-secondary)' }}>
+        <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>
           No text feedback available for AI analysis. Upload feedback with text responses to unlock AI insights.
         </p>
+        {/* Disabled button state with tooltip-like explanation */}
+        <button
+          disabled
+          className="px-6 rounded-lg font-medium inline-flex items-center justify-center gap-2"
+          style={{
+            height: '44px',
+            background: 'linear-gradient(135deg, var(--color-google-blue), var(--color-usc-green))',
+            color: 'white',
+            opacity: 0.4,
+            cursor: 'not-allowed'
+          }}
+          aria-label="Generate AI Insights (disabled - no text feedback available)"
+          title="Upload feedback with text responses to enable AI analysis"
+        >
+          <AIIcon sx={{ fontSize: 20 }} />
+          Generate AI Insights
+          <ChevronRightIcon sx={{ fontSize: 18 }} />
+        </button>
       </div>
     )
   }
@@ -113,22 +132,34 @@ export default function AIInsightsContainer({
             AI Analysis Error
           </h3>
         </div>
-        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>
+        <p className="mb-4 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
           {error}
         </p>
         <button
           onClick={generateAIInsights}
-          className="px-4 py-2 rounded-lg transition-all font-medium"
+          className="px-6 rounded-lg transition-all font-medium inline-flex items-center justify-center gap-2"
           style={{
+            height: '44px',
             backgroundColor: 'var(--color-google-blue)',
-            color: 'white'
+            color: 'white',
+            boxShadow: '0 2px 8px rgba(66, 133, 244, 0.25)'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.opacity = '0.9'
+            e.currentTarget.style.transform = 'scale(1.03)'
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(66, 133, 244, 0.35)'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = '1'
+            e.currentTarget.style.transform = 'scale(1)'
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(66, 133, 244, 0.25)'
           }}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = 'none'
+            e.currentTarget.style.boxShadow = '0 0 0 3px var(--color-ring-offset), 0 0 0 6px var(--color-ring)'
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(66, 133, 244, 0.25)'
+          }}
+          aria-label="Retry AI analysis"
         >
           Retry Analysis
         </button>
@@ -140,31 +171,55 @@ export default function AIInsightsContainer({
     return (
       <div className="glass-card-dark p-8 rounded-xl text-center">
         <AIIcon sx={{ fontSize: 48, color: 'var(--color-google-blue)', mb: 2 }} />
-        <h3 className="text-xl font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-          AI-Powered Insights Available
+        
+        {/* Improved Typography & Copy */}
+        <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>
+          AI Insights
         </h3>
-        <p className="mb-6" style={{ color: 'var(--color-text-secondary)' }}>
-          Generate advanced sentiment analysis, theme extraction, and strategic recommendations using Google's Gemini AI.
+        <p className="text-sm mb-6 max-w-md mx-auto" style={{ color: 'var(--color-text-secondary)' }}>
+          Sentiment, themes & recommended actions
         </p>
+        
+        {/* Primary CTA Button - Improved Design */}
         <button
           onClick={generateAIInsights}
-          className="px-6 py-3 rounded-lg font-medium transition-all transform inline-flex items-center justify-center gap-2"
+          className="px-6 rounded-lg font-medium transition-all inline-flex items-center justify-center gap-2.5 mb-4"
           style={{
+            height: '44px',
             background: 'linear-gradient(135deg, var(--color-google-blue), var(--color-usc-green))',
-            color: 'white'
+            color: 'white',
+            boxShadow: '0 2px 8px rgba(66, 133, 244, 0.3)',
+            transitionDuration: '120ms',
+            transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.05)'
+            e.currentTarget.style.transform = 'scale(1.03)'
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(66, 133, 244, 0.4)'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)'
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(66, 133, 244, 0.3)'
           }}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = 'none'
+            e.currentTarget.style.boxShadow = '0 0 0 3px var(--color-ring-offset), 0 0 0 6px var(--color-ring)'
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(66, 133, 244, 0.3)'
+          }}
+          aria-label={`Generate AI insights for ${feedbackData.length} responses`}
         >
           <AIIcon sx={{ fontSize: 20 }} />
-          Generate AI Insights
+          <span>Generate AI Insights</span>
+          <ChevronRightIcon sx={{ fontSize: 18 }} />
         </button>
-        <p className="mt-3 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-          Analyzing {feedbackData.length} responses with text feedback
+        
+        {/* Supporting Text - Brief & Confidence-Building */}
+        <p className="text-xs mb-2" style={{ color: 'var(--color-text-tertiary)' }}>
+          Analyze {feedbackData.length} response{feedbackData.length !== 1 ? 's' : ''}
+        </p>
+        <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+          Uses Gemini AI — private, on-demand analysis
         </p>
       </div>
     )
