@@ -13,6 +13,7 @@ from backend.analysis import generate_comprehensive_report
 from backend.processing.feedback_service import extract_feedback_data
 from backend.utils.file_helpers import get_default_csv_path
 from backend.gemini.gemini_service import get_gemini_service
+from backend.utils.excel_to_csv import excel_bytes_to_csv_bytes
 
 app = Flask(__name__)
 CORS(app)  # Allow frontend to call this API
@@ -48,26 +49,40 @@ def upload_csv():
                 "error": "No file selected"
             }), 400
         
-        # Validate file type
-        if not file.filename.lower().endswith('.csv'):
-            return jsonify({
-                "success": False,
-                "error": "File must be a CSV"
-            }), 400
-        
         # Read file content
         file_content = file.read()
-        
-        # Validate CSV content
-        validation = validate_csv_content(file_content)
+
+        filename = file.filename.lower()
+
+        # Accept CSV directly, or accept Excel and convert server-side
+        if filename.endswith('.csv'):
+            csv_bytes = file_content
+        elif filename.endswith('.xlsx') or filename.endswith('.xls'):
+            try:
+                csv_bytes = excel_bytes_to_csv_bytes(file_content)
+            except Exception as e:
+                return jsonify({
+                    "success": False,
+                    "error": "Failed to parse Excel file",
+                    "message": str(e)
+                }), 400
+        else:
+            return jsonify({
+                "success": False,
+                "error": "Unsupported file type",
+                "message": "Please upload a .csv, .xlsx or .xls file"
+            }), 400
+
+        # Validate CSV content after conversion (or direct upload)
+        validation = validate_csv_content(csv_bytes)
         if not validation["valid"]:
             return jsonify({
                 "success": False,
                 "error": validation["message"]
             }), 400
-        
+
         # Process the CSV
-        result = process_feedback_csv(file_content)
+        result = process_feedback_csv(csv_bytes)
         
         return jsonify(result)
     
