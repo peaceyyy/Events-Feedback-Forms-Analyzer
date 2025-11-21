@@ -33,7 +33,7 @@ def test_time_slot_preferences():
     print_section("TIME SLOT PREFERENCES ANALYSIS")
     
     # Load test data
-    csv_path = "test_data/feedback_forms-1.csv"
+    csv_path = "test_data/gdg_complete_test_data.csv"
     print(f"📂 Loading CSV: {csv_path}")
     
     try:
@@ -89,7 +89,7 @@ def test_venue_modality_preferences():
     print_section("VENUE & MODALITY PREFERENCES ANALYSIS")
     
     # Load test data
-    csv_path = "test_data/feedback_forms-1.csv"
+    csv_path = "test_data/gdg_complete_test_data.csv"
     print(f"📂 Loading CSV: {csv_path}")
     
     try:
@@ -152,7 +152,7 @@ def test_with_multiple_datasets():
     print_section("MULTI-DATASET VALIDATION")
     
     csv_files = [
-        "test_data/feedback_forms-1.csv",
+        "test_data/gdg_complete_test_data.csv",
         "test_data/feedback_forms-3.csv"
     ]
     

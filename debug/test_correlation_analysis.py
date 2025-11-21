@@ -13,7 +13,7 @@ print("=== Testing Correlation Analysis ===\n")
 
 try:
     # Extract data from test CSV
-    with open('test_data/feedback_forms-3.csv', 'rb') as f:
+    with open('test_data/gdg_complete_test_data.csv', 'rb') as f:
         data = extract_feedback_data(f)
     
     print(f"Loaded {len(data)} feedback entries\n")

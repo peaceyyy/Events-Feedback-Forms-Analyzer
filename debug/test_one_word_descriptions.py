@@ -21,7 +21,7 @@ def test_one_word_descriptions():
     """Test the one-word descriptions processing pipeline"""
     
     # Test with sample CSV
-    csv_path = "test_data/feedback_forms-1.csv"
+    csv_path = "test_data/gdg_complete_test_data.csv"
     
     print("=== DEBUG: One-Word Descriptions Processing ===")
     

@@ -9,7 +9,7 @@ import json
 
 # Load test data
 print("Loading test data...")
-data = extract_feedback_data('test_data/feedback_forms-3.csv')
+data = extract_feedback_data('test_data/gdg_complete_test_data.csv')
 print(f"Loaded {len(data)} records\n")
 
 # Test pacing analysis

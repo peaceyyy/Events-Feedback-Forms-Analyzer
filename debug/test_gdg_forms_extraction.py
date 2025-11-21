@@ -57,7 +57,7 @@ def load_gdg_forms_csv():
 
 def load_test_csv():
     """Load the existing test CSV for comparison."""
-    csv_path = os.path.join(project_root, 'test_data', 'feedback_forms-1.csv')
+    csv_path = os.path.join(project_root, 'test_data', 'gdg_complete_test_data.csv')
     
     if not os.path.exists(csv_path):
         print(f"❌ Test CSV not found at: {csv_path}")

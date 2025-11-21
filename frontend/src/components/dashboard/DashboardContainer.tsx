@@ -14,7 +14,6 @@ import type { UploadResponse, FeedbackRecord } from '@/types/upload'
 import logger from '@/lib/logger'
 import { calculateAspectHighlights, type AspectHighlight } from '@/lib/dataHelpers'
 import { 
-  generateSessionInsights, 
   generateMarketingInsights, 
   generateAspectInsights 
 } from '@/lib/aiService'
@@ -111,10 +110,6 @@ export default function DashboardContainer() {
     setActiveTab(tabId);
   };
 
-  // AI Insight Handlers - Delegated to centralized service
-  const handleGenerateSessionInsights = (sessionMatrixData: any) => 
-    generateSessionInsights(sessionMatrixData);
-
   const handleGenerateMarketingInsights = (channelImpactData: any) => 
     generateMarketingInsights(channelImpactData);
 
@@ -156,7 +151,6 @@ export default function DashboardContainer() {
     onTextInsightsGenerated: handleTextInsightsGenerated,
     onVariantChange: setAspectChartVariant,
     onGenerateAspectInsights: handleGenerateAspectInsights,
-    onGenerateSessionInsights: handleGenerateSessionInsights,
     onGenerateMarketingInsights: handleGenerateMarketingInsights,
     aiAspectLoading,
     aiAspectResult,

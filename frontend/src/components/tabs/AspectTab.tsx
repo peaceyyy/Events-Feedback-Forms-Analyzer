@@ -15,6 +15,7 @@ import AspectComparisonChart from '@/components/analysis/charts/AspectComparison
 import EventAspectsInsights from '@/components/analysis/textAnalytics/EventAspectsInsights'
 import CorrelationAnalysisChart from '@/components/analysis/charts/CorrelationAnalysisChart'
 import PerAspectAveragesChart from '@/components/analysis/charts/PerAspectAveragesChart'
+import DataUnavailableCard from '@/components/ui/DataUnavailableCard'
 
 interface AspectTabProps {
   analysisResults: UploadResponse
@@ -58,19 +59,24 @@ export default function AspectTab({
           
           {/* Left Side - Chart Area (flexible, takes remaining space) */}
           <div className="flex-1 min-w-0 min-h-[500px]">
-            {(analysisResults as any)?.ratings?.data && (
+            {(analysisResults as any)?.ratings?.data ? (
               <AspectComparisonChart
                 data={(analysisResults as any).ratings.data}
                 variant={aspectChartVariant}
                 onVariantChange={onVariantChange}
                 className="h-full"
               />
+            ) : (
+              <DataUnavailableCard
+                title="Aspect Ratings Data"
+                message="Detailed aspect ratings (venue, speaker, content) were not collected in this form."
+              />
             )}
           </div>
 
           {/* Right Side - AI Insights (optimal fixed width, not squished) */}
           <div className="w-full lg:w-[450px] flex-shrink-0">
-            {(analysisResults as any)?.ratings?.data && (
+            {(analysisResults as any)?.ratings?.data ? (
               <EventAspectsInsights 
                 data={(analysisResults as any).ratings.data} 
                 themeData={aiInsights?.themes?.data}
@@ -80,6 +86,11 @@ export default function AspectTab({
                 onGenerateAIInsights={onGenerateAspectInsights}
                 className="h-full"
               />
+            ) : (
+              <DataUnavailableCard
+                title="Aspect Insights"
+                message="AI insights require aspect ratings data to generate analysis."
+              />
             )}
           </div>
           
@@ -88,9 +99,14 @@ export default function AspectTab({
 
         {/* First Row - Per Aspect Averages (Full Width) */}
       <div className="grid grid-cols-1 gap-8">
-        {(analysisResults as any)?.ratings?.data && (
+        {(analysisResults as any)?.ratings?.data ? (
           <PerAspectAveragesChart
             data={(analysisResults as any).ratings.data}
+          />
+        ) : (
+          <DataUnavailableCard
+            title="Per-Aspect Averages"
+            message="Detailed aspect ratings data is required to calculate per-aspect averages."
           />
         )}
       </div>

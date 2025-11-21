@@ -268,7 +268,7 @@ export default function RelationshipChart({ data, variant, options, config }: Re
             )}
             {data.originalY !== undefined && (
               <p style={{ color: 'var(--color-text-secondary)' }}>
-                <span className="font-medium">Recommendation:</span> {data.originalY.toFixed(1)}/10.0
+                <span className="font-medium">Recommendation:</span> {data.originalY.toFixed(1)}/5.0
               </p>
             )}
             
@@ -518,7 +518,7 @@ export default function RelationshipChart({ data, variant, options, config }: Re
               tick={{ fill: 'var(--color-text-secondary)', fontSize: 11}}
               stroke="var(--color-axis-line)"
              
-              label={{ value: 'Recommendation Score (0-10)', angle: -90, position: 'left', offset: 35, style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
+              label={{ value: 'Recommendation Score (0-5)', angle: -90, position: 'left', offset: 35, style: { textAnchor: 'middle', fill: 'var(--color-text-secondary)' } }}
             />
             
             <Scatter 
@@ -552,11 +552,9 @@ const renderLine = () => {
     console.log('RelationshipChart line chart data:', chartData)
   }
 
-  // Determine if this is recommendation data (0-10 scale) or satisfaction data (0-5 scale)
-  const maxValue = Math.max(...chartData.map((item: any) => item.value || 0))
-  const isRecommendationScale = maxValue > 6 // Likely 0-10 scale
-  const yDomain = isRecommendationScale ? [0, 10] : [0, 5];
-  const yLabel = isRecommendationScale ? 'Average Recommendation Score (0-10)' : 'Average Rating (0-5)'
+  // All ratings use 1-5 scale in unified schema (pacing normalized from 1-10 in backend)
+  const yDomain = [0, 5];
+  const yLabel = 'Average Rating (0-5)'
 
   return (
     <div className="w-full h-full min-h-[320px]">

@@ -3,51 +3,11 @@
  */
 
 import type { 
-  SessionAIInsights, 
   MarketingAIInsights, 
   AspectAIInsights,
-  SessionMatrixData,
   DiscoveryChannelsData 
 } from '@/types/api'
 import logger from '@/lib/logger'
-
-/**
- * Generate AI insights for session performance data
- * 
- * Analyzes session attendance, satisfaction, and performance quadrants
- * to provide strategic recommendations for future events.
- * 
- * @param sessionMatrixData - Session performance matrix data
- * @returns AI-generated insights or error object
- */
-export async function generateSessionInsights(
-  sessionMatrixData: SessionMatrixData['data']
-): Promise<SessionAIInsights> {
-  try {
-    const response = await fetch('/api/ai/session-insights', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_data: sessionMatrixData.sessions,
-        quadrants: (sessionMatrixData as any).quadrants,
-        stats: (sessionMatrixData as any).stats,
-      }),
-    })
-
-    const result = await response.json()
-
-    if (!result.success) {
-      throw new Error(result.error || 'Failed to generate session insights')
-    }
-
-    return result.insights
-  } catch (error) {
-    logger.error('Session insights generation error:', error)
-    return {
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
-    }
-  }
-}
 
 /**
  * Generate AI insights for marketing channel performance

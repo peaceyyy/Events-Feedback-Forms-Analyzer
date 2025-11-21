@@ -1,7 +1,7 @@
 Flask
 Flask-Cors
 pandas
-numpy
+numpy<2
 google-generativeai
 python-dotenv
 gunicorn

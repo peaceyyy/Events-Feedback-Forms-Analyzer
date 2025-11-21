@@ -10,8 +10,6 @@ from .metrics_analysis import (
 
 # Session analytics
 from .session_analytics import (
-    generate_session_popularity,
-    generate_session_performance_matrix,
     generate_time_slot_preferences,
     generate_venue_modality_preferences
 )
@@ -49,8 +47,6 @@ __all__ = [
     "categorize_nps",
     
     # Session analytics
-    "generate_session_popularity",
-    "generate_session_performance_matrix",
     "generate_time_slot_preferences",
     "generate_venue_modality_preferences",
     

@@ -13,8 +13,6 @@ from collections import Counter
 # Import from modularized analysis modules
 from .metrics_analysis import generate_satisfaction_analysis, generate_recommendation_analysis
 from .session_analytics import (
-    generate_session_popularity, 
-    generate_session_performance_matrix,
     generate_time_slot_preferences,
     generate_venue_modality_preferences
 )
@@ -80,13 +78,6 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
         analysis_result["nps"] = {"error": str(e)}
     
     try:
-        analysis_result["sessions"] = generate_session_popularity(data)
-        print("DEBUG: Sessions analysis completed")
-    except Exception as e:
-        print(f"DEBUG: Sessions analysis failed: {e}")
-        analysis_result["sessions"] = {"error": str(e)}
-    
-    try:
         analysis_result["ratings"] = generate_rating_comparison(data)
         print("DEBUG: Ratings analysis completed")
     except Exception as e:
@@ -121,15 +112,7 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
         print(f"DEBUG: Correlation analysis failed: {e}")
         analysis_result["correlation"] = {"error": str(e)}
     
-    # NEW: Session Performance Matrix
-    try:
-        analysis_result["session_matrix"] = generate_session_performance_matrix(data)
-        print("DEBUG: Session performance matrix completed")
-    except Exception as e:
-        print(f"DEBUG: Session performance matrix failed: {e}")
-        analysis_result["session_matrix"] = {"error": str(e)}
-    
-    # NEW: Discovery Channel Impact
+    # Discovery Channel Impact
     try:
         analysis_result["discovery_channels"] = generate_discovery_channel_impact(data)
         print("DEBUG: Discovery channel impact analysis completed")
@@ -145,10 +128,15 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
         print(f"DEBUG: Time slot preferences failed: {e}")
         analysis_result["time_preferences"] = {"error": str(e)}
     
-    # NEW: Venue Modality Preferences
+    # NEW: Venue Modality Preferences (optional - only if preferred_venue data exists)
     try:
-        analysis_result["venue_preferences"] = generate_venue_modality_preferences(data)
-        print("DEBUG: Venue modality preferences analysis completed")
+        df_check = pd.DataFrame(data)
+        if 'preferred_venue' in df_check.columns and df_check['preferred_venue'].notna().any():
+            analysis_result["venue_preferences"] = generate_venue_modality_preferences(data)
+            print("DEBUG: Venue modality preferences analysis completed")
+        else:
+            analysis_result["venue_preferences"] = {"available": False, "message": "Venue preference data not available"}
+            print("DEBUG: Venue modality preferences skipped (no venue data)")
     except Exception as e:
         print(f"DEBUG: Venue modality preferences failed: {e}")
         analysis_result["venue_preferences"] = {"error": str(e)}

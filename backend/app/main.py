@@ -133,8 +133,12 @@ def test_with_sample():
     try:
         csv_path = get_default_csv_path()
         if not os.path.exists(csv_path):
-            # Try alternative paths in test_data folder
-            for alt_path in ['test_data/feedback_forms-1.csv', 'test_data/feedback_forms-3.csv', 'feedback_forms-1.csv']:
+            # Fallback chain (typo corrected: fgdg -> gdg)
+            for alt_path in [
+                'test_data/gdg_complete_test_data.csv',  # canonical merged sample
+                'test_data/feedback_forms-3.csv',        # legacy enriched sample
+                'test_data/feedback_forms-1.csv'         # minimal legacy sample
+            ]:
                 if os.path.exists(alt_path):
                     csv_path = alt_path
                     break

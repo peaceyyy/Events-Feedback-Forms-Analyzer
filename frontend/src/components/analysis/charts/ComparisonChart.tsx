@@ -39,7 +39,7 @@ export default function ComparisonChart({ data, variant, options, config }: Comp
       }))
     }
 
-    // Handle session popularity data with optional satisfaction (for grouped bars)
+    // Handle generic session/time slot data with optional satisfaction (for grouped bars)
     if (data.sessions && data.attendance && Array.isArray(data.sessions) && Array.isArray(data.attendance)) {
       return data.sessions.map((session: string, index: number) => ({
         name: session && session.length > 30 ? `${session.substring(0, 30)}...` : (session || `Session ${index + 1}`),
@@ -284,24 +284,9 @@ const renderGroupedBar = () => {
     </ResponsiveContainer>
   )
 
-  // Render empty state if no data
+  // Render empty state if no data - should rarely occur with proper data validation
   if (sortedData.length === 0) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center min-h-[300px] p-8">
-        <div className="text-gray-400 text-center">
-          <div className="text-center mb-4">
-            <div className="text-lg font-semibold text-gray-500">No Data</div>
-          </div>
-          <h3 className="text-lg font-semibold mb-2">No Session Data Available</h3>
-          <p className="text-sm">
-            Waiting for session attendance data...
-          </p>
-          <div className="mt-4 text-xs bg-white/10 rounded p-2 max-w-md">
-            Debug: {JSON.stringify(data, null, 2).substring(0, 200)}...
-          </div>
-        </div>
-      </div>
-    )
+    return null // Let parent component handle empty state with DataUnavailableCard
   }
 
 

@@ -11,7 +11,7 @@ from backend.processing.feedback_service import extract_feedback_data
 from backend.analysis.insights import generate_comprehensive_report
 
 # Test with sample data
-test_csv = "test_data/feedback_forms-1.csv"
+test_csv = "test_data/gdg_complete_test_data.csv"
 
 if os.path.exists(test_csv):
     print(f"Testing with {test_csv}")

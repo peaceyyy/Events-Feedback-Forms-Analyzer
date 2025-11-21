@@ -71,7 +71,7 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
 
       if (result.success && 'summary' in result) {
         logger.debug('Quick Test API Response:', result)
-        if (onUploadSuccess) onUploadSuccess(result, '🧪 Test Data (feedback_forms-1.csv)')
+        if (onUploadSuccess) onUploadSuccess(result, '🧪 Test Data (gdg_complete_test_data.csv)')
       } else if (!result.success && 'error' in result) {
         const error = result.error
         const errorMsg = typeof error === 'object' && error.message

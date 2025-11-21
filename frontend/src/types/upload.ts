@@ -30,7 +30,6 @@ export interface UploadResponse {
   // Comprehensive analysis sections (spread at root level)
   satisfaction?: AnalysisSection<SatisfactionData>;
   nps?: AnalysisSection<NPSData>;
-  sessions?: AnalysisSection<SessionsData>;
   ratings?: AnalysisSection<RatingsData>;
   correlation?: AnalysisSection<CorrelationData>;
   pacing?: AnalysisSection<PacingData>;
@@ -137,32 +136,6 @@ export interface NPSData {
   detractors_percentage: number;
   total_responses: number;
   distribution?: Record<string, number>;
-}
-
-/**
- * Session popularity and performance analysis
- */
-export interface SessionsData {
-  popularity: SessionPopularity[];
-  performance_matrix?: SessionPerformanceMatrix[];
-  total_sessions: number;
-  average_attendance: number;
-}
-
-export interface SessionPopularity {
-  session: string;
-  count: number;
-  percentage: number;
-}
-
-export interface SessionPerformanceMatrix {
-  session: string;
-  attendance: number;
-  avg_satisfaction?: number;
-  avg_recommendation?: number;
-  avg_venue_rating?: number;
-  avg_speaker_rating?: number;
-  avg_content_rating?: number;
 }
 
 /**
