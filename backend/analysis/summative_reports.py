@@ -85,11 +85,11 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
         analysis_result["ratings"] = {"error": str(e)}
     
     try:
-        analysis_result["feedback"] = generate_text_insights(data)
-        print("DEBUG: Feedback analysis completed")
+        analysis_result["text_insights"] = generate_text_insights(data)
+        print("DEBUG: Text insights analysis completed")
     except Exception as e:
-        print(f"DEBUG: Feedback analysis failed: {e}")
-        analysis_result["feedback"] = {"error": str(e)}
+        print(f"DEBUG: Text insights analysis failed: {e}")
+        analysis_result["text_insights"] = {"error": str(e)}
     
     try:
         analysis_result["one_word_descriptions"] = generate_one_word_descriptions(data)
@@ -114,11 +114,11 @@ def generate_comprehensive_report(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     
     # Discovery Channel Impact
     try:
-        analysis_result["discovery_channels"] = generate_discovery_channel_impact(data)
+        analysis_result["discovery"] = generate_discovery_channel_impact(data)
         print("DEBUG: Discovery channel impact analysis completed")
     except Exception as e:
         print(f"DEBUG: Discovery channel impact failed: {e}")
-        analysis_result["discovery_channels"] = {"error": str(e)}
+        analysis_result["discovery"] = {"error": str(e)}
     
     # NEW: Time Slot Preferences
     try:

@@ -84,6 +84,20 @@ export default function DashboardContainer() {
 
   const handleUploadSuccess = (results: UploadResponse, filename?: string) => {
     logger.debug('UPLOAD RESULTS:', results);
+    
+    // DETAILED LOGGING: Validate response structure
+    console.log('='.repeat(80));
+    console.log('DASHBOARD PROCESSING RESPONSE');
+    console.log('='.repeat(80));
+    console.log('Has data:', !!results.data);
+    console.log('Has summary:', !!results.summary);
+    console.log('Has satisfaction:', !!results.satisfaction);
+    console.log('Has nps:', !!results.nps);
+    console.log('Has ratings:', !!results.ratings);
+    console.log('Has text_insights:', !!results.text_insights);
+    console.log('Has discovery:', !!results.discovery);
+    console.log('='.repeat(80));
+    
     setAnalysisResults(results);
     setAnalysisError("");
     if (filename) setUploadedFilename(filename);

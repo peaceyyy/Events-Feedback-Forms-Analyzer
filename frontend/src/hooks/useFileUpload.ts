@@ -89,9 +89,39 @@ export function useFileUpload(options: UseFileUploadOptions = {}): UseFileUpload
               try {
                 // Parse JSON response
                 const response = JSON.parse(xhr.responseText)
+                
+                // DETAILED LOGGING: Log the exact response structure
+                console.log('='.repeat(80));
+                console.log('FRONTEND RECEIVED RESPONSE');
+                console.log('='.repeat(80));
+                console.log('Response keys:', Object.keys(response));
+                console.log('success:', response.success);
+                console.log('data:', response.data ? `${response.data.length} records` : 'undefined');
+                console.log('summary keys:', response.summary ? Object.keys(response.summary) : 'undefined');
+                
+                // Log each analysis section
+                const analysisSections = ['satisfaction', 'nps', 'ratings', 'correlation', 'pacing', 'text_insights', 'discovery'];
+                analysisSections.forEach(section => {
+                  if (response[section]) {
+                    console.log(`${section}:`, Object.keys(response[section]));
+                  } else {
+                    console.log(`${section}: MISSING`);
+                  }
+                });
+                
+                // Check for unexpected fields
+                const expectedKeys = ['success', 'message', 'data', 'summary', 'timestamp', ...analysisSections, 'time_preferences', 'venue_preferences', 'one_word_descriptions', 'scatter_data'];
+                const unexpectedKeys = Object.keys(response).filter(k => !expectedKeys.includes(k));
+                if (unexpectedKeys.length > 0) {
+                  console.warn('UNEXPECTED KEYS:', unexpectedKeys);
+                }
+                console.log('='.repeat(80));
+                
                 resolve(response)
               } catch (e) {
                 // If JSON parsing fails, it's a validation error
+                console.error('JSON Parse Error:', e);
+                console.error('Raw response:', xhr.responseText.substring(0, 500));
                 reject({
                   code: 'VALIDATION_ERROR',
                   message: 'Invalid response from server',

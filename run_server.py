@@ -13,6 +13,10 @@ sys.path.insert(0, project_root)
 
 # Now import and run the Flask app
 from backend.app.main import app
+import logging
+
+# Configure basic logging so backend modules using logging produce output
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s: %(message)s')
 
 if __name__ == '__main__':
     print("Starting Feedback Form Analyzer API...")

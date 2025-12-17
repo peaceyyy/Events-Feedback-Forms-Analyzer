@@ -26,6 +26,7 @@ interface FileUploadProps {
 export default function FileUpload({ onUploadSuccess, onUploadError, onReset, isMinimized = false }: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [dragActive, setDragActive] = useState(false)
+  const [isTestLoading, setIsTestLoading] = useState(false)
   
   // Check if debug mode is enabled (only show Quick Test in development/debug)
   const isDebugMode = process.env.NEXT_PUBLIC_DEBUG_MODE === 'true'
@@ -62,6 +63,7 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
   }
 
   const handleQuickTest = async () => {
+    setIsTestLoading(true)
     try {
       const response = await fetch('/api/test', {
         method: 'GET',
@@ -87,6 +89,8 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
       const errorMsg = 'Connection failed. Is the Flask server running?'
       logger.error('Quick test error:', err)
       if (onUploadError) onUploadError(errorMsg)
+    } finally {
+      setIsTestLoading(false)
     }
   }
 
@@ -145,14 +149,14 @@ export default function FileUpload({ onUploadSuccess, onUploadError, onReset, is
           {isDebugMode && (
             <button
               onClick={handleQuickTest}
-              disabled={isUploading}
+              disabled={isUploading || isTestLoading}
               className="btn-secondary text-sm py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
               style={{
                 background: 'linear-gradient(135deg, rgba(103, 58, 183, 0.1), rgba(63, 81, 181, 0.1))',
                 border: '1.5px solid rgba(103, 58, 183, 0.3)',
               }}
             >
-              {isUploading ? (
+              {isUploading || isTestLoading ? (
                 <div className="flex items-center gap-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-400"></div>
                   <span>Processing...</span>

@@ -13,6 +13,9 @@ import io
 from backend.processing.feedback_service import extract_feedback_data
 # Import the summary and analysis functions from the analysis package
 from backend.analysis import generate_initial_summary, generate_comprehensive_report
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def validate_csv_content(file_content: bytes) -> Dict[str, Any]:
@@ -43,21 +46,18 @@ def process_feedback_csv(file_content: bytes) -> Dict[str, Any]:
         summary = generate_initial_summary(extracted_data)
         
         # Generate comprehensive analysis for charts
-        comprehensive_analysis = generate_comprehensive_report(extracted_data)
-        
-        # Debug logging to see what we're returning
-        print(f"DEBUG: Generated comprehensive analysis with keys: {comprehensive_analysis.keys()}")
-        print(f"DEBUG: NPS analysis: {comprehensive_analysis.get('nps', {}).get('data', {})}")
-        print(f"DEBUG: Sessions analysis: {comprehensive_analysis.get('sessions', {}).get('data', {})}")
-        
-        result = {
-            "success": True,
-            "message": "CSV processed successfully",
-            "data": extracted_data,
-            "summary": summary,
-            "timestamp": datetime.now().isoformat(),
-            **comprehensive_analysis  # Spread comprehensive analysis at root level
-        }
+        logger.info("Root keys: %s", list(result.keys()))
+        logger.info("success: %s", result['success'])
+        logger.info("data: %s records", len(result.get('data', [])))
+        logger.info("summary keys: %s", list(result.get('summary', {}).keys()))
+
+        # Log each analysis section
+        for key in result.keys():
+            if key not in ['success', 'message', 'data', 'summary', 'timestamp']:
+                section = result[key]
+                if isinstance(section, dict):
+                    logger.info("%s: %s", key, list(section.keys()))
+        logger.info("%s", "=" * 80)
         
         return result
     except ValueError as e:

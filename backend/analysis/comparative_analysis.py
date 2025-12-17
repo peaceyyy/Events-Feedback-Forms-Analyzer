@@ -258,8 +258,22 @@ def generate_pacing_analysis(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     if best_pacing['value'] - worst_pacing['value'] > 1.0:
         insights.append(f"Pacing significantly affects satisfaction - '{best_pacing['category']}' leads to {best_pacing['value']:.1f}/5 satisfaction")
     
-    if any(cat['category'].lower() in ['just right', 'perfect', 'good'] for cat in chart_data):
-        optimal_count = sum(cat['count'] for cat in chart_data if cat['category'].lower() in ['just right', 'perfect', 'good'])
+    # Check for "optimal" pacing (String: "Just Right", "Perfect" OR Numeric: 3)
+    is_optimal = False
+    optimal_count = 0
+    
+    for cat in chart_data:
+        category = cat['category']
+        # Handle numeric pacing (3 is standard for "Just Right" on 1-5 scale)
+        if isinstance(category, (int, float)) and int(category) == 3:
+            optimal_count += cat['count']
+            is_optimal = True
+        # Handle string pacing
+        elif isinstance(category, str) and category.lower() in ['just right', 'perfect', 'good']:
+            optimal_count += cat['count']
+            is_optimal = True
+            
+    if is_optimal:
         insights.append(f"{round((optimal_count/total_responses)*100)}% found pacing optimal")
     
     return {

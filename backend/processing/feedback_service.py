@@ -4,6 +4,7 @@ import os
 import pprint
 import json
 from datetime import datetime
+from backend.utils.file_helpers import get_default_csv_path
 
 # --- HELPER & VALIDATION FUNCTIONS ---
 
@@ -41,6 +42,7 @@ def extract_feedback_data(file_path_or_buffer) -> List[Dict[str, Any]]:
         'How well did the content of the event meet your expectations?': 'satisfaction',  # GDG export format (PRIMARY satisfaction metric)
         'How likely are you to recommend our events to a friend or colleague?': 'recommendation_score',
         'How likely are you to recommend our events to a friend or colleague? (1 - Strongly Discourage, 5 - Absolutely Must Go)': 'recommendation_score',  # Unified template (1-5)
+        'How likely are you to recommend our events to a friend or colleague? [OPTIONAL]': 'recommendation_score',  # New format
         'Which sessions did you attend?': 'sessions_attended',  # Optional (old format)
         'Please rate the following aspects of the event [Venue]': 'venue_rating',  # Old format
         'Venue Rating': 'venue_rating',  # New unified format
@@ -60,6 +62,7 @@ def extract_feedback_data(file_path_or_buffer) -> List[Dict[str, Any]]:
         'From a scale of 1 - 5 ?': 'pacing',  # Alternative pacing format (1-5)
         'From a scale of 1 - 5, how was the pacing of the event?': 'pacing',  # Test data pacing (1-5)
         'How was the pacing of the event?': 'pacing',  # Simplified pacing question (1-5)
+        'How was the pacing of the event? [OPTIONAL]': 'pacing',  # New format
         'Event Discovery Channel': 'event_discovery',
         'One-Word Description': 'one_word_desc',
         'How did you hear about this event?': 'event_discovery',  # GDG export format
@@ -166,8 +169,13 @@ def extract_feedback_data(file_path_or_buffer) -> List[Dict[str, Any]]:
     # Normalize pacing: GDG export uses 1-10, unified schema uses 1-5
     # Convert 1-10 scale to 1-5: divide by 2 and round
     if 'pacing' in extracted_df.columns:
-        extracted_df['pacing'] = pd.to_numeric(extracted_df['pacing'], errors='coerce').fillna(0)
-        # Normalize: values > 5 are from 1-10 scale, need conversion
+        # First extract numbers if it's a string like "3 - Just Right"
+        extracted_df['pacing'] = pd.to_numeric(
+            extracted_df['pacing'].astype(str).str.extract(r'(\d+)', expand=False),
+            errors='coerce'
+        ).fillna(0)
+        
+        # Normalize: values > 5 are likely from 1-10 scale, need conversion
         mask = extracted_df['pacing'] > 5
         extracted_df.loc[mask, 'pacing'] = (extracted_df.loc[mask, 'pacing'] / 2).round().astype(int)
         # Ensure values stay within 1-5 range
