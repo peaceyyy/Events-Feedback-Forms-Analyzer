@@ -1,9 +1,17 @@
 // API route for aspect performance insights generation
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_API_URL || 'http://localhost:5000';
+const BACKEND_URL = process.env.BACKEND_API_URL;
 
 export async function POST(request: NextRequest) {
+  // Fail fast if backend URL is not configured
+  if (!BACKEND_URL) {
+    return NextResponse.json(
+      { success: false, error: 'BACKEND_API_URL not configured on server' },
+      { status: 500 }
+    );
+  }
+
   try {
     const body = await request.json();
     

@@ -13,11 +13,19 @@ import type { UploadResponse, UploadError } from '@/types/upload';
  */
 
 // Configuration constants
-const BACKEND_URL = process.env.BACKEND_API_URL || 'http://localhost:5000';
+const BACKEND_URL = process.env.BACKEND_API_URL;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_MIME_TYPES = ['text/csv', 'application/vnd.ms-excel'];
 
 export async function POST(request: NextRequest) {
+  // Fail fast if backend URL is not configured
+  if (!BACKEND_URL) {
+    return NextResponse.json(
+      { success: false, error: 'BACKEND_API_URL not configured on server' },
+      { status: 500 }
+    );
+  }
+
   try {
     // Step 1: Extract and validate form data
     const formData = await request.formData();

@@ -8,6 +8,17 @@ import { NextRequest, NextResponse } from 'next/server';
  * @returns {NextResponse} - AI-generated insights or error response
  */
 export async function POST(request: NextRequest) {
+  // Get backend URL from environment
+  const backendUrl = process.env.BACKEND_API_URL?.replace('/upload', '');
+  
+  // Fail fast if backend URL is not configured
+  if (!backendUrl) {
+    return NextResponse.json(
+      { success: false, error: 'BACKEND_API_URL not configured on server' },
+      { status: 500 }
+    );
+  }
+
   try {
     // Parse the incoming session data
     const body = await request.json();
@@ -20,8 +31,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get backend URL from environment
-    const backendUrl = process.env.BACKEND_API_URL?.replace('/upload', '') || 'http://localhost:5000';
     const aiEndpoint = `${backendUrl}/api/ai/session-insights`;
 
     // Forward request to Python backend

@@ -3,14 +3,12 @@ Main API entry point for the Feedback Form Analyzer.
 This creates a simple Flask API that your frontend can call.
 """
 
-import pandas as pd
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 
 from backend.app.csv_handling import process_feedback_csv, validate_csv_content
 from backend.analysis import generate_comprehensive_report
-from backend.processing.feedback_service import extract_feedback_data
 from backend.utils.file_helpers import get_default_csv_path
 from backend.gemini.gemini_service import get_gemini_service
 

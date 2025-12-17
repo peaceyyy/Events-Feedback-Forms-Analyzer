@@ -3,8 +3,8 @@ services:
   - type: web
     name: feedback-analyzer-api
     runtime: python
-    region: oregon  # Choose: oregon, frankfurt, singapore, ohio
-    plan: free  # Options: free, starter, standard, pro
+    region: oregon  
+    plan: free 
     branch: main
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn -w 4 -b 0.0.0.0:$PORT run_server:app
@@ -13,5 +13,5 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: GEMINI_API_KEY
-        sync: false  # Mark as secret - set manually in Render dashboard
-    autoDeploy: true  # Auto-deploy on git push to main branch
+        sync: false  
+    autoDeploy: true  
