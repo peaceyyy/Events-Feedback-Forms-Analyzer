@@ -11,7 +11,7 @@ import os
 project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, project_root)
 
-# Now import and run the Flask app
+
 from backend.app.main import app
 
 if __name__ == '__main__':
@@ -28,5 +28,5 @@ if __name__ == '__main__':
     print("🔧 Use Ctrl+C to stop the server")
     print("=" * 50)
     
-    # Start the Flask development server
+ 
     app.run(debug=True, host='0.0.0.0', port=5000)
